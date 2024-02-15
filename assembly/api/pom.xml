@@ -25,9 +25,7 @@
     <artifactId>kapua-assembly-api</artifactId>
 
     <properties>
-        <nodejs.version>10.16.3</nodejs.version>
-        <swagger-cli.executable>${project.build.directory}/bin/swagger-cli</swagger-cli.executable>
-        <swagger-cli.version>4.0.4</swagger-cli.version>
+        <swagger-cli.executable>swagger-cli</swagger-cli.executable>
     </properties>
 
     <dependencies>
@@ -221,31 +219,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>install-node-and-npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-swagger-cli</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>install -g @apidevtools/swagger-cli@${swagger-cli.version}</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <nodeVersion>v${nodejs.version}</nodeVersion>
-                    <installDirectory>target</installDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
@@ -302,9 +275,6 @@
                 </executions>
                 <configuration>
                     <executable>${swagger-cli.executable}</executable>
-                    <environmentVariables>
-                        <PATH>$PATH:${project.build.directory}/node</PATH>
-                    </environmentVariables>
                     <arguments>
                         <argument>bundle</argument>
                         <argument>-t</argument>
@@ -373,17 +343,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>swagger-cli-windows</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <properties>
-                <swagger-cli.executable>${project.build.directory}/node/swagger-cli.cmd</swagger-cli.executable>
-            </properties>
         </profile>
     </profiles>
 
