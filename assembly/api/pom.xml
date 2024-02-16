@@ -223,7 +223,7 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>unpack-swagger-ui</id>
+                        <id>Unpack Swagger UI</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>unpack</goal>
@@ -241,7 +241,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>unpack-openapi</id>
+                        <id>Unpack OpenAPI definitions</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>unpack</goal>
@@ -266,24 +266,24 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-openapi</id>
+                        <id>Bundle OpenAPI definitions</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
-                        <phase>prepare-package</phase>
+                        <configuration>
+                            <executable>${swagger-cli.executable}</executable>
+                            <arguments>
+                                <argument>bundle</argument>
+                                <argument>-t</argument>
+                                <argument>yaml</argument>
+                                <argument>-o</argument>
+                                <argument>${project.build.directory}/tmp/openapi.yaml</argument>
+                                <argument>${project.build.directory}/tmp/openapi/openapi.yaml</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <executable>${swagger-cli.executable}</executable>
-                    <arguments>
-                        <argument>bundle</argument>
-                        <argument>-t</argument>
-                        <argument>yaml</argument>
-                        <argument>-o</argument>
-                        <argument>${project.build.directory}/tmp/openapi.yaml</argument>
-                        <argument>${project.build.directory}/tmp/openapi/openapi.yaml</argument>
-                    </arguments>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
