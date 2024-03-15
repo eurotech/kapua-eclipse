@@ -113,6 +113,10 @@ public interface KapuaQuery {
      */
     void setSortCriteria(@NotNull KapuaSortCriteria sortCriteria);
 
+    default boolean getNotScopedEntities() {
+        return false;
+    }
+
     /**
      * Gets the default {@link KapuaSortCriteria} to use if {@link #getSortCriteria()} is not specified.
      *

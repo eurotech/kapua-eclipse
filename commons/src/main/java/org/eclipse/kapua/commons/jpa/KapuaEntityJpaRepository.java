@@ -174,9 +174,16 @@ public class KapuaEntityJpaRepository<E extends KapuaEntity, C extends E, L exte
         if (listQuery.getScopeId() != null && // Support for old method of querying for all ScopeIds (e.g.: query.setScopeId(null)
                 !listQuery.getScopeId().equals(KapuaId.ANY)) {// Support for new method of querying for all ScopeIds (e.g.: query.setScopeId(KapuaId.ANY)
 
-            AndPredicate scopedAndPredicate = listQuery.andPredicate(
-                    listQuery.attributePredicate(AbstractKapuaEntity_.SCOPE_ID, listQuery.getScopeId())
-            );
+            QueryPredicate scopeIdPredicate = listQuery.attributePredicate(AbstractKapuaEntity_.SCOPE_ID, listQuery.getScopeId());
+
+            if (listQuery.getNotScopedEntities()) {
+                scopeIdPredicate = listQuery.orPredicate(
+                        scopeIdPredicate,
+                        listQuery.attributePredicate(AbstractKapuaEntity_.SCOPE_ID, null, AttributePredicate.Operator.IS_NULL)
+                );
+            }
+
+            AndPredicate scopedAndPredicate = listQuery.andPredicate(scopeIdPredicate);
 
             // Add existing query predicates
             if (listQuery.getPredicate() != null) {
