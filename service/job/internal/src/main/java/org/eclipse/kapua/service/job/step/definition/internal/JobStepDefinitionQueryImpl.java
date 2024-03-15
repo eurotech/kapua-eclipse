@@ -32,4 +32,9 @@ public class JobStepDefinitionQueryImpl extends AbstractKapuaNamedQuery implemen
     public JobStepDefinitionQueryImpl(KapuaId scopeId) {
         super(scopeId);
     }
+
+    @Override
+    public boolean getNotScopedEntities() {
+        return true;
+    }
 }
