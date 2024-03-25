@@ -15,19 +15,23 @@ package org.eclipse.kapua.service.job.step.definition.internal;
 import com.google.inject.Provides;
 import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.commons.jpa.KapuaJpaRepositoryConfiguration;
-import org.eclipse.kapua.commons.jpa.KapuaJpaTxManagerFactory;
 import org.eclipse.kapua.service.authorization.AuthorizationService;
 import org.eclipse.kapua.service.authorization.permission.PermissionFactory;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionFactory;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRepository;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionService;
+import org.eclipse.kapua.storage.TxManager;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class JobStepDefinitionModule extends AbstractKapuaModule {
     @Override
     protected void configureModule() {
         bind(JobStepDefinitionFactory.class).to(JobStepDefinitionFactoryImpl.class);
+
+        // The bind of the JobStepDefinitionAligner has been moved to JobEngineModule
+        // bind(JobStepDefinitionAligner.class).in(Singleton.class);
     }
 
     @Provides
@@ -35,12 +39,12 @@ public class JobStepDefinitionModule extends AbstractKapuaModule {
     JobStepDefinitionService jobStepDefinitionService(
             AuthorizationService authorizationService,
             PermissionFactory permissionFactory,
-            JobStepDefinitionRepository repository,
-            KapuaJpaTxManagerFactory jpaTxManagerFactory) {
+            @Named("jobTxManager") TxManager txManager,
+            JobStepDefinitionRepository repository) {
         return new JobStepDefinitionServiceImpl(
                 authorizationService,
                 permissionFactory,
-                jpaTxManagerFactory.create("kapua-job"),
+                txManager,
                 repository
         );
     }

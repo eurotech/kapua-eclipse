@@ -19,6 +19,9 @@
 
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
+        <class>org.eclipse.kapua.service.job.step.definition.internal.JobStepPropertyForAlignerImpl</class>
+        <class>org.eclipse.kapua.service.job.step.definition.internal.JobStepPropertyForAlignerId</class>
+
         <class>org.eclipse.kapua.service.job.internal.JobImpl</class>
         <class>org.eclipse.kapua.service.job.execution.internal.JobExecutionImpl</class>
         <class>org.eclipse.kapua.service.job.step.internal.JobStepImpl</class>

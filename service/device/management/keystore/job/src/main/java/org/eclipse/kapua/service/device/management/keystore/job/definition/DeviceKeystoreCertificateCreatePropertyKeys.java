@@ -20,7 +20,7 @@ import org.eclipse.kapua.service.job.step.definition.JobPropertyKey;
  *
  * @since 1.5.0
  */
-public class DeviceCertificateCreatePropertyKeys implements JobPropertyKey {
+public class DeviceKeystoreCertificateCreatePropertyKeys implements JobPropertyKey {
 
     /**
      * @since 1.5.0
@@ -47,6 +47,6 @@ public class DeviceCertificateCreatePropertyKeys implements JobPropertyKey {
      *
      * @since 1.5.0
      */
-    private DeviceCertificateCreatePropertyKeys() {
+    private DeviceKeystoreCertificateCreatePropertyKeys() {
     }
 }

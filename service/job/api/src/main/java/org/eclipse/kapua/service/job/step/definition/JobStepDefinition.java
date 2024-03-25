@@ -55,6 +55,8 @@ public interface JobStepDefinition extends KapuaNamedEntity {
 
     <P extends JobStepProperty> List<P> getStepProperties();
 
+    JobStepProperty getStepProperty(String name);
+
     void setStepProperties(List<JobStepProperty> jobStepProperties);
 
 }

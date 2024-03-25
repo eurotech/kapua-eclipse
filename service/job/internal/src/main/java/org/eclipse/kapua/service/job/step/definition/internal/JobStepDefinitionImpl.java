@@ -148,6 +148,15 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
     }
 
     @Override
+    public JobStepProperty getStepProperty(String name) {
+        return getStepProperties()
+                .stream()
+                .filter(jsp -> jsp.getName().equals(name))
+                .findAny()
+                .orElse(null);
+    }
+
+    @Override
     public void setStepProperties(List<JobStepProperty> jobStepProperties) {
         this.jobStepProperties = new ArrayList<>();
 

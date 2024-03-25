@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2024, 2022 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,14 +18,21 @@ import org.eclipse.kapua.service.job.step.definition.JobStepProperty;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Convert;
-import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-@Embeddable
-public class JobStepPropertyImpl implements JobStepProperty {
+@Entity(name = "JobStepPropertyForAligner")
+@Table(name = "job_job_step_definition_properties")
+public class JobStepPropertyForAlignerImpl implements JobStepProperty {
 
-    @Basic
-    @Column(name = "name", nullable = false, updatable = false)
-    private String name;
+    @EmbeddedId
+    private JobStepPropertyForAlignerId jobStepPropertyForAlignerId;
+    //
+    //    @Id
+    //    @Basic
+    //    @Column(name = "name", nullable = false, updatable = false)
+    //    private String name;
 
     @Basic
     @Column(name = "property_type", nullable = false, updatable = false)
@@ -68,10 +75,10 @@ public class JobStepPropertyImpl implements JobStepProperty {
     @Column(name = "validation_regex", nullable = true, updatable = true)
     private String validationRegex;
 
-    public JobStepPropertyImpl() {
+    public JobStepPropertyForAlignerImpl() {
     }
 
-    private JobStepPropertyImpl(JobStepProperty jobStepProperty) {
+    private JobStepPropertyForAlignerImpl(JobStepProperty jobStepProperty) {
         setName(jobStepProperty.getName());
         setPropertyType(jobStepProperty.getPropertyType());
         setPropertyValue(jobStepProperty.getPropertyValue());
@@ -85,21 +92,22 @@ public class JobStepPropertyImpl implements JobStepProperty {
         setValidationRegex(jobStepProperty.getValidationRegex());
     }
 
-    public JobStepPropertyImpl(String name, String propertyType, String propertyValue, String propertyExampleValue) {
-        setName(name);
-        setPropertyType(propertyType);
-        setPropertyValue(propertyValue);
-        setExampleValue(propertyExampleValue);
+    public JobStepPropertyForAlignerId getJobStepPropertyForAlignerId() {
+        return jobStepPropertyForAlignerId;
+    }
+
+    public void setJobStepPropertyForAlignerId(JobStepPropertyForAlignerId jobStepPropertyForAlignerId) {
+        this.jobStepPropertyForAlignerId = jobStepPropertyForAlignerId;
     }
 
     @Override
     public String getName() {
-        return name;
+        return null;//        return jobStepPropertyForAlignerId.getName();
     }
 
     @Override
     public void setName(String name) {
-        this.name = name;
+        //        this.jobStepPropertyForAlignerId.setName(name);
     }
 
     @Override
@@ -206,7 +214,9 @@ public class JobStepPropertyImpl implements JobStepProperty {
         this.validationRegex = validationRegex;
     }
 
-    public static JobStepPropertyImpl parse(JobStepProperty jobStepProperty) {
-        return jobStepProperty != null ? (jobStepProperty instanceof JobStepPropertyImpl ? (JobStepPropertyImpl) jobStepProperty : new JobStepPropertyImpl(jobStepProperty)) : null;
+    public static JobStepPropertyForAlignerImpl parse(JobStepProperty jobStepProperty) {
+        return jobStepProperty != null ? (jobStepProperty instanceof JobStepPropertyForAlignerImpl
+                ? (JobStepPropertyForAlignerImpl) jobStepProperty
+                : new JobStepPropertyForAlignerImpl(jobStepProperty)) : null;
     }
 }
