@@ -12,24 +12,25 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.job.step.definition.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.model.AbstractKapuaNamedEntity;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepProperty;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
-
-import javax.persistence.Basic;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link JobStepDefinition} implementation.
@@ -58,9 +59,8 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
     @Column(name = "writer_name", nullable = false, updatable = false)
     private String writerName;
 
-    @ElementCollection
-    @CollectionTable(name = "job_job_step_definition_properties", joinColumns = @JoinColumn(name = "step_definition_id", referencedColumnName = "id"))
-    private List<JobStepPropertyImpl> jobStepProperties;
+    @OneToMany(mappedBy = "jobStepDefinition")
+    private List<JobStepDefinitionPropertyImpl> jobStepProperties;
 
     /**
      * Constructor.
@@ -73,7 +73,8 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
     /**
      * Constructor.
      *
-     * @param scopeId The scope {@link KapuaId} to set into the {@link JobStepDefinition}
+     * @param scopeId
+     *         The scope {@link KapuaId} to set into the {@link JobStepDefinition}
      * @since 1.0.0
      */
     public JobStepDefinitionImpl(KapuaId scopeId) {
@@ -138,31 +139,39 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
         this.writerName = writesName;
     }
 
-    @Override
-    public List<JobStepPropertyImpl> getStepProperties() {
-        if (jobStepProperties == null) {
-            jobStepProperties = new ArrayList<>();
-        }
-
+    public List<JobStepDefinitionPropertyImpl> getJobStepProperties() {
         return jobStepProperties;
     }
 
     @Override
-    public JobStepProperty getStepProperty(String name) {
-        return getStepProperties()
-                .stream()
-                .filter(jsp -> jsp.getName().equals(name))
-                .findAny()
-                .orElse(null);
+    public List<JobStepProperty> getStepProperties() {
+        if (jobStepProperties == null) {
+            jobStepProperties = new ArrayList<>();
+        }
+
+        return jobStepProperties.stream().map(jsp -> jsp.getJobStepProperty()).collect(Collectors.toList());
     }
 
-    @Override
+    public List<JobStepDefinitionPropertyImpl> getStepPropertiesEntitites() {
+        return jobStepProperties;
+    }
+
     public void setStepProperties(List<JobStepProperty> jobStepProperties) {
         this.jobStepProperties = new ArrayList<>();
 
         for (JobStepProperty sp : jobStepProperties) {
-            this.jobStepProperties.add(JobStepPropertyImpl.parse(sp));
+            this.jobStepProperties.add(JobStepDefinitionPropertyImpl.parse(this.getId(), sp));
         }
-
     }
+
+    @Override
+    public JobStepProperty getStepProperty(String name) {
+        return Optional.ofNullable(getStepProperties())
+                .flatMap(props -> props
+                        .stream()
+                        .filter(jsp -> jsp.getName().equals(name))
+                        .findAny())
+                .orElse(null);
+    }
+
 }

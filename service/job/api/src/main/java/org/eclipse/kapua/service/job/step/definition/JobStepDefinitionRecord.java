@@ -12,14 +12,13 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.job.step.definition;
 
-import org.eclipse.kapua.entity.EntityPropertiesReadException;
-import org.eclipse.kapua.entity.EntityPropertiesWriteException;
-import org.eclipse.kapua.model.id.KapuaId;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
+import org.eclipse.kapua.entity.EntityPropertiesReadException;
+import org.eclipse.kapua.entity.EntityPropertiesWriteException;
+import org.eclipse.kapua.model.id.KapuaId;
 
 public abstract class JobStepDefinitionRecord implements JobStepDefinition {
 
@@ -133,11 +132,6 @@ public abstract class JobStepDefinitionRecord implements JobStepDefinition {
                 .filter(jsp -> jsp.getName().equals(name))
                 .findAny()
                 .orElse(null);
-    }
-
-    @Override
-    public void setStepProperties(List<JobStepProperty> jobStepProperties) {
-        this.jobStepProperties = new ArrayList<>(jobStepProperties);
     }
 
     @Override

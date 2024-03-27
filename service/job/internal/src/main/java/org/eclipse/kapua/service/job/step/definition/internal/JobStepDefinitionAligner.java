@@ -12,11 +12,24 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.job.step.definition.internal;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.jpa.JpaAwareTxContext;
 import org.eclipse.kapua.commons.security.KapuaSecurityUtils;
 import org.eclipse.kapua.locator.initializers.KapuaInitializingMethod;
 import org.eclipse.kapua.model.KapuaNamedEntity;
+import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRepository;
 import org.eclipse.kapua.service.job.step.definition.JobStepProperty;
@@ -25,22 +38,14 @@ import org.eclipse.kapua.storage.TxManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 public class JobStepDefinitionAligner {
 
     private final TxManager txManager;
     private final JobStepDefinitionRepository jobStepDefinitionRepository;
     private final Set<JobStepDefinition> knownJobStepDefinitions;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Comparator<JobStepDefinition> jobStepDefinitionComparator;
+    private final Comparator<JobStepProperty> jobStepPropertyComparator;
 
     @Inject
     public JobStepDefinitionAligner(@Named("jobTxManager") TxManager txManager,
@@ -49,6 +54,26 @@ public class JobStepDefinitionAligner {
         this.txManager = txManager;
         this.jobStepDefinitionRepository = domainRepository;
         this.knownJobStepDefinitions = knownJobStepDefinitions;
+        jobStepDefinitionComparator = Comparator
+                .comparing((JobStepDefinition jsp) -> Optional.ofNullable(jsp.getScopeId()).map(KapuaId::getId).orElse(null), Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepDefinition::getName, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepDefinition::getDescription, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepDefinition::getStepType, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepDefinition::getReaderName, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepDefinition::getProcessorName, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepDefinition::getWriterName, Comparator.nullsFirst(Comparator.naturalOrder()));
+        jobStepPropertyComparator = Comparator
+                .comparing(JobStepProperty::getName, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getPropertyType, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getPropertyValue, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getExampleValue, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getRequired, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getSecret, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getMinLength, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getMaxLength, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getMinValue, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getMaxValue, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getValidationRegex, Comparator.nullsFirst(Comparator.naturalOrder()));
     }
 
     @KapuaInitializingMethod(priority = 20)
@@ -61,10 +86,13 @@ public class JobStepDefinitionAligner {
         try {
             KapuaSecurityUtils.doPrivileged(() -> {
                 txManager.execute(tx -> {
-                    List<JobStepDefinition> dbJobStepDefinitionEntries = jobStepDefinitionRepository.query(tx, new JobStepDefinitionQueryImpl(null)).getItems();
+                    List<JobStepDefinitionImpl> dbJobStepDefinitionEntries = jobStepDefinitionRepository.query(tx, new JobStepDefinitionQueryImpl(null)).getItems()
+                            .stream()
+                            .map(i -> (JobStepDefinitionImpl) i)
+                            .collect(Collectors.toList());
                     logger.info("Found {} JobStepDefinition declarations in database", dbJobStepDefinitionEntries.size());
 
-                    for (JobStepDefinition dbJobStepDefinitionEntry : dbJobStepDefinitionEntries) {
+                    for (JobStepDefinitionImpl dbJobStepDefinitionEntry : dbJobStepDefinitionEntries) {
                         if (!knownJobStepDefinitionsByName.containsKey(dbJobStepDefinitionEntry.getName())) {
                             // Leave it be. As we share the database with other components, it might have been created by such components and be hidden from us
                             logger.warn("JobStepDefinition '{}' is only present in the database but has no current declaration!", dbJobStepDefinitionEntry.getName());
@@ -80,17 +108,10 @@ public class JobStepDefinitionAligner {
                         // Check alignment between known and DB JobStepProperty
                         JobStepDefinition wiredJobStepDefinition = knownJobStepDefinitionsByName.get(dbJobStepDefinitionEntry.getName());
 
-                        if (Objects.equals(dbJobStepDefinitionEntry.getScopeId(), wiredJobStepDefinition.getScopeId()) &&
-                                Objects.equals(dbJobStepDefinitionEntry.getName(), wiredJobStepDefinition.getName()) &&
-                                Objects.equals(dbJobStepDefinitionEntry.getDescription(), wiredJobStepDefinition.getDescription()) &&
-                                Objects.equals(dbJobStepDefinitionEntry.getStepType(), wiredJobStepDefinition.getStepType()) &&
-                                Objects.equals(dbJobStepDefinitionEntry.getReaderName(), wiredJobStepDefinition.getReaderName()) &&
-                                Objects.equals(dbJobStepDefinitionEntry.getProcessorName(), wiredJobStepDefinition.getProcessorName()) &&
-                                Objects.equals(dbJobStepDefinitionEntry.getWriterName(), wiredJobStepDefinition.getWriterName())
-                        ) {
+                        if (jobStepDefinitionComparator.compare(dbJobStepDefinitionEntry, wiredJobStepDefinition) == 0) {
                             logger.info("JobStepDefinition '{}' basic properties are ok... proceeding matching JobStepProperties...", dbJobStepDefinitionEntry.getName());
 
-                            if (jobStepDefinitionsAreEquals(dbJobStepDefinitionEntry, wiredJobStepDefinition)) {
+                            if (jobStepDefinitionPropertiesAreEqual(dbJobStepDefinitionEntry, wiredJobStepDefinition)) {
                                 //We are happy!
                                 logger.info("JobStepDefinition '{}' is ok!", dbJobStepDefinitionEntry.getName());
                                 continue;
@@ -126,9 +147,9 @@ public class JobStepDefinitionAligner {
         }
     }
 
-    private boolean jobStepDefinitionsAreEquals(JobStepDefinition dbJobStepDefinitionEntry, JobStepDefinition wiredJobStepDefinition) {
+    private boolean jobStepDefinitionPropertiesAreEqual(JobStepDefinition dbJobStepDefinitionEntry, JobStepDefinition wiredJobStepDefinition) {
         for (JobStepProperty wiredJobStepDefinitionProperty : wiredJobStepDefinition.getStepProperties()) {
-            JobStepProperty dbJobStepDefinitionProperty = dbJobStepDefinitionEntry.getStepProperty(wiredJobStepDefinitionProperty.getName());
+            final JobStepProperty dbJobStepDefinitionProperty = dbJobStepDefinitionEntry.getStepProperty(wiredJobStepDefinitionProperty.getName());
 
             if (dbJobStepDefinitionProperty == null) {
                 logger.warn("Wired JobStepProperty '{}' of JobStepDefinition '{}' is not aligned with the database one",
@@ -138,7 +159,7 @@ public class JobStepDefinitionAligner {
                 return false;
             }
 
-            if (!jobStepPropertiesAreEquals(dbJobStepDefinitionProperty, wiredJobStepDefinitionProperty)) {
+            if (jobStepPropertyComparator.compare(dbJobStepDefinitionProperty, wiredJobStepDefinitionProperty) != 0) {
                 logger.warn("Database JobStepProperty '{}' of JobStepDefinition '{}' is not aligned with the wired one",
                         dbJobStepDefinitionProperty.getName(),
                         dbJobStepDefinitionEntry.getName());
@@ -150,43 +171,7 @@ public class JobStepDefinitionAligner {
         return true;
     }
 
-    private boolean jobStepPropertiesAreEquals(JobStepProperty dbJobStepDefinitionProperty, JobStepProperty wiredJobStepDefinitionProperty) {
-        return (Objects.equals(dbJobStepDefinitionProperty.getName(), wiredJobStepDefinitionProperty.getName()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getPropertyType(), wiredJobStepDefinitionProperty.getPropertyType()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getPropertyValue(), wiredJobStepDefinitionProperty.getPropertyValue()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getExampleValue(), wiredJobStepDefinitionProperty.getExampleValue()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getRequired(), wiredJobStepDefinitionProperty.getRequired()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getSecret(), wiredJobStepDefinitionProperty.getSecret()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getMinLength(), wiredJobStepDefinitionProperty.getMinLength()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getMaxLength(), wiredJobStepDefinitionProperty.getMaxLength()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getMinValue(), wiredJobStepDefinitionProperty.getMinValue()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getMaxValue(), wiredJobStepDefinitionProperty.getMaxValue()) &&
-                Objects.equals(dbJobStepDefinitionProperty.getValidationRegex(), wiredJobStepDefinitionProperty.getValidationRegex())
-        );
-    }
-
-    //    private void createMissingDomains(TxContext tx, List<String> declaredDomainsNotInDb, Map<String, Domain> knownDomainsByName) throws KapuaException {
-    //        if (declaredDomainsNotInDb.size() > 0) {
-    //            logger.info("Found {} declared domains that have no counterpart in the database!", declaredDomainsNotInDb.size());
-    //            //Create wired domains not present in the db
-    //            for (final String declaredOnlyName : declaredDomainsNotInDb) {
-    //                final Domain expected = knownDomainsByName.get(declaredOnlyName);
-    //                createDomainInDb(tx, expected);
-    //            }
-    //        }
-    //    }
-    //
-    //    private void createDomainInDb(TxContext tx, Domain expected) throws KapuaException {
-    //        logger.info("To be added: {}", expected);
-    //        final org.eclipse.kapua.service.authorization.domain.Domain newEntity = new DomainImpl();
-    //        newEntity.setName(expected.getName());
-    //        newEntity.setActions(expected.getActions());
-    //        newEntity.setGroupable(expected.getGroupable());
-    //        newEntity.setServiceName(expected.getServiceName());
-    //        jobStepDefinitionRepository.create(tx, newEntity);
-    //    }
-
-    private void alignJobStepDefinitions(TxContext txContext, JobStepDefinition dbJobStepDefinition, JobStepDefinition wiredJobStepDefinition) throws KapuaException {
+    private void alignJobStepDefinitions(TxContext txContext, JobStepDefinitionImpl dbJobStepDefinition, JobStepDefinition wiredJobStepDefinition) throws KapuaException {
         logger.info("JobStepDefinition '{}' aligning...", dbJobStepDefinition.getName());
 
         dbJobStepDefinition.setScopeId(wiredJobStepDefinition.getScopeId());
@@ -197,31 +182,32 @@ public class JobStepDefinitionAligner {
         dbJobStepDefinition.setProcessorName(wiredJobStepDefinition.getProcessorName());
         dbJobStepDefinition.setWriterName(wiredJobStepDefinition.getWriterName());
 
-        EntityManager entityManager = JpaAwareTxContext.extractEntityManager(txContext);
+        final EntityManager entityManager = JpaAwareTxContext.extractEntityManager(txContext);
+
+        final Map<String, JobStepDefinitionPropertyImpl> dbPropertiesByName = dbJobStepDefinition.getStepPropertiesEntitites()
+                .stream()
+                .collect(Collectors.toMap(jsp -> jsp.getId().getName(), jsp -> jsp));
 
         for (JobStepProperty wiredJobStepProperty : wiredJobStepDefinition.getStepProperties()) {
-            JobStepPropertyForAlignerId jobStepPropertyForAlignerId = new JobStepPropertyForAlignerId(dbJobStepDefinition.getId(), wiredJobStepProperty.getName());
+            final JobStepDefinitionPropertyImpl dbJobStepPropertyEntity = dbPropertiesByName.get(wiredJobStepProperty.getName());
 
-            JobStepPropertyForAlignerImpl dbJobStepPropertyAligner = entityManager.find(JobStepPropertyForAlignerImpl.class, jobStepPropertyForAlignerId);
-
-            if (dbJobStepPropertyAligner == null) {
-                JobStepPropertyForAlignerImpl dbMissingJobStepProperty = JobStepPropertyForAlignerImpl.parse(wiredJobStepProperty);
-                dbMissingJobStepProperty.setJobStepPropertyForAlignerId(jobStepPropertyForAlignerId);
-
+            if (dbJobStepPropertyEntity == null) {
+                JobStepDefinitionPropertyImpl dbMissingJobStepProperty =
+                        new JobStepDefinitionPropertyImpl(dbJobStepDefinition.getId(), wiredJobStepProperty);
                 entityManager.persist(dbMissingJobStepProperty);
             } else {
-                dbJobStepPropertyAligner.setPropertyType(wiredJobStepProperty.getPropertyType());
-                dbJobStepPropertyAligner.setPropertyValue(wiredJobStepProperty.getPropertyValue());
-                dbJobStepPropertyAligner.setRequired(wiredJobStepProperty.getRequired());
-                dbJobStepPropertyAligner.setSecret(wiredJobStepProperty.getSecret());
-                dbJobStepPropertyAligner.setExampleValue(wiredJobStepProperty.getExampleValue());
-                dbJobStepPropertyAligner.setMinLength(wiredJobStepProperty.getMinLength());
-                dbJobStepPropertyAligner.setMaxLength(wiredJobStepProperty.getMaxLength());
-                dbJobStepPropertyAligner.setMinValue(wiredJobStepProperty.getMinValue());
-                dbJobStepPropertyAligner.setMaxValue(wiredJobStepProperty.getMaxValue());
-                dbJobStepPropertyAligner.setValidationRegex(wiredJobStepProperty.getValidationRegex());
+                dbJobStepPropertyEntity.getJobStepProperty().setPropertyType(wiredJobStepProperty.getPropertyType());
+                dbJobStepPropertyEntity.getJobStepProperty().setPropertyValue(wiredJobStepProperty.getPropertyValue());
+                dbJobStepPropertyEntity.getJobStepProperty().setRequired(wiredJobStepProperty.getRequired());
+                dbJobStepPropertyEntity.getJobStepProperty().setSecret(wiredJobStepProperty.getSecret());
+                dbJobStepPropertyEntity.getJobStepProperty().setExampleValue(wiredJobStepProperty.getExampleValue());
+                dbJobStepPropertyEntity.getJobStepProperty().setMinLength(wiredJobStepProperty.getMinLength());
+                dbJobStepPropertyEntity.getJobStepProperty().setMaxLength(wiredJobStepProperty.getMaxLength());
+                dbJobStepPropertyEntity.getJobStepProperty().setMinValue(wiredJobStepProperty.getMinValue());
+                dbJobStepPropertyEntity.getJobStepProperty().setMaxValue(wiredJobStepProperty.getMaxValue());
+                dbJobStepPropertyEntity.getJobStepProperty().setValidationRegex(wiredJobStepProperty.getValidationRegex());
 
-                entityManager.merge(dbJobStepPropertyAligner);
+                entityManager.merge(dbJobStepPropertyEntity);
             }
         }
 

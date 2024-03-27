@@ -12,41 +12,37 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.job.step.definition.internal;
 
+import java.io.Serializable;
+
+import javax.persistence.Embeddable;
+
 import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.model.id.KapuaId;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import java.io.Serializable;
-import java.math.BigInteger;
-
 @Embeddable
-public class JobStepPropertyForAlignerId implements Serializable {
+public class JobStepDefinitionPropertyId implements Serializable {
 
     private static final long serialVersionUID = -6533866941432301617L;
-    @Basic
-    @Column(name = "step_definition_id", nullable = false, updatable = false)
-    private BigInteger stepDefinitionId;
 
-    @Basic
-    @Column(name = "name", nullable = false, updatable = false)
+    protected KapuaEid stepDefinitionId;
+
     private String name;
 
-    public JobStepPropertyForAlignerId() {
+    public JobStepDefinitionPropertyId(KapuaId stepDefinitionId, String name) {
+        this.stepDefinitionId = KapuaEid.parseKapuaId(stepDefinitionId);
+        this.name = name;
     }
 
-    public JobStepPropertyForAlignerId(KapuaId stepDefinitionId, String name) {
-        setStepDefinitionId(stepDefinitionId);
-        setName(name);
+    public JobStepDefinitionPropertyId() {
+
     }
 
     public KapuaEid getStepDefinitionId() {
-        return new KapuaEid(stepDefinitionId);
+        return stepDefinitionId;
     }
 
-    public void setStepDefinitionId(KapuaId stepDefinitionId) {
-        this.stepDefinitionId = stepDefinitionId.getId();
+    public void setStepDefinitionId(KapuaEid stepDefinitionId) {
+        this.stepDefinitionId = stepDefinitionId;
     }
 
     public String getName() {
