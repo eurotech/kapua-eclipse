@@ -17,8 +17,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -27,6 +30,7 @@ import javax.persistence.Table;
 
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.model.AbstractKapuaNamedEntity;
+import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepProperty;
@@ -42,6 +46,12 @@ import org.eclipse.kapua.service.job.step.definition.JobStepType;
 public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements JobStepDefinition {
 
     private static final long serialVersionUID = 3747451706859757246L;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "eid", column = @Column(name = "scope_id", nullable = true, updatable = true))
+    })
+    protected KapuaEid scopeId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "job_step_type", nullable = false, updatable = false)
@@ -96,6 +106,16 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
         setProcessorName(jobStepDefinition.getProcessorName());
         setWriterName(jobStepDefinition.getWriterName());
         setStepProperties(jobStepDefinition.getStepProperties());
+    }
+
+    @Override
+    public KapuaEid getScopeId() {
+        return scopeId;
+    }
+
+    @Override
+    public void setScopeId(KapuaId scopeId) {
+        this.scopeId = KapuaEid.parseKapuaId(scopeId);
     }
 
     @Override
