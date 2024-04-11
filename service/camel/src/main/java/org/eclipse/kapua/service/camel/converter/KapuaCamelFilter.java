@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.camel.converter;
 
+import java.util.Base64;
+
 import org.apache.camel.Exchange;
 import org.apache.commons.lang.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
@@ -22,8 +24,6 @@ import org.eclipse.kapua.commons.security.KapuaSession;
 import org.eclipse.kapua.service.client.message.MessageConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Base64;
 
 /**
  * Kapua Camel session filter used to bind/unbind Kapua session to the thread context
