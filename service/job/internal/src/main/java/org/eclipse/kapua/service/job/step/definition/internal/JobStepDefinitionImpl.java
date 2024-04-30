@@ -28,7 +28,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.model.AbstractKapuaNamedEntity;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.model.id.KapuaId;
@@ -95,10 +94,10 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
      * Clone constructor.
      *
      * @param jobStepDefinition
-     * @throws KapuaException
+     *         The {@link JobStepDefinition} to clone.
      * @since 1.1.0
      */
-    public JobStepDefinitionImpl(JobStepDefinition jobStepDefinition) throws KapuaException {
+    public JobStepDefinitionImpl(JobStepDefinition jobStepDefinition) {
         super(jobStepDefinition);
 
         setStepType(jobStepDefinition.getStepType());
@@ -192,6 +191,22 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
                         .filter(jsp -> jsp.getName().equals(name))
                         .findAny())
                 .orElse(null);
+    }
+
+    /**
+     * Parses the given {@link JobStepDefinition} into a {@link JobStepDefinitionImpl}.
+     *
+     * @param jobStepDefinition
+     *         The {@link JobStepDefinition} to parse.
+     * @return The parsed {@link JobStepDefinitionImpl}.
+     * @since 2.0.0
+     */
+    public static JobStepDefinitionImpl parse(JobStepDefinition jobStepDefinition) {
+        return jobStepDefinition != null ?
+                (jobStepDefinition instanceof JobStepDefinitionImpl ?
+                        (JobStepDefinitionImpl) jobStepDefinition :
+                        new JobStepDefinitionImpl(jobStepDefinition))
+                : null;
     }
 
 }

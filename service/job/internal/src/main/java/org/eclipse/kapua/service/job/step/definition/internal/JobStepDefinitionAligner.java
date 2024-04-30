@@ -132,7 +132,19 @@ public class JobStepDefinitionAligner {
                         for (String declaredJobStepDefinitionsNotInDbName : declaredJobStepDefinitionsNotInDb) {
                             logger.info("Creating new JobStepDefinition '{}'...", declaredJobStepDefinitionsNotInDbName);
 
-                            //                            jobStepDefinitionRepository.create(tx, knownJobStepDefinitionsByName.get(declaredJobStepDefinitionsNotInDbName));
+                            JobStepDefinition declaredJobStepDefinitionNotInDb = knownJobStepDefinitionsByName.get(declaredJobStepDefinitionsNotInDbName);
+
+                            JobStepDefinitionImpl newJobStepDefinition = new JobStepDefinitionImpl();
+                            newJobStepDefinition.setScopeId(declaredJobStepDefinitionNotInDb.getScopeId());
+                            newJobStepDefinition.setName(declaredJobStepDefinitionNotInDb.getName());
+                            newJobStepDefinition.setDescription(declaredJobStepDefinitionNotInDb.getDescription());
+                            newJobStepDefinition.setStepType(declaredJobStepDefinitionNotInDb.getStepType());
+                            newJobStepDefinition.setReaderName(declaredJobStepDefinitionNotInDb.getReaderName());
+                            newJobStepDefinition.setProcessorName(declaredJobStepDefinitionNotInDb.getProcessorName());
+                            newJobStepDefinition.setWriterName(declaredJobStepDefinitionNotInDb.getWriterName());
+                            newJobStepDefinition.setStepProperties(declaredJobStepDefinitionNotInDb.getStepProperties());
+
+                            jobStepDefinitionRepository.create(tx, newJobStepDefinition);
 
                             logger.info("Creating new JobStepDefinition '{}'... DONE!", declaredJobStepDefinitionsNotInDbName);
                         }
@@ -149,7 +161,7 @@ public class JobStepDefinitionAligner {
 
     private boolean jobStepDefinitionPropertiesAreEqual(JobStepDefinition dbJobStepDefinitionEntry, JobStepDefinition wiredJobStepDefinition) {
         for (JobStepProperty wiredJobStepDefinitionProperty : wiredJobStepDefinition.getStepProperties()) {
-            final JobStepProperty dbJobStepDefinitionProperty = dbJobStepDefinitionEntry.getStepProperty(wiredJobStepDefinitionProperty.getName());
+            JobStepProperty dbJobStepDefinitionProperty = dbJobStepDefinitionEntry.getStepProperty(wiredJobStepDefinitionProperty.getName());
 
             if (dbJobStepDefinitionProperty == null) {
                 logger.warn("Wired JobStepProperty '{}' of JobStepDefinition '{}' is not aligned with the database one",
@@ -182,14 +194,14 @@ public class JobStepDefinitionAligner {
         dbJobStepDefinition.setProcessorName(wiredJobStepDefinition.getProcessorName());
         dbJobStepDefinition.setWriterName(wiredJobStepDefinition.getWriterName());
 
-        final EntityManager entityManager = JpaAwareTxContext.extractEntityManager(txContext);
+        EntityManager entityManager = JpaAwareTxContext.extractEntityManager(txContext);
 
-        final Map<String, JobStepDefinitionPropertyImpl> dbPropertiesByName = dbJobStepDefinition.getStepPropertiesEntitites()
+        Map<String, JobStepDefinitionPropertyImpl> dbPropertiesByName = dbJobStepDefinition.getStepPropertiesEntitites()
                 .stream()
                 .collect(Collectors.toMap(jsp -> jsp.getId().getName(), jsp -> jsp));
 
         for (JobStepProperty wiredJobStepProperty : wiredJobStepDefinition.getStepProperties()) {
-            final JobStepDefinitionPropertyImpl dbJobStepPropertyEntity = dbPropertiesByName.get(wiredJobStepProperty.getName());
+            JobStepDefinitionPropertyImpl dbJobStepPropertyEntity = dbPropertiesByName.get(wiredJobStepProperty.getName());
 
             if (dbJobStepPropertyEntity == null) {
                 JobStepDefinitionPropertyImpl dbMissingJobStepProperty =

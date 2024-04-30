@@ -27,5 +27,4 @@ public class DeviceAssetJobModule extends AbstractKapuaModule {
     public JobStepDefinition deviceAssetWriteJobStepDefinition() {
         return new DeviceAssetWriteJobStepDefinition();
     }
-
 }
