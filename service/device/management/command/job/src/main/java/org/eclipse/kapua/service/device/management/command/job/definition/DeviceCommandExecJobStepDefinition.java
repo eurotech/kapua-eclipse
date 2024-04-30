@@ -13,12 +13,20 @@
 package org.eclipse.kapua.service.device.management.command.job.definition;
 
 import com.beust.jcommander.internal.Lists;
+import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.device.management.command.DeviceCommandInput;
+import org.eclipse.kapua.service.device.management.command.DeviceCommandManagementService;
 import org.eclipse.kapua.service.device.management.command.job.DeviceCommandExecTargetProcessor;
+import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
 
+/**
+ * {@link JobStepDefinition} to perform {@link DeviceCommandManagementService#exec(KapuaId, KapuaId, DeviceCommandInput, Long)}.
+ *
+ * @since 2.0.0
+ */
 public class DeviceCommandExecJobStepDefinition extends JobStepDefinitionRecord {
 
     private static final long serialVersionUID = -6971341093191023791L;

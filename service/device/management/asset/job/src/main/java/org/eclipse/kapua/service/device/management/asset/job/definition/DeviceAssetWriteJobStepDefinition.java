@@ -13,12 +13,20 @@
 package org.eclipse.kapua.service.device.management.asset.job.definition;
 
 import com.beust.jcommander.internal.Lists;
+import org.eclipse.kapua.model.id.KapuaId;
+import org.eclipse.kapua.service.device.management.asset.DeviceAssetManagementService;
 import org.eclipse.kapua.service.device.management.asset.DeviceAssets;
 import org.eclipse.kapua.service.device.management.asset.job.DeviceAssetWriteTargetProcessor;
+import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
 
+/**
+ * {@link JobStepDefinition} to perform {@link DeviceAssetManagementService#write(KapuaId, KapuaId, DeviceAssets, Long)}
+ *
+ * @since 2.0.0
+ */
 public class DeviceAssetWriteJobStepDefinition extends JobStepDefinitionRecord {
 
     private static final long serialVersionUID = -7814283244134241606L;

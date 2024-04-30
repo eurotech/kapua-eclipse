@@ -13,11 +13,19 @@
 package org.eclipse.kapua.service.device.management.bundle.job.definition;
 
 import com.beust.jcommander.internal.Lists;
+import org.eclipse.kapua.model.id.KapuaId;
+import org.eclipse.kapua.service.device.management.bundle.DeviceBundleManagementService;
 import org.eclipse.kapua.service.device.management.bundle.job.DeviceBundleStopTargetProcessor;
+import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
 
+/**
+ * {@link JobStepDefinition} to perform {@link DeviceBundleManagementService#stop(KapuaId, KapuaId, String, Long)}
+ *
+ * @since 2.0.0
+ */
 public class DeviceBundleStopJobStepDefinition extends JobStepDefinitionRecord {
 
     private static final long serialVersionUID = 4328514004506150656L;

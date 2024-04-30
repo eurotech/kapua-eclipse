@@ -18,6 +18,11 @@ import org.eclipse.kapua.service.device.management.packages.job.definition.Devic
 import org.eclipse.kapua.service.device.management.packages.job.definition.DevicePackageUninstallJobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 
+/**
+ * {@link AbstractKapuaModule} module for {@code kapua-device-management-packages-job}
+ *
+ * @since 2.0.0
+ */
 public class DevicePackageJobModule extends AbstractKapuaModule {
 
     @Override

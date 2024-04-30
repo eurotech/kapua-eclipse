@@ -29,6 +29,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.eclipse.kapua.commons.model.AbstractKapuaEntity;
 import org.eclipse.kapua.commons.model.AbstractKapuaNamedEntity;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.model.id.KapuaId;
@@ -47,6 +48,12 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
 
     private static final long serialVersionUID = 3747451706859757246L;
 
+    /**
+     * This overrides the {@link AbstractKapuaEntity#scopeId} JPA mapping which prevents the field to be updated. The {@link JobStepDefinitionAligner} may require to change the
+     * {@link JobStepDefinition#getScopeId()}.
+     *
+     * @since 2.0.0
+     */
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "eid", column = @Column(name = "scope_id", nullable = true, updatable = true))
@@ -84,7 +91,7 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
      * Constructor.
      *
      * @param scopeId
-     *         The scope {@link KapuaId} to set into the {@link JobStepDefinition}
+     *         The {@link JobStepDefinition#getScopeId()}
      * @since 1.0.0
      */
     public JobStepDefinitionImpl(KapuaId scopeId) {
@@ -108,11 +115,26 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
         setStepProperties(jobStepDefinition.getStepProperties());
     }
 
+    /**
+     * Gets the {@link JobStepDefinitionImpl#scopeId} instead of the {@link AbstractKapuaEntity#scopeId}.
+     *
+     * @return The {@link JobStepDefinitionImpl#scopeId}
+     * @see #scopeId
+     * @since 2.0.0
+     */
     @Override
     public KapuaEid getScopeId() {
         return scopeId;
     }
 
+    /**
+     * Sets the {@link JobStepDefinitionImpl#scopeId} instead of the {@link AbstractKapuaEntity#scopeId}.
+     *
+     * @param scopeId
+     *         The {@link JobStepDefinitionImpl#scopeId}
+     * @see #scopeId
+     * @since 2.0.0
+     */
     @Override
     public void setScopeId(KapuaId scopeId) {
         this.scopeId = KapuaEid.parseKapuaId(scopeId);
@@ -169,7 +191,9 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
             jobStepProperties = new ArrayList<>();
         }
 
-        return jobStepProperties.stream().map(jsp -> jsp.getJobStepProperty()).collect(Collectors.toList());
+        return jobStepProperties.stream()
+                .map(JobStepDefinitionPropertyImpl::getJobStepProperty)
+                .collect(Collectors.toList());
     }
 
     public List<JobStepDefinitionPropertyImpl> getStepPropertiesEntitites() {
@@ -179,17 +203,17 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
     public void setStepProperties(List<JobStepProperty> jobStepProperties) {
         this.jobStepProperties = new ArrayList<>();
 
-        for (JobStepProperty sp : jobStepProperties) {
-            this.jobStepProperties.add(JobStepDefinitionPropertyImpl.parse(this, sp));
+        for (JobStepProperty jobStepProperty : jobStepProperties) {
+            this.jobStepProperties.add(JobStepDefinitionPropertyImpl.parse(this, jobStepProperty));
         }
     }
 
     @Override
     public JobStepProperty getStepProperty(String name) {
         return Optional.ofNullable(getStepProperties())
-                .flatMap(props -> props
+                .flatMap(jobStepProperties -> jobStepProperties
                         .stream()
-                        .filter(jsp -> jsp.getName().equals(name))
+                        .filter(jobStepProperty -> jobStepProperty.getName().equals(name))
                         .findAny())
                 .orElse(null);
     }

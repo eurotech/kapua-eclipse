@@ -26,9 +26,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 
+import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepProperty;
 
-@Entity(name = "JobStepPropertyForAligner")
+/**
+ * The {@link JobStepProperty} implementation for {@link JobStepDefinitionImpl}.
+ *
+ * @since 2.0.0
+ */
+@Entity(name = "JobStepDefinitionProperty")
 @Table(name = "job_job_step_definition_properties")
 public class JobStepDefinitionPropertyImpl {
 
@@ -48,42 +54,107 @@ public class JobStepDefinitionPropertyImpl {
     })
     private JobStepPropertyImpl jobStepProperty;
 
+    /**
+     * Constructor.
+     *
+     * @since 2.0.0
+     */
     public JobStepDefinitionPropertyImpl() {
     }
 
-    public JobStepDefinitionPropertyImpl(JobStepDefinitionImpl jobStepDefinition, JobStepProperty jobStepProperty) {
+    /**
+     * Constructor.
+     *
+     * @param jobStepDefinition
+     *         The {@link JobStepDefinition} owner of the {@link JobStepProperty}
+     * @param jobStepProperty
+     *         The {@link JobStepProperty}
+     * @since 2.0.0
+     */
+    public JobStepDefinitionPropertyImpl(JobStepDefinition jobStepDefinition, JobStepProperty jobStepProperty) {
         setId(new JobStepDefinitionPropertyId(jobStepDefinition.getId(), jobStepProperty.getName()));
         setJobStepDefinition(jobStepDefinition);
         setJobStepProperty(jobStepProperty);
     }
 
+    /**
+     * Gets the {@link JobStepDefinitionPropertyId}
+     *
+     * @return The {@link JobStepDefinitionPropertyId}
+     * @since 2.0.0
+     */
     public JobStepDefinitionPropertyId getId() {
         return id;
     }
 
+    /**
+     * Sets the {@link JobStepDefinitionPropertyId}
+     *
+     * @param id
+     *         The {@link JobStepDefinitionPropertyId}
+     * @since 2.0.0
+     */
     public void setId(JobStepDefinitionPropertyId id) {
         this.id = id;
     }
 
-    public JobStepDefinitionImpl getJobStepDefinition() {
+    /**
+     * Gets the {@link JobStepDefinition}
+     *
+     * @return The {@link JobStepDefinition}
+     * @since 2.0.0
+     */
+    public JobStepDefinition getJobStepDefinition() {
         return jobStepDefinition;
     }
 
-    public void setJobStepDefinition(JobStepDefinitionImpl jobStepDefinition) {
-        this.jobStepDefinition = jobStepDefinition;
+    /**
+     * Sets the {@link JobStepDefinition}
+     *
+     * @param jobStepDefinition
+     *         the {@link JobStepDefinition}
+     * @since 2.0.0
+     */
+    public void setJobStepDefinition(JobStepDefinition jobStepDefinition) {
+        this.jobStepDefinition = JobStepDefinitionImpl.parse(jobStepDefinition);
     }
 
+    /**
+     * Gets the {@link JobStepProperty}
+     *
+     * @return The {@link JobStepProperty}
+     * @since 2.0.0
+     */
     public JobStepProperty getJobStepProperty() {
         return jobStepProperty;
     }
 
+    /**
+     * Sets the {@link JobStepProperty}
+     *
+     * @param jobStepProperty
+     *         The {@link JobStepProperty}
+     * @since 2.0.0
+     */
     public void setJobStepProperty(JobStepProperty jobStepProperty) {
-        this.jobStepProperty = Optional.ofNullable(jobStepProperty).map(jsp -> jsp instanceof JobStepPropertyImpl
-                ? (JobStepPropertyImpl) jsp
-                : JobStepPropertyImpl.parse(jsp)).orElse(null);
+        this.jobStepProperty = Optional.ofNullable(jobStepProperty)
+                .map(jsp -> jsp instanceof JobStepPropertyImpl ?
+                        (JobStepPropertyImpl) jsp :
+                        JobStepPropertyImpl.parse(jsp)
+                ).orElse(null);
     }
 
-    public static JobStepDefinitionPropertyImpl parse(JobStepDefinitionImpl jobStepDefinition, JobStepProperty jobStepProperty) {
+    /**
+     * Parses the given {@link JobStepDefinition} and the {@link JobStepProperty} into a {@link JobStepDefinitionPropertyImpl}.
+     *
+     * @param jobStepDefinition
+     *         The {@link JobStepDefinition} to parse.
+     * @param jobStepProperty
+     *         The {@link JobStepProperty} to parse.
+     * @return The parsed {@link JobStepDefinitionPropertyImpl}
+     * @since 2.0.0
+     */
+    public static JobStepDefinitionPropertyImpl parse(JobStepDefinition jobStepDefinition, JobStepProperty jobStepProperty) {
         if (jobStepProperty == null) {
             return null;
         }

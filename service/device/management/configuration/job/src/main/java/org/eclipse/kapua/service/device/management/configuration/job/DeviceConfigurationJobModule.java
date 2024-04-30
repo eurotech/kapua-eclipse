@@ -17,6 +17,11 @@ import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.service.device.management.configuration.job.definition.DeviceConfigurationPutJobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 
+/**
+ * {@link AbstractKapuaModule} module for {@code kapua-device-management-configuration-job}
+ *
+ * @since 2.0.0
+ */
 public class DeviceConfigurationJobModule extends AbstractKapuaModule {
 
     @Override

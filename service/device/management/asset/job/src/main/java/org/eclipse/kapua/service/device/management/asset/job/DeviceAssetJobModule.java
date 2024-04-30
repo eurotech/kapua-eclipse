@@ -17,6 +17,11 @@ import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.service.device.management.asset.job.definition.DeviceAssetWriteJobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 
+/**
+ * {@link AbstractKapuaModule} module for {@code kapua-device-management-asset-job}
+ *
+ * @since 2.0.0
+ */
 public class DeviceAssetJobModule extends AbstractKapuaModule {
 
     @Override

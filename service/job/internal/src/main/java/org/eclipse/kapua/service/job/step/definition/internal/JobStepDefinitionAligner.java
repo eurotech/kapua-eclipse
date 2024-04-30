@@ -38,30 +38,41 @@ import org.eclipse.kapua.storage.TxManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This aligner aligns the declared {@link JobStepDefinition}s in each module with the database.
+ *
+ * @since 2.0.0
+ */
 public class JobStepDefinitionAligner {
 
+    private static final Logger LOG = LoggerFactory.getLogger(JobStepDefinitionAligner.class);
     private final TxManager txManager;
     private final JobStepDefinitionRepository jobStepDefinitionRepository;
-    private final Set<JobStepDefinition> knownJobStepDefinitions;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Set<JobStepDefinition> wiredJobStepDefinitions;
     private final Comparator<JobStepDefinition> jobStepDefinitionComparator;
     private final Comparator<JobStepProperty> jobStepPropertyComparator;
 
     @Inject
     public JobStepDefinitionAligner(@Named("jobTxManager") TxManager txManager,
             JobStepDefinitionRepository domainRepository,
-            Set<JobStepDefinition> knownJobStepDefinitions) {
+            Set<JobStepDefinition> wiredJobStepDefinitions) {
         this.txManager = txManager;
         this.jobStepDefinitionRepository = domainRepository;
-        this.knownJobStepDefinitions = knownJobStepDefinitions;
+        this.wiredJobStepDefinitions = wiredJobStepDefinitions;
+
         jobStepDefinitionComparator = Comparator
-                .comparing((JobStepDefinition jsp) -> Optional.ofNullable(jsp.getScopeId()).map(KapuaId::getId).orElse(null), Comparator.nullsFirst(Comparator.naturalOrder()))
+                .comparing((JobStepDefinition jsp) ->
+                                Optional.ofNullable(jsp.getScopeId())
+                                        .map(KapuaId::getId)
+                                        .orElse(null),
+                        Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepDefinition::getName, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepDefinition::getDescription, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepDefinition::getStepType, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepDefinition::getReaderName, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepDefinition::getProcessorName, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepDefinition::getWriterName, Comparator.nullsFirst(Comparator.naturalOrder()));
+
         jobStepPropertyComparator = Comparator
                 .comparing(JobStepProperty::getName, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepProperty::getPropertyType, Comparator.nullsFirst(Comparator.naturalOrder()))
@@ -78,79 +89,70 @@ public class JobStepDefinitionAligner {
 
     @KapuaInitializingMethod(priority = 20)
     public void populate() {
-        logger.info("JobStepDefinitions alignment commencing. Found {} JobStepDefinition declarations in wiring", knownJobStepDefinitions.size());
-        Map<String, JobStepDefinition> knownJobStepDefinitionsByName = knownJobStepDefinitions
+        LOG.info("JobStepDefinitions alignment commencing. Found {} JobStepDefinition declarations in wiring", wiredJobStepDefinitions.size());
+        Map<String, JobStepDefinition> wiredJobStepDefinitionsByName = wiredJobStepDefinitions
                 .stream()
                 .collect(Collectors.toMap(KapuaNamedEntity::getName, d -> d));
-        List<String> declaredJobStepDefinitionsNotInDb = new ArrayList<>(knownJobStepDefinitionsByName.keySet());
+
+        List<String> wiredJobStepDefinitionsNotInDb = new ArrayList<>(wiredJobStepDefinitionsByName.keySet());
         try {
             KapuaSecurityUtils.doPrivileged(() -> {
                 txManager.execute(tx -> {
-                    List<JobStepDefinitionImpl> dbJobStepDefinitionEntries = jobStepDefinitionRepository.query(tx, new JobStepDefinitionQueryImpl(null)).getItems()
+                    // Retrieve all JobStepDefinition from the database
+                    List<JobStepDefinitionImpl> dbJobStepDefinitions = jobStepDefinitionRepository.query(tx, new JobStepDefinitionQueryImpl(null)).getItems()
                             .stream()
-                            .map(i -> (JobStepDefinitionImpl) i)
+                            .map(dbJobStepDefinition -> (JobStepDefinitionImpl) dbJobStepDefinition)
                             .collect(Collectors.toList());
-                    logger.info("Found {} JobStepDefinition declarations in database", dbJobStepDefinitionEntries.size());
+                    LOG.info("Found {} JobStepDefinition declarations in database", dbJobStepDefinitions.size());
 
-                    for (JobStepDefinitionImpl dbJobStepDefinitionEntry : dbJobStepDefinitionEntries) {
-                        if (!knownJobStepDefinitionsByName.containsKey(dbJobStepDefinitionEntry.getName())) {
+                    // Check all JobStepDefinition from the database against the wired ones
+                    for (JobStepDefinitionImpl dbJobStepDefinition : dbJobStepDefinitions) {
+                        if (!wiredJobStepDefinitionsByName.containsKey(dbJobStepDefinition.getName())) {
                             // Leave it be. As we share the database with other components, it might have been created by such components and be hidden from us
-                            logger.warn("JobStepDefinition '{}' is only present in the database but has no current declaration!", dbJobStepDefinitionEntry.getName());
+                            LOG.warn("JobStepDefinition '{}' is only present in the database but it isn't wired in loaded modules!", dbJobStepDefinition.getName());
                             continue;
                         }
 
                         // Good news, it's both declared in wiring and present in the db!
-                        declaredJobStepDefinitionsNotInDb.remove(dbJobStepDefinitionEntry.getName());
+                        wiredJobStepDefinitionsNotInDb.remove(dbJobStepDefinition.getName());
 
                         // Trigger fetch of Actions collection from db, otherwise the toString would not show the details
-                        dbJobStepDefinitionEntry.getStepProperties();
+                        dbJobStepDefinition.getStepProperties();
 
                         // Check alignment between known and DB JobStepProperty
-                        JobStepDefinition wiredJobStepDefinition = knownJobStepDefinitionsByName.get(dbJobStepDefinitionEntry.getName());
+                        JobStepDefinition wiredJobStepDefinition = wiredJobStepDefinitionsByName.get(dbJobStepDefinition.getName());
 
-                        if (jobStepDefinitionComparator.compare(dbJobStepDefinitionEntry, wiredJobStepDefinition) == 0) {
-                            logger.info("JobStepDefinition '{}' basic properties are ok... proceeding matching JobStepProperties...", dbJobStepDefinitionEntry.getName());
+                        if (jobStepDefinitionComparator.compare(dbJobStepDefinition, wiredJobStepDefinition) == 0) {
+                            LOG.info("JobStepDefinition '{}' basic properties are aligned... proceeding checking JobStepProperties...", dbJobStepDefinition.getName());
 
-                            if (jobStepDefinitionPropertiesAreEqual(dbJobStepDefinitionEntry, wiredJobStepDefinition)) {
+                            if (jobStepDefinitionPropertiesAreEqual(dbJobStepDefinition, wiredJobStepDefinition)) {
                                 //We are happy!
-                                logger.info("JobStepDefinition '{}' is ok!", dbJobStepDefinitionEntry.getName());
+                                LOG.info("JobStepDefinition '{}' is aligned!", dbJobStepDefinition.getName());
                                 continue;
                             }
                         }
 
-                        logger.info("JobStepDefinition '{}' is not ok!", dbJobStepDefinitionEntry.getName());
+                        LOG.info("JobStepDefinition '{}' is not aligned!", dbJobStepDefinition.getName());
 
                         // Align them!
-                        alignJobStepDefinitions(tx, dbJobStepDefinitionEntry, wiredJobStepDefinition);
+                        alignJobStepDefinitions(tx, dbJobStepDefinition, wiredJobStepDefinition);
                     }
 
-                    if (declaredJobStepDefinitionsNotInDb.isEmpty()) {
-                        logger.info("All wired JobStepDefinition were already present in the database");
+                    if (wiredJobStepDefinitionsNotInDb.isEmpty()) {
+                        LOG.info("All wired JobStepDefinition were already present in the database");
                     } else {
-                        logger.info("There are {} wired JobStepDefinition not present on the database", declaredJobStepDefinitionsNotInDb.size());
+                        LOG.info("There are {} wired JobStepDefinition not present on the database", wiredJobStepDefinitionsNotInDb.size());
 
-                        for (String declaredJobStepDefinitionsNotInDbName : declaredJobStepDefinitionsNotInDb) {
-                            logger.info("Creating new JobStepDefinition '{}'...", declaredJobStepDefinitionsNotInDbName);
+                        for (String wiredJobStepDefinitionsNotInDbName : wiredJobStepDefinitionsNotInDb) {
+                            LOG.info("Creating new JobStepDefinition '{}'...", wiredJobStepDefinitionsNotInDbName);
 
-                            JobStepDefinition declaredJobStepDefinitionNotInDb = knownJobStepDefinitionsByName.get(declaredJobStepDefinitionsNotInDbName);
+                            createNewJobStepDefinition(tx, wiredJobStepDefinitionsByName.get(wiredJobStepDefinitionsNotInDbName));
 
-                            JobStepDefinitionImpl newJobStepDefinition = new JobStepDefinitionImpl();
-                            newJobStepDefinition.setScopeId(declaredJobStepDefinitionNotInDb.getScopeId());
-                            newJobStepDefinition.setName(declaredJobStepDefinitionNotInDb.getName());
-                            newJobStepDefinition.setDescription(declaredJobStepDefinitionNotInDb.getDescription());
-                            newJobStepDefinition.setStepType(declaredJobStepDefinitionNotInDb.getStepType());
-                            newJobStepDefinition.setReaderName(declaredJobStepDefinitionNotInDb.getReaderName());
-                            newJobStepDefinition.setProcessorName(declaredJobStepDefinitionNotInDb.getProcessorName());
-                            newJobStepDefinition.setWriterName(declaredJobStepDefinitionNotInDb.getWriterName());
-                            newJobStepDefinition.setStepProperties(declaredJobStepDefinitionNotInDb.getStepProperties());
-
-                            jobStepDefinitionRepository.create(tx, newJobStepDefinition);
-
-                            logger.info("Creating new JobStepDefinition '{}'... DONE!", declaredJobStepDefinitionsNotInDbName);
+                            LOG.info("Creating new JobStepDefinition '{}'... DONE!", wiredJobStepDefinitionsNotInDbName);
                         }
                     }
 
-                    logger.info("JobStepDefinition alignment complete!");
+                    LOG.info("JobStepDefinition alignment complete!");
                     return null;
                 });
             });
@@ -159,12 +161,22 @@ public class JobStepDefinitionAligner {
         }
     }
 
-    private boolean jobStepDefinitionPropertiesAreEqual(JobStepDefinition dbJobStepDefinitionEntry, JobStepDefinition wiredJobStepDefinition) {
+    /**
+     * Checks if the given {@link JobStepDefinition} from the database matches the {@link JobStepDefinition} wired in the module.
+     *
+     * @param dbJobStepDefinition
+     *         The {@link JobStepDefinition} from the database
+     * @param wiredJobStepDefinition
+     *         The {@link JobStepDefinition} wired in the module
+     * @return {@code true} if they match, {@code false} otherwise
+     * @since 2.0.0
+     */
+    private boolean jobStepDefinitionPropertiesAreEqual(JobStepDefinition dbJobStepDefinition, JobStepDefinition wiredJobStepDefinition) {
         for (JobStepProperty wiredJobStepDefinitionProperty : wiredJobStepDefinition.getStepProperties()) {
-            JobStepProperty dbJobStepDefinitionProperty = dbJobStepDefinitionEntry.getStepProperty(wiredJobStepDefinitionProperty.getName());
+            JobStepProperty dbJobStepDefinitionProperty = dbJobStepDefinition.getStepProperty(wiredJobStepDefinitionProperty.getName());
 
             if (dbJobStepDefinitionProperty == null) {
-                logger.warn("Wired JobStepProperty '{}' of JobStepDefinition '{}' is not aligned with the database one",
+                LOG.warn("Wired JobStepProperty '{}' of JobStepDefinition '{}' is not aligned with the database one",
                         wiredJobStepDefinitionProperty.getName(),
                         wiredJobStepDefinitionProperty.getName());
 
@@ -172,9 +184,9 @@ public class JobStepDefinitionAligner {
             }
 
             if (jobStepPropertyComparator.compare(dbJobStepDefinitionProperty, wiredJobStepDefinitionProperty) != 0) {
-                logger.warn("Database JobStepProperty '{}' of JobStepDefinition '{}' is not aligned with the wired one",
+                LOG.warn("Database JobStepProperty '{}' of JobStepDefinition '{}' is not aligned with the wired one",
                         dbJobStepDefinitionProperty.getName(),
-                        dbJobStepDefinitionEntry.getName());
+                        dbJobStepDefinition.getName());
 
                 return false;
             }
@@ -183,8 +195,20 @@ public class JobStepDefinitionAligner {
         return true;
     }
 
+    /**
+     * Aligns the {@link JobStepProperty} from the database to match the {@link JobStepDefinition} wired in the modules.
+     *
+     * @param txContext
+     *         The {@link TxContext} of the transaction.
+     * @param dbJobStepDefinition
+     *         The {@link JobStepDefinition} from the database to align
+     * @param wiredJobStepDefinition
+     *         The {@link JobStepDefinition} wired in the modules with the correct values.
+     * @throws KapuaException
+     * @since 2.0.0
+     */
     private void alignJobStepDefinitions(TxContext txContext, JobStepDefinitionImpl dbJobStepDefinition, JobStepDefinition wiredJobStepDefinition) throws KapuaException {
-        logger.info("JobStepDefinition '{}' aligning...", dbJobStepDefinition.getName());
+        LOG.info("JobStepDefinition '{}' aligning...", dbJobStepDefinition.getName());
 
         dbJobStepDefinition.setScopeId(wiredJobStepDefinition.getScopeId());
         dbJobStepDefinition.setName(wiredJobStepDefinition.getName());
@@ -223,7 +247,32 @@ public class JobStepDefinitionAligner {
             }
         }
 
-        logger.info("JobStepDefinition '{}' aligning... DONE!", dbJobStepDefinition.getName());
+        LOG.info("JobStepDefinition '{}' aligning... DONE!", dbJobStepDefinition.getName());
 
+    }
+
+    /**
+     * Creates a new {@link JobStepDefinition} into the database from the given wired {@link JobStepDefinition}
+     *
+     * @param tx
+     *         The {@link TxContext} of the transaction
+     * @param wiredJobStepDefinitionNotInDb
+     *         The wired {@link JobStepDefinition}
+     * @throws KapuaException
+     * @since 2.0.0
+     */
+    private void createNewJobStepDefinition(TxContext tx, JobStepDefinition wiredJobStepDefinitionNotInDb) throws KapuaException {
+
+        JobStepDefinitionImpl newJobStepDefinition = new JobStepDefinitionImpl();
+        newJobStepDefinition.setScopeId(wiredJobStepDefinitionNotInDb.getScopeId());
+        newJobStepDefinition.setName(wiredJobStepDefinitionNotInDb.getName());
+        newJobStepDefinition.setDescription(wiredJobStepDefinitionNotInDb.getDescription());
+        newJobStepDefinition.setStepType(wiredJobStepDefinitionNotInDb.getStepType());
+        newJobStepDefinition.setReaderName(wiredJobStepDefinitionNotInDb.getReaderName());
+        newJobStepDefinition.setProcessorName(wiredJobStepDefinitionNotInDb.getProcessorName());
+        newJobStepDefinition.setWriterName(wiredJobStepDefinitionNotInDb.getWriterName());
+        newJobStepDefinition.setStepProperties(wiredJobStepDefinitionNotInDb.getStepProperties());
+
+        jobStepDefinitionRepository.create(tx, newJobStepDefinition);
     }
 }

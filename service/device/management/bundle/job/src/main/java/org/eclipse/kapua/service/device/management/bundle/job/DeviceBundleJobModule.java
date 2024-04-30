@@ -18,6 +18,11 @@ import org.eclipse.kapua.service.device.management.bundle.job.definition.DeviceB
 import org.eclipse.kapua.service.device.management.bundle.job.definition.DeviceBundleStopJobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 
+/**
+ * {@link AbstractKapuaModule} module for {@code kapua-device-management-bundle-job}
+ *
+ * @since 2.0.0
+ */
 public class DeviceBundleJobModule extends AbstractKapuaModule {
 
     @Override

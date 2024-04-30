@@ -13,12 +13,21 @@
 package org.eclipse.kapua.service.device.management.packages.job.definition;
 
 import com.beust.jcommander.internal.Lists;
+import org.eclipse.kapua.model.id.KapuaId;
+import org.eclipse.kapua.service.device.management.packages.DevicePackageManagementService;
 import org.eclipse.kapua.service.device.management.packages.job.DevicePackageDownloadTargetProcessor;
+import org.eclipse.kapua.service.device.management.packages.model.download.DevicePackageDownloadOptions;
 import org.eclipse.kapua.service.device.management.packages.model.download.DevicePackageDownloadRequest;
+import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
 
+/**
+ * {@link JobStepDefinition} to perform {@link DevicePackageManagementService#downloadExec(KapuaId, KapuaId, DevicePackageDownloadRequest, DevicePackageDownloadOptions)}
+ *
+ * @since 2.0.0
+ */
 public class DevicePackageDownloadJobStepDefinition extends JobStepDefinitionRecord {
 
     private static final long serialVersionUID = 867888593933132944L;

@@ -13,11 +13,19 @@
 package org.eclipse.kapua.service.device.management.keystore.job.definition;
 
 import com.beust.jcommander.internal.Lists;
+import org.eclipse.kapua.model.id.KapuaId;
+import org.eclipse.kapua.service.device.management.keystore.DeviceKeystoreManagementService;
 import org.eclipse.kapua.service.device.management.keystore.job.DeviceKeystoreItemDeleteTargetProcessor;
+import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
 
+/**
+ * {@link JobStepDefinition} to perform {@link DeviceKeystoreManagementService#deleteKeystoreItem(KapuaId, KapuaId, String, String, Long)}
+ *
+ * @since 2.0.0
+ */
 public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinitionRecord {
 
     private static final long serialVersionUID = 1282749172519349072L;

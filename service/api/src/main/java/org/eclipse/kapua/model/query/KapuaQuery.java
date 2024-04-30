@@ -108,11 +108,20 @@ public interface KapuaQuery {
     /**
      * Sets the {@link KapuaQuery} {@link KapuaSortCriteria}.
      *
-     * @param sortCriteria The {@link KapuaQuery} {@link KapuaSortCriteria}.
+     * @param sortCriteria
+     *         The {@link KapuaQuery} {@link KapuaSortCriteria}.
      * @since 1.0.0
      */
     void setSortCriteria(@NotNull KapuaSortCriteria sortCriteria);
 
+    /**
+     * Gets whether to include not scoped {@link KapuaEntity}es in the result set.
+     * <p>
+     * Not scoped {@link KapuaEntity}es are defined by the ones that have {@link KapuaEntity#getScopeId()} = {@code null}.
+     *
+     * @return Whether to include not scoped {@link KapuaEntity}es in the result set.
+     * @since 2.0.0
+     */
     default boolean getNotScopedEntities() {
         return false;
     }

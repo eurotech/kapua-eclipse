@@ -19,6 +19,11 @@ import org.eclipse.kapua.service.device.management.keystore.job.definition.Devic
 import org.eclipse.kapua.service.device.management.keystore.job.definition.DeviceKeystoreKeypairCreateJobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 
+/**
+ * {@link AbstractKapuaModule} module for {@code kapua-device-management-keystore-job}
+ *
+ * @since 2.0.0
+ */
 public class DeviceKeystoreJobModule extends AbstractKapuaModule {
 
     @Override

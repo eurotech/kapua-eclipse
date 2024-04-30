@@ -13,11 +13,20 @@
 package org.eclipse.kapua.service.device.management.keystore.job.definition;
 
 import com.beust.jcommander.internal.Lists;
+import org.eclipse.kapua.model.id.KapuaId;
+import org.eclipse.kapua.service.device.management.keystore.DeviceKeystoreManagementService;
 import org.eclipse.kapua.service.device.management.keystore.job.DeviceKeystoreKeypairCreateTargetProcessor;
+import org.eclipse.kapua.service.device.management.keystore.model.DeviceKeystoreKeypair;
+import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
 
+/**
+ * {@link JobStepDefinition} to perform {@link DeviceKeystoreManagementService#createKeystoreKeypair(KapuaId, KapuaId, DeviceKeystoreKeypair, Long)}
+ *
+ * @since 2.0.0
+ */
 public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinitionRecord {
 
     private static final long serialVersionUID = -1091068929445064691L;
