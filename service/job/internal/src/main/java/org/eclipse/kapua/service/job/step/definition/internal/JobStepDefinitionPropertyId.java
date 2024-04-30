@@ -14,6 +14,8 @@ package org.eclipse.kapua.service.job.step.definition.internal;
 
 import java.io.Serializable;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.eclipse.kapua.commons.model.id.KapuaEid;
@@ -26,6 +28,8 @@ public class JobStepDefinitionPropertyId implements Serializable {
 
     protected KapuaEid stepDefinitionId;
 
+    @Basic
+    @Column(name = "name", nullable = false, updatable = false)
     private String name;
 
     public JobStepDefinitionPropertyId(KapuaId stepDefinitionId, String name) {

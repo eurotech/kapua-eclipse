@@ -14,6 +14,9 @@ package org.eclipse.kapua.service.job.step.definition.internal;
 
 import java.util.Optional;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -23,7 +26,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 
-import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.job.step.definition.JobStepProperty;
 
 @Entity(name = "JobStepPropertyForAligner")
@@ -41,13 +43,17 @@ public class JobStepDefinitionPropertyImpl {
     public JobStepDefinitionImpl jobStepDefinition;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(insertable = false, updatable = false))
+    })
     private JobStepPropertyImpl jobStepProperty;
 
     public JobStepDefinitionPropertyImpl() {
     }
 
-    public JobStepDefinitionPropertyImpl(KapuaId jobStepId, JobStepProperty jobStepProperty) {
-        setId(new JobStepDefinitionPropertyId(jobStepId, jobStepProperty.getName()));
+    public JobStepDefinitionPropertyImpl(JobStepDefinitionImpl jobStepDefinition, JobStepProperty jobStepProperty) {
+        setId(new JobStepDefinitionPropertyId(jobStepDefinition.getId(), jobStepProperty.getName()));
+        setJobStepDefinition(jobStepDefinition);
         setJobStepProperty(jobStepProperty);
     }
 
@@ -67,7 +73,7 @@ public class JobStepDefinitionPropertyImpl {
         this.jobStepDefinition = jobStepDefinition;
     }
 
-    public JobStepPropertyImpl getJobStepProperty() {
+    public JobStepProperty getJobStepProperty() {
         return jobStepProperty;
     }
 
@@ -77,9 +83,13 @@ public class JobStepDefinitionPropertyImpl {
                 : JobStepPropertyImpl.parse(jsp)).orElse(null);
     }
 
-    public static JobStepDefinitionPropertyImpl parse(KapuaId jobStepId, JobStepProperty jobStepProperty) {
-        return jobStepProperty != null ? (jobStepProperty instanceof JobStepDefinitionPropertyImpl
-                ? (JobStepDefinitionPropertyImpl) jobStepProperty
-                : new JobStepDefinitionPropertyImpl(jobStepId, jobStepProperty)) : null;
+    public static JobStepDefinitionPropertyImpl parse(JobStepDefinitionImpl jobStepDefinition, JobStepProperty jobStepProperty) {
+        if (jobStepProperty == null) {
+            return null;
+        }
+        if (jobStepProperty instanceof JobStepDefinitionPropertyImpl) {
+            return (JobStepDefinitionPropertyImpl) jobStepProperty;
+        }
+        return new JobStepDefinitionPropertyImpl(jobStepDefinition, jobStepProperty);
     }
 }

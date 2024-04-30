@@ -205,7 +205,7 @@ public class JobStepDefinitionAligner {
 
             if (dbJobStepPropertyEntity == null) {
                 JobStepDefinitionPropertyImpl dbMissingJobStepProperty =
-                        new JobStepDefinitionPropertyImpl(dbJobStepDefinition.getId(), wiredJobStepProperty);
+                        new JobStepDefinitionPropertyImpl(dbJobStepDefinition, wiredJobStepProperty);
                 entityManager.persist(dbMissingJobStepProperty);
             } else {
                 dbJobStepPropertyEntity.getJobStepProperty().setPropertyType(wiredJobStepProperty.getPropertyType());
