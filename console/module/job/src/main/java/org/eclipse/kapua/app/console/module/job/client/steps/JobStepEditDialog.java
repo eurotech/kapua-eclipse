@@ -69,7 +69,7 @@ public class JobStepEditDialog extends JobStepAddDialog {
     }
 
     public void populateEditDialog(final GwtJobStep gwtJobStep) {
-        JOB_STEP_DEFINITION_SERVICE.find(gwtJobStep.getJobStepDefinitionId(), new AsyncCallback<GwtJobStepDefinition>() {
+        JOB_STEP_DEFINITION_SERVICE.find(gwtJobStep.getScopeId(), gwtJobStep.getJobStepDefinitionId(), new AsyncCallback<GwtJobStepDefinition>() {
 
             @Override
             public void onFailure(Throwable caught) {

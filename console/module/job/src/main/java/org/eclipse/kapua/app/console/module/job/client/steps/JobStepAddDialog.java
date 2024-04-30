@@ -53,7 +53,6 @@ import org.eclipse.kapua.app.console.module.job.client.messages.ConsoleJobMessag
 import org.eclipse.kapua.app.console.module.job.shared.model.GwtJobStep;
 import org.eclipse.kapua.app.console.module.job.shared.model.GwtJobStepCreator;
 import org.eclipse.kapua.app.console.module.job.shared.model.GwtJobStepDefinition;
-import org.eclipse.kapua.app.console.module.job.shared.model.GwtJobStepDefinitionQuery;
 import org.eclipse.kapua.app.console.module.job.shared.model.GwtJobStepProperty;
 import org.eclipse.kapua.app.console.module.job.shared.service.GwtJobStepDefinitionService;
 import org.eclipse.kapua.app.console.module.job.shared.service.GwtJobStepDefinitionServiceAsync;
@@ -156,13 +155,11 @@ public class JobStepAddDialog extends EntityAddEditDialog {
             }
         });
 
-        GwtJobStepDefinitionQuery query = new GwtJobStepDefinitionQuery();
-        query.setScopeId(currentSession.getSelectedAccountId());
         RpcProxy<ListLoadResult<GwtJobStepDefinition>> jobStepDefinitionProxy = new RpcProxy<ListLoadResult<GwtJobStepDefinition>>() {
 
             @Override
             protected void load(Object loadConfig, AsyncCallback<ListLoadResult<GwtJobStepDefinition>> callback) {
-                JOB_STEP_DEFINITION_SERVICE.findAll(callback);
+                JOB_STEP_DEFINITION_SERVICE.findAll(currentSession.getSelectedAccountId(), callback);
             }
         };
 

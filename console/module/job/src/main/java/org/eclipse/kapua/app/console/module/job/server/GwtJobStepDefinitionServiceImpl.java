@@ -20,6 +20,7 @@ import org.eclipse.kapua.app.console.module.api.server.KapuaRemoteServiceServlet
 import org.eclipse.kapua.app.console.module.api.server.util.KapuaExceptionHandler;
 import org.eclipse.kapua.app.console.module.api.setting.ConsoleSetting;
 import org.eclipse.kapua.app.console.module.api.setting.ConsoleSettingKeys;
+import org.eclipse.kapua.app.console.module.api.shared.util.GwtKapuaCommonsModelConverter;
 import org.eclipse.kapua.app.console.module.job.shared.model.GwtJobStepDefinition;
 import org.eclipse.kapua.app.console.module.job.shared.model.GwtJobStepProperty;
 import org.eclipse.kapua.app.console.module.job.shared.service.GwtJobStepDefinitionService;
@@ -45,12 +46,15 @@ public class GwtJobStepDefinitionServiceImpl extends KapuaRemoteServiceServlet i
     private static final ConsoleSetting CONSOLE_SETTING = ConsoleSetting.getInstance();
 
     private static final String JOB_STEP_DEFINITION_EXCLUDE_REGEX = CONSOLE_SETTING.getString(ConsoleSettingKeys.JOB_STEP_DEFINITION_EXCLUDE_REGEX);
+    private static final long serialVersionUID = 8660088632558036600L;
 
     @Override
-    public ListLoadResult<GwtJobStepDefinition> findAll() throws GwtKapuaException {
+    public ListLoadResult<GwtJobStepDefinition> findAll(String scopeIdString) throws GwtKapuaException {
         List<GwtJobStepDefinition> gwtJobStepDefinitionList = new ArrayList<GwtJobStepDefinition>();
         try {
-            JobStepDefinitionListResult result = JOB_STEP_DEFINITION_SERVICE.query(JOB_STEP_DEFINITION_FACTORY.newQuery(KapuaId.ANY));
+            KapuaId scopeId = GwtKapuaCommonsModelConverter.convertKapuaId(scopeIdString);
+
+            JobStepDefinitionListResult result = JOB_STEP_DEFINITION_SERVICE.query(JOB_STEP_DEFINITION_FACTORY.newQuery(scopeId));
             for (JobStepDefinition jsd : result.getItems()) {
 
                 if (!Strings.isNullOrEmpty(JOB_STEP_DEFINITION_EXCLUDE_REGEX) && jsd.getName().matches(JOB_STEP_DEFINITION_EXCLUDE_REGEX)) {
@@ -71,12 +75,14 @@ public class GwtJobStepDefinitionServiceImpl extends KapuaRemoteServiceServlet i
     }
 
     @Override
-    public GwtJobStepDefinition find(String gwtJobStepDefinitionId) throws GwtKapuaException {
-        KapuaId jobStepDefinitionId = KapuaEid.parseCompactId(gwtJobStepDefinitionId);
+    public GwtJobStepDefinition find(String scopeIdString, String gwtJobStepDefinitionId) throws GwtKapuaException {
 
         GwtJobStepDefinition gwtJobStepDefinition = null;
         try {
-            JobStepDefinition jobStepDefinition = JOB_STEP_DEFINITION_SERVICE.find(KapuaId.ANY, jobStepDefinitionId);
+            KapuaId scopeId = GwtKapuaCommonsModelConverter.convertKapuaId(scopeIdString);
+            KapuaId jobStepDefinitionId = KapuaEid.parseCompactId(gwtJobStepDefinitionId);
+
+            JobStepDefinition jobStepDefinition = JOB_STEP_DEFINITION_SERVICE.find(scopeId, jobStepDefinitionId);
             if (jobStepDefinition != null) {
                 gwtJobStepDefinition = KapuaGwtJobModelConverter.convertJobStepDefinition(jobStepDefinition);
 
