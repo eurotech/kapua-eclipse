@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -68,7 +69,7 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
     @Column(name = "writer_name", nullable = false, updatable = false)
     private String writerName;
 
-    @OneToMany(mappedBy = "jobStepDefinition")
+    @OneToMany(mappedBy = "jobStepDefinition", cascade = CascadeType.PERSIST)
     private List<JobStepDefinitionPropertyImpl> jobStepProperties;
 
     /**
