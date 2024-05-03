@@ -1,33 +1,38 @@
 codecov:
-    require_ci_to_pass: true
+  require_ci_to_pass: true
 
 comment:
-    behavior: default
-    layout: "reach, diff, flags, files"
-    require_base: false
-    require_changes: false
-    require_head: true
+  behavior: default
+  layout: "reach, diff, flags, files"
+  require_base: false
+  require_changes: false
+  require_head: true
 
 coverage:
-    precision: 2
-    range: "70...100"
-    round: down
-    status:
-        changes: false
-        project: true
-        patch: true
+  precision: 2
+  range: "70...100"
+  round: down
+  status:
+    changes: false
+    project: true
+    patch: true
 
 parsers:
-    gcov:
-        branch_detection:
-            conditional: true
-            loop: true
-            method: false
-            macro: false
-    javascript:
-        enable_partials: false
+  gcov:
+    branch_detection:
+      conditional: true
+      loop: true
+      method: false
+      macro: false
+  javascript:
+    enable_partials: false
+
+# Fixes coverage report patch matching against source
+# See: https://docs.codecov.com/docs/fixing-paths
+fixes:
+  - "/home/runner/work/kapua/kapua::"
 
 ignore:
-    - "qa"
-    - "**/test/"
-    - "**/test-steps/"
+  - "qa"
+  - "**/test/"
+  - "**/test-steps/"
