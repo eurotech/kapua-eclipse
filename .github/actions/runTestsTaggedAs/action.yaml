@@ -64,3 +64,5 @@ runs:
       shell: bash
     - name: Code coverage results upload
       uses: codecov/codecov-action@v4
+      with:
+        codecov_yml_path: codecov.yml
