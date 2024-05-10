@@ -12,12 +12,7 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.authorization.access.shiro;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.inject.Inject;
-
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.kapua.KapuaEntityNotFoundException;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
@@ -48,8 +43,12 @@ import org.eclipse.kapua.storage.TxManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GroupQueryHelperImpl implements GroupQueryHelper {
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+public class GroupQueryHelperImpl implements GroupQueryHelper {
     private final TxManager txManager;
     private final AccessInfoFactory accessInfoFactory;
     private final AccessInfoRepository accessInfoRepository;
@@ -147,7 +146,7 @@ public class GroupQueryHelperImpl implements GroupQueryHelper {
         }
     }
 
-    private static boolean checkGroupPermission(String domain, List<Permission> groupPermissions, Permission permission) {
+    private static boolean checkGroupPermission(@NonNull String domain, @NonNull List<Permission> groupPermissions, @NonNull Permission permission) {
         if ((permission.getDomain() == null || domain.equals(permission.getDomain())) &&
                 (permission.getAction() == null || Actions.read.equals(permission.getAction()))) {
             if (permission.getGroupId() == null) {

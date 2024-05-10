@@ -51,7 +51,7 @@
         <spring.version>5.3.39</spring.version>
         <spring-security.version>5.8.16</spring-security.version>
         <spring-boot.version>2.7.18</spring-boot.version>
-        
+
         <aopalliance.version>1.0</aopalliance.version>
         <artemis.version>2.38.0</artemis.version>
         <assertj.version>3.2.0</assertj.version>
@@ -139,7 +139,7 @@
         <maven-assembly-plugin.version>3.0.0</maven-assembly-plugin.version>
         <maven-bundle-plugin.version>5.1.8</maven-bundle-plugin.version>
         <maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.0.1</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
