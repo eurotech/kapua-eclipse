@@ -181,10 +181,6 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
         this.writerName = writesName;
     }
 
-    public List<JobStepDefinitionPropertyImpl> getJobStepProperties() {
-        return jobStepProperties;
-    }
-
     @Override
     public List<JobStepProperty> getStepProperties() {
         if (jobStepProperties == null) {
@@ -196,18 +192,6 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
                 .collect(Collectors.toList());
     }
 
-    public List<JobStepDefinitionPropertyImpl> getStepPropertiesEntitites() {
-        return jobStepProperties;
-    }
-
-    public void setStepProperties(List<JobStepProperty> jobStepProperties) {
-        this.jobStepProperties = new ArrayList<>();
-
-        for (JobStepProperty jobStepProperty : jobStepProperties) {
-            this.jobStepProperties.add(JobStepDefinitionPropertyImpl.parse(this, jobStepProperty));
-        }
-    }
-
     @Override
     public JobStepProperty getStepProperty(String name) {
         return Optional.ofNullable(getStepProperties())
@@ -216,6 +200,23 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
                         .filter(jobStepProperty -> jobStepProperty.getName().equals(name))
                         .findAny())
                 .orElse(null);
+    }
+
+    @Override
+    public void setStepProperties(List<JobStepProperty> jobStepProperties) {
+        this.jobStepProperties = new ArrayList<>();
+
+        for (JobStepProperty jobStepProperty : jobStepProperties) {
+            this.jobStepProperties.add(JobStepDefinitionPropertyImpl.parse(this, jobStepProperty));
+        }
+    }
+
+    public List<JobStepDefinitionPropertyImpl> getStepPropertiesEntitites() {
+        return jobStepProperties;
+    }
+
+    public List<JobStepDefinitionPropertyImpl> getJobStepProperties() {
+        return jobStepProperties;
     }
 
     /**
