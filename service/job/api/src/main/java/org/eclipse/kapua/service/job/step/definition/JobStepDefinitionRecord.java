@@ -12,13 +12,13 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.job.step.definition;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-
 import org.eclipse.kapua.entity.EntityPropertiesReadException;
 import org.eclipse.kapua.entity.EntityPropertiesWriteException;
 import org.eclipse.kapua.model.id.KapuaId;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 public abstract class JobStepDefinitionRecord implements JobStepDefinition {
 
@@ -33,13 +33,13 @@ public abstract class JobStepDefinitionRecord implements JobStepDefinition {
     private List<JobStepProperty> jobStepProperties;
 
     public JobStepDefinitionRecord(KapuaId scopeId,
-            String name,
-            String description,
-            JobStepType stepType,
-            String readerName,
-            String processorName,
-            String writerName,
-            List<JobStepProperty> jobStepProperties) {
+                                   String name,
+                                   String description,
+                                   JobStepType stepType,
+                                   String readerName,
+                                   String processorName,
+                                   String writerName,
+                                   List<JobStepProperty> jobStepProperties) {
         this.scopeId = scopeId;
         this.name = name;
         this.description = description;
@@ -56,18 +56,8 @@ public abstract class JobStepDefinitionRecord implements JobStepDefinition {
     }
 
     @Override
-    public void setScopeId(KapuaId scopeId) {
-        this.scopeId = scopeId;
-    }
-
-    @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
@@ -76,18 +66,8 @@ public abstract class JobStepDefinitionRecord implements JobStepDefinition {
     }
 
     @Override
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
     public JobStepType getStepType() {
         return stepType;
-    }
-
-    @Override
-    public void setStepType(JobStepType stepType) {
-        this.stepType = stepType;
     }
 
     @Override
@@ -96,18 +76,8 @@ public abstract class JobStepDefinitionRecord implements JobStepDefinition {
     }
 
     @Override
-    public void setReaderName(String readerName) {
-        this.readerName = readerName;
-    }
-
-    @Override
     public String getProcessorName() {
         return processorName;
-    }
-
-    @Override
-    public void setProcessorName(String processorName) {
-        this.processorName = processorName;
     }
 
     @Override
@@ -116,13 +86,8 @@ public abstract class JobStepDefinitionRecord implements JobStepDefinition {
     }
 
     @Override
-    public void setWriterName(String writerName) {
-        this.writerName = writerName;
-    }
-
-    @Override
-    public <P extends JobStepProperty> List<P> getStepProperties() {
-        return (List<P>) jobStepProperties;
+    public List<JobStepProperty> getStepProperties() {
+        return jobStepProperties;
     }
 
     @Override
@@ -193,5 +158,47 @@ public abstract class JobStepDefinitionRecord implements JobStepDefinition {
     public void setEntityProperties(Properties props) throws EntityPropertiesWriteException {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void setScopeId(KapuaId scopeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setName(String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setDescription(String description) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setStepType(JobStepType stepType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setReaderName(String readerName) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setProcessorName(String processorName) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setWriterName(String writerName) {
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Override
+    public void setStepProperties(List<JobStepProperty> jobStepProperties) {
+        throw new UnsupportedOperationException();
+    }
+
 
 }
