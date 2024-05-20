@@ -12,6 +12,15 @@
  *******************************************************************************/
 package org.eclipse.kapua.job.engine.app.resources;
 
+import org.eclipse.kapua.KapuaException;
+import org.eclipse.kapua.commons.rest.model.IsJobRunningMultipleResponse;
+import org.eclipse.kapua.commons.rest.model.IsJobRunningResponse;
+import org.eclipse.kapua.commons.rest.model.MultipleJobIdRequest;
+import org.eclipse.kapua.job.engine.JobEngineService;
+import org.eclipse.kapua.job.engine.JobStartOptions;
+import org.eclipse.kapua.model.id.KapuaId;
+import org.glassfish.jersey.process.internal.RequestScoped;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,15 +28,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
-
-import org.eclipse.kapua.KapuaException;
-import org.eclipse.kapua.job.engine.IsJobRunningMultipleResponse;
-import org.eclipse.kapua.job.engine.IsJobRunningResponse;
-import org.eclipse.kapua.job.engine.JobEngineService;
-import org.eclipse.kapua.job.engine.JobStartOptions;
-import org.eclipse.kapua.job.engine.MultipleJobIdRequest;
-import org.eclipse.kapua.model.id.KapuaId;
-import org.glassfish.jersey.process.internal.RequestScoped;
 
 @SuppressWarnings("RestParamTypeInspection")
 @Path("/")
@@ -69,7 +69,7 @@ public class JobEngineResource {
 
     @POST
     @Path("start-with-options/{scopeId}/{jobId}")
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON})
     public void startJob(@PathParam("scopeId") KapuaId scopeId, @PathParam("jobId") KapuaId jobId, JobStartOptions jobStartOptions) throws KapuaException {
         jobEngineService.startJob(scopeId, jobId, jobStartOptions);
     }
