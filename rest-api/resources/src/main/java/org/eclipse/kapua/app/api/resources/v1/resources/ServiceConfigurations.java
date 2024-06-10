@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -30,9 +31,9 @@ import javax.ws.rs.core.Response;
 import org.eclipse.kapua.KapuaEntityNotFoundException;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.KapuaIllegalArgumentException;
-import org.eclipse.kapua.app.api.core.model.ScopeId;
 import org.eclipse.kapua.app.api.core.resources.AbstractKapuaResource;
 import org.eclipse.kapua.commons.configuration.metatype.EmptyTocd;
+import org.eclipse.kapua.commons.rest.model.ScopeId;
 import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.model.config.metatype.KapuaTocd;
 import org.eclipse.kapua.service.KapuaService;
@@ -54,9 +55,10 @@ public class ServiceConfigurations extends AbstractKapuaResource {
     public ServiceConfigurationFactory serviceConfigurationFactory;
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public ServiceConfiguration get(@PathParam("scopeId") ScopeId scopeId) throws KapuaException {
-        List<KapuaConfigurableService> configurableServices = locator.getServices().stream().filter(service -> service instanceof KapuaConfigurableService).map(kapuaService -> (KapuaConfigurableService) kapuaService).collect(Collectors.toList());
+        List<KapuaConfigurableService> configurableServices = locator.getServices().stream().filter(service -> service instanceof KapuaConfigurableService)
+                .map(kapuaService -> (KapuaConfigurableService) kapuaService).collect(Collectors.toList());
         ServiceConfiguration serviceConfiguration = serviceConfigurationFactory.newConfigurationInstance();
         for (KapuaConfigurableService configurableService : configurableServices) {
             KapuaTocd metadata = configurableService.getConfigMetadata(scopeId);
@@ -75,8 +77,8 @@ public class ServiceConfigurations extends AbstractKapuaResource {
     }
 
     @PUT
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Response update(
             @PathParam("scopeId") ScopeId scopeId,
             ServiceConfiguration serviceConfiguration
@@ -89,7 +91,7 @@ public class ServiceConfigurations extends AbstractKapuaResource {
             Class<KapuaService> configurableServiceClass;
             try {
                 configurableServiceClass =
-                    (Class<KapuaService>) Class.forName(serviceComponentConfiguration.getId()).asSubclass(KapuaService.class);
+                        (Class<KapuaService>) Class.forName(serviceComponentConfiguration.getId()).asSubclass(KapuaService.class);
             } catch (ClassNotFoundException e) {
                 throw new KapuaIllegalArgumentException("serviceConfiguration.componentConfiguration.id", serviceComponentConfiguration.getId());
             }
@@ -103,7 +105,7 @@ public class ServiceConfigurations extends AbstractKapuaResource {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Path("{serviceId}")
     public ServiceComponentConfiguration getComponent(
             @PathParam("scopeId") ScopeId scopeId,
@@ -132,8 +134,8 @@ public class ServiceConfigurations extends AbstractKapuaResource {
     }
 
     @PUT
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Path("{serviceId}")
     public Response updateComponent(
             @PathParam("scopeId") ScopeId scopeId,

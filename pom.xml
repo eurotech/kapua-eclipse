@@ -1002,6 +1002,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.kapua</groupId>
+                <artifactId>kapua-commons-rest-jersey</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.kapua</groupId>
                 <artifactId>kapua-scheduler-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -1322,6 +1327,7 @@
                 <artifactId>kapua-foreignkeys</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
 
             <dependency>
                 <groupId>org.eclipse.kapua</groupId>
