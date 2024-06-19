@@ -26,8 +26,8 @@ import org.eclipse.kapua.commons.liquibase.DatabaseCheckUpdate;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProvider;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProviderImpl;
 import org.eclipse.kapua.commons.util.xml.XmlRootAnnotatedJaxbClassesScanner;
-import org.eclipse.kapua.commons.web.rest.KapuaCommonApiCoreSetting;
-import org.eclipse.kapua.commons.web.rest.KapuaCommonApiCoreSettingKeys;
+import org.eclipse.kapua.commons.jersey.rest.KapuaCommonApiCoreSetting;
+import org.eclipse.kapua.commons.jersey.rest.KapuaCommonApiCoreSettingKeys;
 import org.eclipse.kapua.locator.LocatorConfig;
 
 import com.google.inject.Provides;
