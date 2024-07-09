@@ -39,7 +39,6 @@ import org.eclipse.kapua.commons.service.event.store.internal.EventStoreServiceI
 import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.event.ServiceEventBus;
 import org.eclipse.kapua.event.ServiceEventBusException;
-import org.eclipse.kapua.model.config.metatype.KapuaMetatypeFactory;
 import org.eclipse.kapua.model.domain.Actions;
 import org.eclipse.kapua.model.domain.Domain;
 import org.eclipse.kapua.model.domain.DomainEntry;
@@ -258,7 +257,6 @@ public class DeviceRegistryModule extends AbstractKapuaModule {
             RootUserTester rootUserTester,
             KapuaJpaRepositoryConfiguration jpaRepoConfig,
             Map<String, DeviceConnectionCredentialAdapter> availableDeviceConnectionAdapters,
-            KapuaMetatypeFactory kapuaMetatypeFactory,
             EntityCacheFactory entityCacheFactory,
             KapuaDeviceRegistrySettings kapuaDeviceRegistrySettings,
             XmlUtil xmlUtil) {
@@ -270,7 +268,6 @@ public class DeviceRegistryModule extends AbstractKapuaModule {
                         ),
                         rootUserTester,
                         availableDeviceConnectionAdapters,
-                        kapuaMetatypeFactory,
                         kapuaDeviceRegistrySettings,
                         xmlUtil)
         );
