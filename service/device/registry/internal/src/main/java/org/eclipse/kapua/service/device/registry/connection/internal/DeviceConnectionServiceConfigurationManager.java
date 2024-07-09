@@ -23,7 +23,6 @@ import org.eclipse.kapua.commons.configuration.ServiceConfigRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManagerImpl;
 import org.eclipse.kapua.commons.util.xml.XmlUtil;
-import org.eclipse.kapua.model.config.metatype.KapuaMetatypeFactory;
 import org.eclipse.kapua.model.config.metatype.KapuaTad;
 import org.eclipse.kapua.model.config.metatype.KapuaTocd;
 import org.eclipse.kapua.model.config.metatype.KapuaToption;
@@ -45,7 +44,6 @@ public class DeviceConnectionServiceConfigurationManager extends ServiceConfigur
     private final Map<String, DeviceConnectionCredentialAdapter> availableDeviceConnectionAdapters;
 
     private final KapuaDeviceRegistrySettings deviceRegistrySettings;
-    private final KapuaMetatypeFactory kapuaMetatypeFactory;
 
     /**
      * Constructor.
@@ -56,21 +54,17 @@ public class DeviceConnectionServiceConfigurationManager extends ServiceConfigur
      *         The {@link RootUserTester} instance.
      * @param availableDeviceConnectionAdapters
      *         The {@link Map} of available {@link DeviceConnectionCredentialAdapter}.
-     * @param kapuaMetatypeFactory
-     *         The {@link KapuaMetatypeFactory} instance.
      * @since 2.0.0
      */
     public DeviceConnectionServiceConfigurationManager(
             ServiceConfigRepository serviceConfigRepository,
             RootUserTester rootUserTester,
             Map<String, DeviceConnectionCredentialAdapter> availableDeviceConnectionAdapters,
-            KapuaMetatypeFactory kapuaMetatypeFactory,
             KapuaDeviceRegistrySettings kapuaDeviceRegistrySettings,
             XmlUtil xmlUtil) {
         super(DeviceConnectionService.class.getName(), serviceConfigRepository, rootUserTester, xmlUtil);
 
         this.availableDeviceConnectionAdapters = availableDeviceConnectionAdapters;
-        this.kapuaMetatypeFactory = kapuaMetatypeFactory;
         this.deviceRegistrySettings = kapuaDeviceRegistrySettings;
     }
 
@@ -107,7 +101,7 @@ public class DeviceConnectionServiceConfigurationManager extends ServiceConfigur
                             .keySet()
                             .stream()
                             .map(authType -> {
-                                KapuaToption authTypeToption = kapuaMetatypeFactory.newKapuaToption();
+                                KapuaToption authTypeToption = new KapuaToption();
                                 authTypeToption.setLabel(authType);
                                 authTypeToption.setValue(authType);
                                 return authTypeToption;
