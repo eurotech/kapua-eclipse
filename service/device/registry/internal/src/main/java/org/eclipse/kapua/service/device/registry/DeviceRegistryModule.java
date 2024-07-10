@@ -17,18 +17,10 @@ import java.util.Map;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.eclipse.kapua.commons.configuration.AccountRelativeFinder;
-import org.eclipse.kapua.commons.configuration.CachingServiceConfigRepository;
-import org.eclipse.kapua.commons.configuration.ResourceLimitedServiceConfigurationManagerImpl;
-import org.eclipse.kapua.commons.configuration.RootUserTester;
-import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
-import org.eclipse.kapua.commons.configuration.ServiceConfigurationManagerCachingWrapper;
-import org.eclipse.kapua.commons.configuration.UsedEntitiesCounterImpl;
 import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.commons.core.ServiceModule;
 import org.eclipse.kapua.commons.event.ServiceEventHouseKeeperFactoryImpl;
-import org.eclipse.kapua.commons.jpa.EntityCacheFactory;
 import org.eclipse.kapua.commons.jpa.EventStorer;
 import org.eclipse.kapua.commons.jpa.KapuaJpaRepositoryConfiguration;
 import org.eclipse.kapua.commons.jpa.KapuaJpaTxManagerFactory;
@@ -36,7 +28,6 @@ import org.eclipse.kapua.commons.model.domains.Domains;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreFactory;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreRecordRepository;
 import org.eclipse.kapua.commons.service.event.store.internal.EventStoreServiceImpl;
-import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.event.ServiceEventBus;
 import org.eclipse.kapua.event.ServiceEventBusException;
 import org.eclipse.kapua.model.domain.Actions;
@@ -55,7 +46,6 @@ import org.eclipse.kapua.service.device.registry.connection.DeviceConnectionServ
 import org.eclipse.kapua.service.device.registry.connection.internal.CachingDeviceConnectionRepository;
 import org.eclipse.kapua.service.device.registry.connection.internal.DeviceConnectionFactoryImpl;
 import org.eclipse.kapua.service.device.registry.connection.internal.DeviceConnectionImplJpaRepository;
-import org.eclipse.kapua.service.device.registry.connection.internal.DeviceConnectionServiceConfigurationManager;
 import org.eclipse.kapua.service.device.registry.connection.internal.DeviceConnectionServiceImpl;
 import org.eclipse.kapua.service.device.registry.connection.option.DeviceConnectionOptionFactory;
 import org.eclipse.kapua.service.device.registry.connection.option.DeviceConnectionOptionRepository;
@@ -83,8 +73,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Provides;
-import com.google.inject.multibindings.ClassMapKey;
-import com.google.inject.multibindings.ProvidesIntoMap;
 import com.google.inject.multibindings.ProvidesIntoSet;
 
 /**
@@ -242,57 +230,6 @@ public class DeviceRegistryModule extends AbstractKapuaModule {
     @Singleton
     protected TxManager deviceRegistryTxManager(KapuaJpaTxManagerFactory jpaTxManagerFactory) {
         return jpaTxManagerFactory.create("kapua-device");
-    }
-
-    @ProvidesIntoMap
-    @ClassMapKey(DeviceRegistryService.class)
-    @Singleton
-    protected ServiceConfigurationManager deviceRegistryServiceConfigurationManager(
-            DeviceFactory factory,
-            RootUserTester rootUserTester,
-            AccountRelativeFinder accountRelativeFinder,
-            DeviceRepository deviceRepository,
-            KapuaJpaRepositoryConfiguration jpaRepoConfig,
-            EntityCacheFactory entityCacheFactory,
-            XmlUtil xmlUtil
-    ) {
-        return new ServiceConfigurationManagerCachingWrapper(
-                new ResourceLimitedServiceConfigurationManagerImpl(
-                        DeviceRegistryService.class.getName(),
-                        new CachingServiceConfigRepository(
-                                new ServiceConfigImplJpaRepository(jpaRepoConfig),
-                                entityCacheFactory.createCache("AbstractKapuaConfigurableServiceCacheId")
-                        ),
-                        rootUserTester,
-                        accountRelativeFinder,
-                        new UsedEntitiesCounterImpl(
-                                factory,
-                                deviceRepository),
-                        xmlUtil
-                ));
-    }
-
-    @ProvidesIntoMap
-    @ClassMapKey(DeviceConnectionService.class)
-    @Singleton
-    ServiceConfigurationManager deviceConnectionServiceConfigurationManager(
-            RootUserTester rootUserTester,
-            KapuaJpaRepositoryConfiguration jpaRepoConfig,
-            Map<String, DeviceConnectionCredentialAdapter> availableDeviceConnectionAdapters,
-            EntityCacheFactory entityCacheFactory,
-            KapuaDeviceRegistrySettings kapuaDeviceRegistrySettings,
-            XmlUtil xmlUtil) {
-        return new ServiceConfigurationManagerCachingWrapper(
-                new DeviceConnectionServiceConfigurationManager(
-                        new CachingServiceConfigRepository(
-                                new ServiceConfigImplJpaRepository(jpaRepoConfig),
-                                entityCacheFactory.createCache("AbstractKapuaConfigurableServiceCacheId")
-                        ),
-                        rootUserTester,
-                        availableDeviceConnectionAdapters,
-                        kapuaDeviceRegistrySettings,
-                        xmlUtil)
-        );
     }
 
     @Provides
