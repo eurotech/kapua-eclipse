@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.user.internal;
 
+import java.util.Map;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -50,6 +52,8 @@ import org.eclipse.kapua.service.user.UserService;
 import org.eclipse.kapua.service.user.internal.setting.KapuaUserSetting;
 
 import com.google.inject.Provides;
+import com.google.inject.multibindings.ClassMapKey;
+import com.google.inject.multibindings.ProvidesIntoMap;
 import com.google.inject.multibindings.ProvidesIntoSet;
 
 public class UserModule extends AbstractKapuaModule {
@@ -76,7 +80,7 @@ public class UserModule extends AbstractKapuaModule {
     @Provides
     @Singleton
     public UserService userService(
-            @Named("UserServiceConfigurationManager") ServiceConfigurationManager serviceConfigurationManager,
+            Map<Class<?>, ServiceConfigurationManager> serviceConfigurationManagersByServiceClass,
             AuthorizationService authorizationService,
             PermissionFactory permissionFactory,
             UserRepository userRepository,
@@ -84,7 +88,7 @@ public class UserModule extends AbstractKapuaModule {
             EventStorer eventStorer,
             KapuaJpaTxManagerFactory jpaTxManagerFactory) {
         return new UserServiceImpl(
-                serviceConfigurationManager,
+                serviceConfigurationManagersByServiceClass.get(UserService.class),
                 authorizationService,
                 permissionFactory,
                 jpaTxManagerFactory.create("kapua-user"),
@@ -121,9 +125,9 @@ public class UserModule extends AbstractKapuaModule {
                 eventModuleName);
     }
 
-    @Provides
+    @ProvidesIntoMap
+    @ClassMapKey(UserService.class)
     @Singleton
-    @Named("UserServiceConfigurationManager")
     ServiceConfigurationManager userServiceConfigurationManager(
             UserFactory userFactory,
             RootUserTester rootUserTester,

@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.account.internal;
 
+import java.util.Map;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -51,6 +53,8 @@ import org.eclipse.kapua.service.authorization.permission.PermissionFactory;
 
 import com.google.inject.Module;
 import com.google.inject.Provides;
+import com.google.inject.multibindings.ClassMapKey;
+import com.google.inject.multibindings.ProvidesIntoMap;
 import com.google.inject.multibindings.ProvidesIntoSet;
 
 /**
@@ -118,7 +122,7 @@ public class AccountModule extends AbstractKapuaModule implements Module {
             AccountFactory accountFactory,
             PermissionFactory permissionFactory,
             AuthorizationService authorizationService,
-            @Named("AccountServiceConfigurationManager") ServiceConfigurationManager serviceConfigurationManager,
+            Map<Class<?>, ServiceConfigurationManager> serviceConfigurationManagersByServiceClass,
             EventStorer eventStorer,
             KapuaJpaTxManagerFactory jpaTxManagerFactory,
             AccountMapper accountMapper) {
@@ -127,14 +131,14 @@ public class AccountModule extends AbstractKapuaModule implements Module {
                 accountRepository,
                 permissionFactory,
                 authorizationService,
-                serviceConfigurationManager,
+                serviceConfigurationManagersByServiceClass.get(AccountService.class),
                 eventStorer,
                 accountMapper);
     }
 
-    @Provides
+    @ProvidesIntoMap
+    @ClassMapKey(AccountService.class)
     @Singleton
-    @Named("AccountServiceConfigurationManager")
     ServiceConfigurationManager accountServiceConfigurationManager(
             AccountFactory factory,
             RootUserTester rootUserTester,

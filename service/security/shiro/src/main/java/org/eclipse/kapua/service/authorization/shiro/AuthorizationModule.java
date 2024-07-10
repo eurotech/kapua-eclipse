@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.authorization.shiro;
 
+import java.util.Map;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -101,6 +103,8 @@ import org.eclipse.kapua.service.authorization.shiro.setting.KapuaAuthorizationS
 import org.eclipse.kapua.storage.TxManager;
 
 import com.google.inject.Provides;
+import com.google.inject.multibindings.ClassMapKey;
+import com.google.inject.multibindings.ProvidesIntoMap;
 import com.google.inject.multibindings.ProvidesIntoSet;
 
 public class AuthorizationModule extends AbstractKapuaModule {
@@ -239,7 +243,7 @@ public class AuthorizationModule extends AbstractKapuaModule {
             AccessInfoFactory accessInfoFactory,
             AccessRoleService accessRoleService,
             AccessInfoService accessInfoService,
-            @Named("RoleServiceConfigurationManager") ServiceConfigurationManager serviceConfigurationManager,
+            Map<Class<?>, ServiceConfigurationManager> serviceConfigurationManagersByServiceClass,
             RoleRepository roleRepository,
             RolePermissionRepository rolePermissionRepository,
             KapuaJpaTxManagerFactory jpaTxManagerFactory,
@@ -253,7 +257,7 @@ public class AuthorizationModule extends AbstractKapuaModule {
                 accessInfoFactory,
                 accessRoleService,
                 accessInfoService,
-                serviceConfigurationManager,
+                serviceConfigurationManagersByServiceClass.get(RoleService.class),
                 jpaTxManagerFactory.create("kapua-authorization"),
                 roleRepository,
                 rolePermissionRepository,
@@ -261,9 +265,9 @@ public class AuthorizationModule extends AbstractKapuaModule {
         );
     }
 
-    @Provides
+    @ProvidesIntoMap
+    @ClassMapKey(RoleService.class)
     @Singleton
-    @Named("RoleServiceConfigurationManager")
     public ServiceConfigurationManager roleServiceConfigurationManager(
             RoleFactory roleFactory,
             RootUserTester rootUserTester,
@@ -308,17 +312,17 @@ public class AuthorizationModule extends AbstractKapuaModule {
     @Singleton
     GroupService groupService(PermissionFactory permissionFactory,
             AuthorizationService authorizationService,
-            @Named("GroupServiceConfigurationManager") ServiceConfigurationManager serviceConfigurationManager,
+            Map<Class<?>, ServiceConfigurationManager> serviceConfigurationManagersByServiceClass,
             GroupRepository groupRepository,
             KapuaJpaTxManagerFactory jpaTxManagerFactory) {
-        return new GroupServiceImpl(permissionFactory, authorizationService, serviceConfigurationManager,
+        return new GroupServiceImpl(permissionFactory, authorizationService, serviceConfigurationManagersByServiceClass.get(GroupService.class),
                 jpaTxManagerFactory.create("kapua-authorization"),
                 groupRepository);
     }
 
-    @Provides
+    @ProvidesIntoMap
+    @ClassMapKey(GroupService.class)
     @Singleton
-    @Named("GroupServiceConfigurationManager")
     public ServiceConfigurationManager groupServiceConfigurationManager(
             GroupFactory factory,
             RootUserTester rootUserTester,
