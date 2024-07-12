@@ -43,6 +43,7 @@ import org.eclipse.kapua.model.config.metatype.KapuaTmetadata;
 import org.eclipse.kapua.model.config.metatype.KapuaTocd;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.config.KapuaConfigurableService;
+import org.eclipse.kapua.service.config.ServiceComponentConfiguration;
 import org.eclipse.kapua.storage.TxContext;
 import org.xml.sax.SAXException;
 
@@ -395,6 +396,17 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
         }
     }
 
+    @Override
+    public ServiceComponentConfiguration extractServiceComponentConfiguration(TxContext txContext, KapuaId scopeId) throws KapuaException {
+        final KapuaTocd metadata = this.getConfigMetadata(txContext, scopeId, true);
+        final Map<String, Object> values = this.getConfigValues(txContext, scopeId, true);
+        final ServiceComponentConfiguration res = new ServiceComponentConfiguration(metadata.getId());
+        res.setDefinition(metadata);
+        res.setName(metadata.getName());
+        res.setProperties(values);
+        return res;
+    }
+
     /**
      * Process {@link KapuaTmetadata} to exclude disabled {@link KapuaTocd}s and {@link KapuaTad}s if requested.
      *
@@ -426,6 +438,7 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
      * @throws Exception
      * @since 1.0.0
      */
+    //TODO: this must be moved in its own provider, as the logic of "where the metadata comes from" does not belong here
     private KapuaTmetadata readMetadata(String pid) throws JAXBException, SAXException, IOException {
         URL url = ResourceUtils.getResource(String.format("META-INF/metatypes/%s.xml", pid));
 
