@@ -36,10 +36,15 @@
             <outputDirectory>/opt/artemis</outputDirectory>
             <directory>${project.build.directory}/dependencies/artemis/apache-artemis-${artemis.version}</directory>
             <fileMode>0644</fileMode>
-            <!-- <excludes>
+            <excludes>
+                <exclude>lib/log4j-api-*</exclude>
+                <exclude>lib/log4j-core-*</exclude>
+                <exclude>lib/log4j-slf4j2-impl-*</exclude>
+                <!--
                 <exclude>activemq-all-*</exclude>
                 <exclude>webapps-demo/</exclude>
-            </excludes> -->
+                -->
+            </excludes>
         </fileSet>
 
         <fileSet>
