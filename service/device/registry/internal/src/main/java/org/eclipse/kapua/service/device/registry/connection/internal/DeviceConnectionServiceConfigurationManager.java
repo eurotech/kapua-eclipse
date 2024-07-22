@@ -22,6 +22,7 @@ import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManagerImpl;
+import org.eclipse.kapua.commons.model.domains.Domains;
 import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.model.config.metatype.KapuaTad;
 import org.eclipse.kapua.model.config.metatype.KapuaTocd;
@@ -62,7 +63,7 @@ public class DeviceConnectionServiceConfigurationManager extends ServiceConfigur
             Map<String, DeviceConnectionCredentialAdapter> availableDeviceConnectionAdapters,
             KapuaDeviceRegistrySettings kapuaDeviceRegistrySettings,
             XmlUtil xmlUtil) {
-        super(DeviceConnectionService.class.getName(), serviceConfigRepository, rootUserTester, xmlUtil);
+        super(DeviceConnectionService.class.getName(), Domains.DEVICE_CONNECTION, serviceConfigRepository, rootUserTester, xmlUtil);
 
         this.availableDeviceConnectionAdapters = availableDeviceConnectionAdapters;
         this.deviceRegistrySettings = kapuaDeviceRegistrySettings;
