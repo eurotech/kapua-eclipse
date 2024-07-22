@@ -21,6 +21,7 @@ import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManagerImpl;
+import org.eclipse.kapua.commons.model.domains.Domains;
 import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.model.config.metatype.KapuaTocd;
 import org.eclipse.kapua.model.id.KapuaId;
@@ -43,6 +44,7 @@ public class CredentialServiceConfigurationManagerImpl extends ServiceConfigurat
             KapuaAuthenticationSetting kapuaAuthenticationSetting,
             XmlUtil xmlUtil) {
         super(CredentialService.class.getName(),
+                Domains.CREDENTIAL,
                 serviceConfigRepository,
                 rootUserTester,
                 xmlUtil);

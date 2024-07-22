@@ -38,12 +38,13 @@ public class ResourceLimitedServiceConfigurationManagerImpl
 
     public ResourceLimitedServiceConfigurationManagerImpl(
             String pid,
+            String domain,
             ServiceConfigRepository serviceConfigRepository,
             RootUserTester rootUserTester,
             AccountRelativeFinder accountRelativeFinder,
             UsedEntitiesCounter usedEntitiesCounter,
             XmlUtil xmlUtil) {
-        super(pid, serviceConfigRepository, rootUserTester, xmlUtil);
+        super(pid, domain, serviceConfigRepository, rootUserTester, xmlUtil);
         this.accountRelativeFinder = accountRelativeFinder;
         this.usedEntitiesCounter = usedEntitiesCounter;
     }
