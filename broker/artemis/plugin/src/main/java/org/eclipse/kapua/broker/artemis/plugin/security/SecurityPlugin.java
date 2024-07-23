@@ -150,8 +150,6 @@ public class SecurityPlugin implements ActiveMQSecurityManager5 {
                     username, connectionInfo.getClientId(), connectionInfo.getClientIp(), remotingConnection.getID(),
                     remotingConnection.getTransportConnection().getRemoteAddress(), remotingConnection.getTransportConnection().isOpen());
             //TODO double check why the client id is null once coming from AMQP connection (the Kapua connection factory with custom client id generation is called)
-            KapuaPrincipal kapuaPrincipal = buildInternalKapuaPrincipal(getAdminAccountInfo().getId(), username, connectionInfo.getClientId());
-            //auto generate client id if null. It shouldn't be null but in some case the one from JMS connection is.
             String clientId = connectionInfo.getClientId();
             //set a random client id value if not set by the client
             //from JMS 2 specs "Although setting client ID remains mandatory when creating an unshared durable subscription, it is optional when creating a shared durable subscription."
@@ -159,6 +157,8 @@ public class SecurityPlugin implements ActiveMQSecurityManager5 {
                 clientId = clientIdPrefix + INDEX.getAndIncrement();
                 logger.info("Updated empty client id to: {}", clientId);
             }
+            KapuaPrincipal kapuaPrincipal = buildInternalKapuaPrincipal(getAdminAccountInfo().getId(), username, clientId);
+            //auto generate client id if null. It shouldn't be null but in some case the one from JMS connection is.
             //update client id with account|clientId (see pattern)
             String fullClientId = Utils.getFullClientId(getAdminAccountInfo().getId(), clientId);
             remotingConnection.setClientID(fullClientId);
