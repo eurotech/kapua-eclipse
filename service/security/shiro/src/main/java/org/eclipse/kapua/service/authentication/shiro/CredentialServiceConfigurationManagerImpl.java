@@ -29,6 +29,7 @@ import org.eclipse.kapua.service.authentication.credential.CredentialService;
 import org.eclipse.kapua.service.authentication.credential.shiro.AccountPasswordLengthProviderImpl;
 import org.eclipse.kapua.service.authentication.shiro.setting.KapuaAuthenticationSetting;
 import org.eclipse.kapua.storage.TxContext;
+import org.eclipse.kapua.storage.TxManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,7 @@ public class CredentialServiceConfigurationManagerImpl extends ServiceConfigurat
     private final SystemPasswordLengthProvider systemPasswordLengthProvider;
 
     public CredentialServiceConfigurationManagerImpl(
+            TxManager txManager,
             ServiceConfigRepository serviceConfigRepository,
             SystemPasswordLengthProvider systemPasswordLengthProvider,
             RootUserTester rootUserTester,
@@ -45,6 +47,7 @@ public class CredentialServiceConfigurationManagerImpl extends ServiceConfigurat
             XmlUtil xmlUtil) {
         super(CredentialService.class.getName(),
                 Domains.CREDENTIAL,
+                txManager,
                 serviceConfigRepository,
                 rootUserTester,
                 xmlUtil);
