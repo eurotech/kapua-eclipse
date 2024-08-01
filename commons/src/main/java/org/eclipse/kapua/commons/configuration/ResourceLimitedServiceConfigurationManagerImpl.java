@@ -21,7 +21,6 @@ import org.eclipse.kapua.KapuaMaxNumberOfItemsReachedException;
 import org.eclipse.kapua.commons.configuration.exception.ServiceConfigurationLimitExceededException;
 import org.eclipse.kapua.commons.configuration.exception.ServiceConfigurationParentLimitExceededException;
 import org.eclipse.kapua.commons.security.KapuaSecurityUtils;
-import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.model.config.metatype.KapuaTocd;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.account.Account;
@@ -45,8 +44,8 @@ public class ResourceLimitedServiceConfigurationManagerImpl
             RootUserTester rootUserTester,
             AccountRelativeFinder accountRelativeFinder,
             UsedEntitiesCounter usedEntitiesCounter,
-            XmlUtil xmlUtil) {
-        super(pid, domain, txManager, serviceConfigRepository, rootUserTester, xmlUtil);
+            ServiceConfigurationMetadataProvider serviceConfigurationMetadataProvider) {
+        super(pid, domain, txManager, serviceConfigRepository, rootUserTester, serviceConfigurationMetadataProvider);
         this.accountRelativeFinder = accountRelativeFinder;
         this.usedEntitiesCounter = usedEntitiesCounter;
     }

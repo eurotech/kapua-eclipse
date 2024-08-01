@@ -14,6 +14,7 @@ package org.eclipse.kapua.service.account.test;
 
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.configuration.AccountRelativeFinder;
+import org.eclipse.kapua.commons.configuration.ResourceBasedServiceConfigurationMetadataProvider;
 import org.eclipse.kapua.commons.configuration.ResourceLimitedServiceConfigurationManagerImpl;
 import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
@@ -136,7 +137,7 @@ public class AccountLocatorConfiguration {
                                 new UsedEntitiesCounterImpl(
                                         accountFactory,
                                         accountRepository),
-                                new XmlUtil(new TestJAXBContextProvider())
+                                new ResourceBasedServiceConfigurationMetadataProvider(new XmlUtil(new TestJAXBContextProvider()))
                         ),
                         new EventStorerImpl(new EventStoreRecordImplJpaRepository(jpaRepoConfig)),
                         accountMapper));

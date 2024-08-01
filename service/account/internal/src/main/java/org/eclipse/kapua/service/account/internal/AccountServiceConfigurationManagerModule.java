@@ -16,6 +16,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.kapua.commons.configuration.AccountRelativeFinder;
 import org.eclipse.kapua.commons.configuration.CachingServiceConfigRepository;
+import org.eclipse.kapua.commons.configuration.ResourceBasedServiceConfigurationMetadataProvider;
 import org.eclipse.kapua.commons.configuration.ResourceLimitedServiceConfigurationManagerImpl;
 import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
@@ -75,7 +76,7 @@ public class AccountServiceConfigurationManagerModule extends AbstractKapuaModul
                         new UsedEntitiesCounterImpl(
                                 factory,
                                 accountRepository),
-                        xmlUtil
+                        new ResourceBasedServiceConfigurationMetadataProvider(xmlUtil)
                 ));
     }
 }
