@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.kapua.commons.configuration.AccountRelativeFinder;
 import org.eclipse.kapua.commons.configuration.CachingServiceConfigRepository;
+import org.eclipse.kapua.commons.configuration.ResourceBasedServiceConfigurationMetadataProvider;
 import org.eclipse.kapua.commons.configuration.ResourceLimitedServiceConfigurationManagerImpl;
 import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
@@ -78,7 +79,7 @@ public class JobServiceConfigurationManagerModule extends AbstractKapuaModule im
                                 factory,
                                 jobRepository
                         ),
-                        xmlUtil));
+                        new ResourceBasedServiceConfigurationMetadataProvider(xmlUtil)));
 
     }
 }

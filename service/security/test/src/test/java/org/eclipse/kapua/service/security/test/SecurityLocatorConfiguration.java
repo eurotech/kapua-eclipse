@@ -19,6 +19,7 @@ import java.util.HashSet;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.KapuaRuntimeException;
 import org.eclipse.kapua.commons.configuration.AccountRelativeFinder;
+import org.eclipse.kapua.commons.configuration.ResourceBasedServiceConfigurationMetadataProvider;
 import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
@@ -181,7 +182,7 @@ public class SecurityLocatorConfiguration {
                         systemMinimumPasswordLengthProvider,
                         Mockito.mock(RootUserTester.class),
                         new KapuaAuthenticationSetting(),
-                        new XmlUtil(new TestJAXBContextProvider()));
+                        new ResourceBasedServiceConfigurationMetadataProvider(new XmlUtil(new TestJAXBContextProvider())));
                 final CredentialImplJpaRepository credentialRepository = new CredentialImplJpaRepository(jpaRepoConfig);
                 final AuthenticationUtils authenticationUtils = authenticationUtils(new KapuaCryptoSetting());
                 final AccountPasswordLengthProviderImpl accountPasswordLengthProvider = new AccountPasswordLengthProviderImpl(systemMinimumPasswordLengthProvider,

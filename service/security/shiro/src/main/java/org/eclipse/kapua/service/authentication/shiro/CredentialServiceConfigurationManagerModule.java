@@ -15,6 +15,7 @@ package org.eclipse.kapua.service.authentication.shiro;
 import javax.inject.Singleton;
 
 import org.eclipse.kapua.commons.configuration.CachingServiceConfigRepository;
+import org.eclipse.kapua.commons.configuration.ResourceBasedServiceConfigurationMetadataProvider;
 import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
@@ -64,6 +65,6 @@ public class CredentialServiceConfigurationManagerModule extends AbstractKapuaMo
                         systemPasswordLengthProvider,
                         rootUserTester,
                         kapuaAuthenticationSetting,
-                        xmlUtil));
+                        new ResourceBasedServiceConfigurationMetadataProvider(xmlUtil)));
     }
 }

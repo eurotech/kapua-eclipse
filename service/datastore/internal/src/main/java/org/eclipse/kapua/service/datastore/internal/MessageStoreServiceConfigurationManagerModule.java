@@ -15,6 +15,7 @@ package org.eclipse.kapua.service.datastore.internal;
 import javax.inject.Singleton;
 
 import org.eclipse.kapua.commons.configuration.CachingServiceConfigRepository;
+import org.eclipse.kapua.commons.configuration.ResourceBasedServiceConfigurationMetadataProvider;
 import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
@@ -68,7 +69,7 @@ public class MessageStoreServiceConfigurationManagerModule extends AbstractKapua
                         entityCacheFactory.createCache("AbstractKapuaConfigurableServiceCacheId")
                 ),
                 rootUserTester,
-                xmlUtil
+                new ResourceBasedServiceConfigurationMetadataProvider(xmlUtil)
         ) {
 
             @Override

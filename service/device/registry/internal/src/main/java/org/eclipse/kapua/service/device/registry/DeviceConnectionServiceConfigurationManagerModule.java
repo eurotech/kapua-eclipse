@@ -18,6 +18,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.eclipse.kapua.commons.configuration.CachingServiceConfigRepository;
+import org.eclipse.kapua.commons.configuration.ResourceBasedServiceConfigurationMetadataProvider;
 import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
@@ -68,7 +69,7 @@ public class DeviceConnectionServiceConfigurationManagerModule extends AbstractK
                         rootUserTester,
                         availableDeviceConnectionAdapters,
                         kapuaDeviceRegistrySettings,
-                        xmlUtil)
+                        new ResourceBasedServiceConfigurationMetadataProvider(xmlUtil))
         );
     }
 }

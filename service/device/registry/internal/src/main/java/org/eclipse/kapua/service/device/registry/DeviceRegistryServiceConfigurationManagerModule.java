@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.kapua.commons.configuration.AccountRelativeFinder;
 import org.eclipse.kapua.commons.configuration.CachingServiceConfigRepository;
+import org.eclipse.kapua.commons.configuration.ResourceBasedServiceConfigurationMetadataProvider;
 import org.eclipse.kapua.commons.configuration.ResourceLimitedServiceConfigurationManagerImpl;
 import org.eclipse.kapua.commons.configuration.RootUserTester;
 import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
@@ -73,7 +74,7 @@ public class DeviceRegistryServiceConfigurationManagerModule extends AbstractKap
                         new UsedEntitiesCounterImpl(
                                 factory,
                                 deviceRepository),
-                        xmlUtil
+                        new ResourceBasedServiceConfigurationMetadataProvider(xmlUtil)
                 ));
     }
 }
