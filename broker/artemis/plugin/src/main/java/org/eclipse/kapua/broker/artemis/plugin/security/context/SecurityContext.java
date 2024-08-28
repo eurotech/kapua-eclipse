@@ -131,11 +131,11 @@ public final class SecurityContext {
     }
 
     public boolean setSessionContext(SessionContext sessionContext, List<AuthAcl> authAcls) throws Exception {
-        logger.info("Updating session context for connection id: {}", sessionContext.getConnectionId());
+        logger.debug("Updating session context for connection id: {}", sessionContext.getConnectionId());
         String connectionId = sessionContext.getConnectionId();
         return runWithLock.run(connectionId, () -> {
             if (updateConnectionTokenOnConnection(connectionId) == null) {
-                logger.info("Setting session context for connection id: {}", connectionId);
+                logger.debug("Setting session context for connection id: {}", connectionId);
                 activeConnections.add(connectionId);
                 //fill by connection id context
                 sessionContextMap.put(connectionId, sessionContext);
@@ -174,10 +174,10 @@ public final class SecurityContext {
     }
 
     public SessionContext cleanSessionContext(SessionContext sessionContext) throws Exception {
-        logger.info("Updating session context for connection id: {}", sessionContext.getConnectionId());
+        logger.debug("Updating session context for connection id: {}", sessionContext.getConnectionId());
         String connectionId = sessionContext.getConnectionId();
         return runWithLock.run(connectionId, () -> {
-            logger.info("Cleaning session context for connection id: {}", connectionId);
+            logger.debug("Cleaning session context for connection id: {}", connectionId);
             //cleaning context and filling cache
             SessionContext sessionContextOld = sessionContextMap.remove(connectionId);
             if (sessionContextOld != null) {
@@ -200,7 +200,7 @@ public final class SecurityContext {
                 if (connectionId.equals(currentSessionContext.getConnectionId())) {
                     //redundant assignment
                     currentSessionContext = sessionContextMapByClient.remove(fullClientId);
-                    logger.info("Disconnect: NO stealing - remove session context by clientId: {} - connection id: {}", currentSessionContext.getClientId(), currentSessionContext.getConnectionId());
+                    logger.debug("Disconnect: NO stealing - remove session context by clientId: {} - connection id: {}", currentSessionContext.getClientId(), currentSessionContext.getConnectionId());
                 } else {
                     logger.info("Disconnect: stealing - leave session context by clientId: {} - connection id: {}", currentSessionContext.getClientId(), currentSessionContext.getConnectionId());
                 }
