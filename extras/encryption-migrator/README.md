@@ -63,5 +63,5 @@ Other useful properties from Kapua
 #### Example usage
 
 ```bash
-java -Dcommons.db.connection.host=somehost -Dmigrator.encryption.key.old=changeMePlease\!\! -Dmigrator.encryption.key.new=changedMeThanks\! -jar kapua-encryption-migrator-2.1.0-SNAPSHOT-app.jar
+java -Dcommons.db.connection.host=somehost -Dmigrator.encryption.key.old=changeMePlease\!\! -Dmigrator.encryption.key.new=changedMeThanks\! -jar kapua-encryption-migrator-2.1.0-SEC-FIX-SNAPSHOT-app.jar
 ```
