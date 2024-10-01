@@ -57,6 +57,7 @@ public class SystemSettingKeyTest {
         systemSettings.put(SystemSettingKey.DB_USE_LEGACY_DATETIME_CODE, "commons.db.useLegacyDatetimeCode");
         systemSettings.put(SystemSettingKey.DB_SERVER_TIMEZONE, "commons.db.serverTimezone");
         systemSettings.put(SystemSettingKey.DB_CHAR_ENCODING, "commons.db.characterEncoding");
+        systemSettings.put(SystemSettingKey.DB_POOL_SIZE, "commons.db.pool.size");
         systemSettings.put(SystemSettingKey.DB_POOL_SIZE_MIN, "commons.db.pool.size.min");
         systemSettings.put(SystemSettingKey.DB_POOL_SIZE_MAX, "commons.db.pool.size.max");
         systemSettings.put(SystemSettingKey.DB_POOL_IDLE_TIMEOUT, "commons.db.pool.idle.timeout");
