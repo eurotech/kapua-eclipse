@@ -18,7 +18,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 
-import moxycom.MoxyJsonFeatureCustomJsonProvider;
 import org.eclipse.kapua.app.api.core.KapuaSerializableBodyWriter;
 import org.eclipse.kapua.app.api.core.ListBodyWriter;
 import org.eclipse.kapua.app.api.core.MoxyJsonConfigContextResolver;
