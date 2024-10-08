@@ -12,6 +12,13 @@
  *******************************************************************************/
 package org.eclipse.kapua.app.api.web;
 
+import java.util.HashMap;
+
+import javax.inject.Singleton;
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBException;
+
+import moxycom.MoxyJsonFeatureCustomJsonProvider;
 import org.eclipse.kapua.app.api.core.KapuaSerializableBodyWriter;
 import org.eclipse.kapua.app.api.core.ListBodyWriter;
 import org.eclipse.kapua.app.api.core.MoxyJsonConfigContextResolver;
@@ -27,11 +34,6 @@ import org.glassfish.jersey.server.spi.Container;
 import org.glassfish.jersey.server.spi.ContainerLifecycleListener;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
-
-import javax.inject.Singleton;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
-import java.util.HashMap;
 
 public class RestApisApplication extends ResourceConfig {
 
@@ -58,13 +60,13 @@ public class RestApisApplication extends ResourceConfig {
         property(ServerProperties.WADL_FEATURE_DISABLE, true);
 
         //Manually adding MOXyJSONFeature
-        register(org.glassfish.jersey.moxy.json.MoxyJsonFeature.class);
         register(MoxyJsonConfigContextResolver.class);
         register(UriConnegFilter.class);
         register(JaxbContextResolver.class);
         register(RestApiJAXBContextProvider.class);
         register(KapuaSerializableBodyWriter.class);
         register(ListBodyWriter.class);
+        register(MoxyJsonFeatureCustomJsonProvider.class);
 
         register(new ContainerLifecycleListener() {
 
