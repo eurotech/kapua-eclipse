@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.kapua.model.xml.adapters;
 
+import org.eclipse.kapua.KapuaIllegalNullArgumentException;
 import org.eclipse.kapua.model.xml.XmlPropertyAdapted;
 import org.eclipse.kapua.qa.markers.junit.JUnitTests;
 import org.junit.Assert;
@@ -187,7 +188,7 @@ public class XmlPropertiesAdapterTest {
     }
 
     @Test
-    public void testUnmarshallingMissingProperties() {
+    public void testUnmarshallingMissingProperties() throws KapuaIllegalNullArgumentException {
         //Given adapters
         final StringPropertyAdapter stringAdapter = Mockito.spy(new StringPropertyAdapter());
         final HashMap<TestTypes, XmlPropertyAdapter> adapters = new HashMap<TestTypes, XmlPropertyAdapter>() {
@@ -204,7 +205,7 @@ public class XmlPropertiesAdapterTest {
     }
 
     @Test
-    public void testUnmarshalling() {
+    public void testUnmarshalling() throws KapuaIllegalNullArgumentException {
         //Given adapters
         final StringPropertyAdapter stringAdapter = Mockito.spy(new StringPropertyAdapter());
         final BooleanPropertyAdapter booleanAdapter = Mockito.spy(new BooleanPropertyAdapter());
@@ -254,7 +255,7 @@ public class XmlPropertiesAdapterTest {
         //and an instance
         final XmlPropertiesAdapter instance = new TestPropertiesAdapter(adapters);
         //When I unmarshal
-        Assert.assertThrows(InternalError.class, () -> instance.unmarshal(new TestPropertyAdapted[]{
+        Assert.assertThrows(IllegalArgumentException.class, () -> instance.unmarshal(new TestPropertyAdapted[]{
                 new TestPropertyAdapted("aString", TestTypes.First, "TheString"),
                 new TestPropertyAdapted("aBoolean", TestTypes.Second, "false", "true"),
                 new TestPropertyAdapted("anotherValue", null, "42")
