@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 
+import moxycom.MoxyJsonFeatureCustomJsonProvider;
 import org.eclipse.kapua.app.api.core.KapuaSerializableBodyWriter;
 import org.eclipse.kapua.app.api.core.ListBodyWriter;
 import org.eclipse.kapua.app.api.core.MoxyJsonConfigContextResolver;
@@ -60,12 +61,12 @@ public class RestApisApplication extends ResourceConfig {
         property(ServerProperties.WADL_FEATURE_DISABLE, true);
 
         //Manually adding MOXyJSONFeature
-        register(org.glassfish.jersey.moxy.json.MoxyJsonFeature.class);
         register(MoxyJsonConfigContextResolver.class);
         register(UriConnegFilter.class);
         register(JaxbContextResolver.class);
         register(KapuaSerializableBodyWriter.class);
         register(ListBodyWriter.class);
+        register(MoxyJsonFeatureCustomJsonProvider.class);
 
         register(new ContainerLifecycleListener() {
 
