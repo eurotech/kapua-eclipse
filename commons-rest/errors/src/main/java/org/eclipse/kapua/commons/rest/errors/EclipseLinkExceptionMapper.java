@@ -14,10 +14,11 @@ package org.eclipse.kapua.commons.rest.errors;
 
 import org.eclipse.kapua.commons.rest.model.errors.ThrowableInfo;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLConversionException;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +44,11 @@ public class EclipseLinkExceptionMapper implements ExceptionMapper<EclipseLinkEx
         LOG.error(eclipseException.getMessage(), eclipseException);
 
         if (eclipseException instanceof ConversionException ||
-            eclipseException instanceof ValidationException ||
-            eclipseException instanceof XMLConversionException) { // These are subset of EclipseLinkExceptions thrown by MOXy, so we have a problem with JAXB parsing of the XML/JSON
+                eclipseException instanceof DescriptorException ||
+                eclipseException instanceof XMLMarshalException ||
+                eclipseException instanceof XMLConversionException) { // These are subset of EclipseLinkExceptions thrown by MOXy, so we have a problem with JAXB parsing of the XML/JSON
             ThrowableInfo responseError = new ThrowableInfo(Response.Status.BAD_REQUEST.getStatusCode(), eclipseException, showStackTrace);
-            responseError.setMessage("An error occurred during the parsing of the XML/JSON. Check the correctness of the format. Details of the exception thrown: " + responseError.getMessage());
+            responseError.setMessage("An error occurred during the parsing of the XML/JSON. Check the correctness of its format. Details of the exception thrown: " + responseError.getMessage());
             return Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(responseError)
