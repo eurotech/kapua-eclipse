@@ -73,7 +73,7 @@ public class MoxyJsonFeatureCustomJsonProvider implements Feature {
 
     @Provider
     public static class CustomMoxyJsonProvider extends org.glassfish.jersey.moxy.json.internal.ConfigurableMoxyJsonProvider {
-        //A custom moxyJsonProvider that sets the unmarshaller validationEventHandler to the default one. This one return false (and hence, jaxb then stops execution and propagate exception to the stack) when error or fatal error is found (when exception has been thrown from one of our custom xmlAdapters for example)
+        //A custom moxyJsonProvider that sets the unmarshaller validationEventHandler to the default one. This one allows to propagate exceptions to the stack when an error is found (for example, when an exception has been thrown from one of our custom "xmlAdapters")
         @Override
         protected void preReadFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, Unmarshaller unmarshaller) throws JAXBException {
             super.preReadFrom(type, genericType, annotations, mediaType, httpHeaders, unmarshaller);
