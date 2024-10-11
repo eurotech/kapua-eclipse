@@ -27,7 +27,7 @@
     <packaging>feature</packaging>
 
     <properties>
-        <karaf.version>4.4.2</karaf.version>
+        <karaf.version>4.4.6</karaf.version>
     </properties>
 
     <dependencies>
