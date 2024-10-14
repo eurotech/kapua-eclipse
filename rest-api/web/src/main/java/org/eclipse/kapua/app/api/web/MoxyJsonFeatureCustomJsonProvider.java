@@ -40,6 +40,7 @@ public class MoxyJsonFeatureCustomJsonProvider implements Feature {
 
     @Override
     public boolean configure(final FeatureContext context) {
+        //STARTING FROM THERE THE CODE HAS BEEN COPIED BY org.glassfish.jersey.moxy.json.MoxyJsonFeature
         final Configuration config = context.getConfiguration();
 
         if (CommonProperties.getValue(config.getProperties(), config.getRuntimeType(),
@@ -65,6 +66,7 @@ public class MoxyJsonFeatureCustomJsonProvider implements Feature {
             context.register(MoxyFilteringFeature.class);
             context.register(FilteringMoxyJsonProvider.class, workerPriority);
         } else {
+            //THIS NEXT LINE IS DIFFERENT FROM org.glassfish.jersey.moxy.json.MoxyJsonFeature AND CUSTOMIZED FOR THE PURPOSE OF THIS CLASS
             context.register(CustomMoxyJsonProvider.class, workerPriority);
         }
 
