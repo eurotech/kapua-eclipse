@@ -37,7 +37,7 @@ Feature: REST API tests for parsing of requests
     When REST "PUT" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON "{\"id\": \"org.eclipse.kapua.service.authentication.credential.CredentialService\", \"properties\": {\"property\": [{\"name\": \"password.minLength\", \"array\": false, \"encrypted\": false, \"value\": [\"13\"]}]}}"
     Then REST response code is 400
     And REST response containing text "An error occurred during the parsing of the XML/JSON"
-    And REST response containing text "null value for property.type parameter"
+    And REST response containing text "Illegal 'null' value for 'property.type' for parameter: password.minLength"
 
   Scenario: Update of an user setting a wrong format "expirationDate" field
   api back-end parser (MOXy) should spot error on the format and the micro-service should reply with 400 error code

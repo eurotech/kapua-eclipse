@@ -42,8 +42,8 @@ public class XmlPropertiesAdapter<T extends Enum<T>, V extends XmlPropertyAdapte
                 .orElse(Collections.emptyList())
                 .stream()
                 .peek(adaptedProp -> {
-                    if (adaptedProp.getType() == null && adaptedProp.getValues() != null) {
-                        throw new IllegalArgumentException("null value for property.type parameter");
+                    if (adaptedProp.getType() == null) {
+                        throw new IllegalArgumentException("Illegal 'null' value for 'property.type' for parameter: " + adaptedProp.getName());
                     }
                 })
                 .filter(adaptedProp -> xmlPropertyAdapters.containsKey((adaptedProp.getType())))
