@@ -65,7 +65,7 @@ public class RestApisApplication extends ResourceConfig {
         register(JaxbContextResolver.class);
         register(KapuaSerializableBodyWriter.class);
         register(ListBodyWriter.class);
-        register(MoxyJsonFeatureCustomJsonProvider.class);
+        register(CustomMoxyJsonProvider.class);
 
         register(new ContainerLifecycleListener() {
 
