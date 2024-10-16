@@ -12,7 +12,6 @@
  *******************************************************************************/
 package org.eclipse.kapua.model.xml.adapters;
 
-import org.eclipse.kapua.KapuaIllegalNullArgumentException;
 import org.eclipse.kapua.model.xml.XmlPropertyAdapted;
 import org.eclipse.kapua.qa.markers.junit.JUnitTests;
 import org.junit.Assert;
@@ -188,7 +187,7 @@ public class XmlPropertiesAdapterTest {
     }
 
     @Test
-    public void testUnmarshallingMissingProperties() throws KapuaIllegalNullArgumentException {
+    public void testUnmarshallingMissingProperties() {
         //Given adapters
         final StringPropertyAdapter stringAdapter = Mockito.spy(new StringPropertyAdapter());
         final HashMap<TestTypes, XmlPropertyAdapter> adapters = new HashMap<TestTypes, XmlPropertyAdapter>() {
@@ -205,7 +204,7 @@ public class XmlPropertiesAdapterTest {
     }
 
     @Test
-    public void testUnmarshalling() throws KapuaIllegalNullArgumentException {
+    public void testUnmarshalling() {
         //Given adapters
         final StringPropertyAdapter stringAdapter = Mockito.spy(new StringPropertyAdapter());
         final BooleanPropertyAdapter booleanAdapter = Mockito.spy(new BooleanPropertyAdapter());
