@@ -30,7 +30,7 @@ Feature: REST API tests for parsing of requests
     Then REST response code is 400
     And REST response containing text "An error occurred during the parsing of the XML/JSON"
 
-  Scenario: Update of "credentialService" configuration missing to include the "type" field
+  Scenario: Update of "credentialService" configuration missing to include the "type" field but providing the "value" field
     api back-end parser (MOXy) should spot error on the format and the mico-service should reply with 400 error code
     Given Server with host "127.0.0.1" on port "8081"
     Given An authenticated user
@@ -47,6 +47,14 @@ Feature: REST API tests for parsing of requests
     When REST "PUT" call at "/v1/_/users/Ag" with JSON "{\"optlock\": 1, \"name\": \"kapua-broker\", \"expirationDate\": \"randomwrongvaluenotparsabledate\"}"
     Then REST response code is 400
     And REST response containing text "An error occurred during the parsing of the XML/JSON"
+
+  Scenario: Update of "credentialService" configuration missing to include the "type" field AND the "value" field
+  api back-end parser (MOXy) should NOT spot error because we are trying to update a property with a "default" value
+    Given Server with host "127.0.0.1" on port "8081"
+    Given An authenticated user
+    #the json is a huge string but basically it's a complete set of properties for the CredentialService, where the "password.minLength" property we want to set has missing "type" and "value" fields (we want to set an unlimited value for it)
+    When REST "PUT" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON "{\"id\": \"org.eclipse.kapua.service.authentication.credential.CredentialService\", \"properties\": {\"property\": [{\"name\": \"lockoutPolicy.resetAfter\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3800\"]}, {\"name\": \"password.minLength\", \"array\": false, \"encrypted\": false}, {\"name\": \"lockoutPolicy.lockDuration\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"10800\"]}, {\"name\": \"lockoutPolicy.enabled\", \"array\": false, \"encrypted\": false, \"type\": \"Boolean\", \"value\": [\"true\"]}, {\"name\": \"lockoutPolicy.maxFailures\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3\"]}]}}"
+    Then REST response code is 204
 
   @teardown
   Scenario: Stop full docker environment
