@@ -92,7 +92,7 @@ public class KapuaFileUtilsTest {
     @Test
     public void getAsFileTest() {
         String[] stringUrls = new String[]{
-                "https://opensource.apple.com/source/cups/cups-218/cups/data/iso-8859-1.txt",
+                "https://opensource.apple.com/",
                 //As per 2023-09-07, this file is no longer available:
 //                "http://txt2html.sourceforge.net/sample.txt",
                 "https://www.lipsum.com/"};
