@@ -92,8 +92,7 @@ public class KapuaFileUtilsTest {
     @Test
     public void getAsFileTest() {
         String[] stringUrls = new String[]{
-                "https://opensource.apple.com/source/cups/cups-218/cups/data/iso-8859-1.txt",
-                "http://txt2html.sourceforge.net/sample.txt",
+                "https://opensource.apple.com/",
                 "https://www.lipsum.com/"};
         for (String stringURL : stringUrls) {
             try {
