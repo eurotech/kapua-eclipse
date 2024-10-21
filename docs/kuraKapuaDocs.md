@@ -7,7 +7,7 @@ This is a short introduction to locally connect Kura and Kapua. Although some of
  - [Kapua quick start guide](https://github.com/eclipse/kapua/blob/develop/README.md)
  - [Kapua User Manual](http://download.eclipse.org/kapua/docs/develop/user-manual/en/)
  - [Kapua Developer guide](http://download.eclipse.org/kapua/docs/develop/developer-guide/en/)
- - [Eclipse Kura Documentaion](http://eclipse.github.io/kura/)
+ - [Eclipse Kura Documentation](http://eclipse-kura.github.io/kura/)
 
 
 ## Hardware Requirements
@@ -146,7 +146,7 @@ Now we have everything we need to connect Kura to Kapua.
 ## Downloading and configuring Kura
 
 Second part of this guide describes how to configure Raspberry Pi, but you can also use BBB (BeagleBone Black) or Intel Edison [as described on Kura download page](http://www.eclipse.org/kura/downloads.php?).
-Because there already exists a guide for [installing Kura on Raspberry Pi](https://eclipse.github.io/kura/intro/raspberry-pi-quick-start.html) we will not repeat the procedure here. When you finish, come back and follow the procedure below. In this example, we will assume that Raspberry Pi has IP: 192.168.1.11 and our PC 192.168.1.10.
+Because there already exists a guide for [installing Kura on Raspberry Pi](https://eclipse-kura.github.io/kura/docs-release-5.5/getting-started/install-kura/) we will not repeat the procedure here. When you finish, come back and follow the procedure below. In this example, we will assume that Raspberry Pi has IP: 192.168.1.11 and our PC 192.168.1.10.
 
 1. Connect Raspberry Pi and local PC to the same network
 2. On PC open browser and enter Raspberry's IP (which can be obtained with **ifconifg** command in Terminal of Raspberry Pi)
