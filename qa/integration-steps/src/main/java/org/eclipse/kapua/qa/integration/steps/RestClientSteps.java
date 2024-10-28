@@ -179,6 +179,9 @@ public class RestClientSteps {
         }
         else if (method.equals("GET")) {
             baseBuilder.GET();
+        } else if (method.equals("PUT")) {
+            baseBuilder.setHeader("Content-Type", "application/json");
+            baseBuilder.PUT(HttpRequest.BodyPublishers.ofString(json));
         }
 
         if (additionalHeaders != null) {

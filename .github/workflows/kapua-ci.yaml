@@ -330,6 +330,19 @@ jobs:
         with:
           tag: '@rest_cors'
           needs-docker-images: 'true'
+          needs-api-docker-image: 'true'
+  test-api-parsing:
+    needs: test-api-auth
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Clones Kapua repo inside the runner
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/runTestsTaggedAs
+        with:
+          tag: '@rest_parsing'
+          needs-docker-images: 'true'
+          needs-api-docker-image: 'true'
   junit-tests:
     needs: build
     runs-on: ubuntu-latest
