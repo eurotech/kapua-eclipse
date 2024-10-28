@@ -60,12 +60,12 @@ public class RestApisApplication extends ResourceConfig {
         property(ServerProperties.WADL_FEATURE_DISABLE, true);
 
         //Manually adding MOXyJSONFeature
-        register(org.glassfish.jersey.moxy.json.MoxyJsonFeature.class);
         register(MoxyJsonConfigContextResolver.class);
         register(UriConnegFilter.class);
         register(JaxbContextResolver.class);
         register(KapuaSerializableBodyWriter.class);
         register(ListBodyWriter.class);
+        register(MoxyJsonFeatureCustomJsonProvider.class);
 
         register(new ContainerLifecycleListener() {
 

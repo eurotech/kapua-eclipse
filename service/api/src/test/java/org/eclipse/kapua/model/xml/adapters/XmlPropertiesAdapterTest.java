@@ -254,7 +254,7 @@ public class XmlPropertiesAdapterTest {
         //and an instance
         final XmlPropertiesAdapter instance = new TestPropertiesAdapter(adapters);
         //When I unmarshal
-        Assert.assertThrows(InternalError.class, () -> instance.unmarshal(new TestPropertyAdapted[]{
+        Assert.assertThrows(IllegalArgumentException.class, () -> instance.unmarshal(new TestPropertyAdapted[]{
                 new TestPropertyAdapted("aString", TestTypes.First, "TheString"),
                 new TestPropertyAdapted("aBoolean", TestTypes.Second, "false", "true"),
                 new TestPropertyAdapted("anotherValue", null, "42")
