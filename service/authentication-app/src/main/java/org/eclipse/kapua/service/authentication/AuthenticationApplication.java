@@ -52,6 +52,7 @@ public class AuthenticationApplication {
 
     public static void main(String[] args) {
         //org.springframework.context.ApplicationContext is not needed now so don't keep the SpringApplication.run return
+        System.setProperty("org.springframework.boot.logging.LoggingSystem", "none");
         SpringApplication.run(AuthenticationApplication.class, args);
     }
 
