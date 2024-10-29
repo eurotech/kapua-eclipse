@@ -260,4 +260,33 @@ public class XmlPropertiesAdapterTest {
                 new TestPropertyAdapted("anotherValue", null, "42")
         }));
     }
+
+    //Scenario in which, for example, I update a device configuration with some properties set to the default value (null or "") and some to a defined valued
+    @Test
+    public void testUnmarshallingEmptyNullValuesFields() {
+        final StringPropertyAdapter stringAdapter = Mockito.spy(new StringPropertyAdapter());
+        final BooleanPropertyAdapter booleanAdapter = Mockito.spy(new BooleanPropertyAdapter());
+        final LongPropertyAdapter longAdapter = Mockito.spy(new LongPropertyAdapter());
+        final HashMap<TestTypes, XmlPropertyAdapter> adapters = new HashMap<TestTypes, XmlPropertyAdapter>() {
+            {
+                put(TestTypes.First, stringAdapter);
+                put(TestTypes.Second, booleanAdapter);
+                put(TestTypes.Fourth, longAdapter);
+            }
+        };
+        final XmlPropertiesAdapter instance = new TestPropertiesAdapter(adapters);
+        final Map<String, Object> got = instance.unmarshal(new TestPropertyAdapted[]{
+                new TestPropertyAdapted("aString", TestTypes.First, "TheString"),
+                new TestPropertyAdapted("emptyValues", TestTypes.Second, "", ""),
+                new TestPropertyAdapted("emptyValue", TestTypes.Fourth, ""),
+                new TestPropertyAdapted("nullValue", TestTypes.Fourth, (String) null)
+        });
+        Assert.assertNotNull(got);
+        Assert.assertEquals(4, got.keySet().size());
+        Assert.assertNotNull(got.get("aString"));
+        Assert.assertArrayEquals(new Boolean[]{null, null}, (Boolean[]) got.get("emptyValues"));
+        Assert.assertNull(got.get("emptyValue"));
+        Assert.assertNull(got.get("nullValue"));
+    }
+
 }
