@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 public class XmlPropertiesAdapter<T extends Enum<T>, V extends XmlPropertyAdapted<T>> extends XmlAdapter<V[], Map<String, Object>> {
     private final Class<V> propertyClass;
@@ -47,14 +48,14 @@ public class XmlPropertiesAdapter<T extends Enum<T>, V extends XmlPropertyAdapte
                     }
                 })
                 .filter(adaptedProp -> xmlPropertyAdapters.containsKey((adaptedProp.getType())))
-                .collect(Collectors.toMap(
-                        XmlPropertyAdapted::getName,
-                        adaptedProp -> {
-                            final XmlPropertyAdapter xmlPropertyAdapter = xmlPropertyAdapters.get(adaptedProp.getType());
-                            return xmlPropertyAdapter.unmarshallValues(adaptedProp);
-                        }));
+                .collect(HashMap::new, (m,v)->m.put(v.getName(), extractValueFromXmlProperty(v)), HashMap::putAll); //This is a work-around for Collectors.toMap limitation on null values https://stackoverflow.com/questions/24630963/nullpointerexception-in-collectors-tomap-with-null-entry-values
 
         return unmarshalledProperties;
+    }
+
+    private Object extractValueFromXmlProperty(V adaptedProp) {
+        final XmlPropertyAdapter xmlPropertyAdapter = xmlPropertyAdapters.get(adaptedProp.getType());
+        return xmlPropertyAdapter.unmarshallValues(adaptedProp);
     }
 
     @Override
