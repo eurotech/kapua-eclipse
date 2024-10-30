@@ -61,6 +61,9 @@ components:
         name:
           description: A human readable name for this field
           type: string
+        allowSelfEdit:
+          description: A flag indicating whether this field is editable by a user of the account to which the configuration belong to
+          type: boolean
       example:
         cardinality: 0
         default: 'false'
