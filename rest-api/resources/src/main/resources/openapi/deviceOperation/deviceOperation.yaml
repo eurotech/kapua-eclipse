@@ -22,6 +22,12 @@ components:
       schema:
         $ref: '../openapi.yaml#/components/schemas/kapuaId'
       required: true
+    status:
+      name: status
+      in: query
+      description: The status of the Registry Operation on which to perform the operation
+      schema:
+        $ref: './deviceOperation.yaml#/components/schemas/operationStatus'
   schemas:
     deviceOperation:
       allOf:

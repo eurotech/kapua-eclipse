@@ -26,6 +26,7 @@ paths:
           description: The resource of the DeviceManagementOperation in which to search results
           schema:
             type: string
+        - $ref: '../deviceOperation/deviceOperation.yaml#/components/parameters/status'
         - $ref: '../openapi.yaml#/components/parameters/askTotalCount'
         - $ref: '../openapi.yaml#/components/parameters/sortParam'
         - name: sortDir
