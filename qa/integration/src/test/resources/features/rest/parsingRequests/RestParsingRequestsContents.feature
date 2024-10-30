@@ -52,9 +52,33 @@ Feature: REST API tests for parsing of requests
   api back-end parser (MOXy) should NOT spot error because we are trying to update a property with a "default" value
     Given Server with host "127.0.0.1" on port "8081"
     Given An authenticated user
-    #the json is a huge string but basically it's a complete set of properties for the CredentialService, where the "password.minLength" property we want to set has missing "type" and "value" fields (we want to set an unlimited value for it)
+    #the json is a huge string but basically it's a complete set of properties for the CredentialService, where the "password.minLength" property we want to set has a finite value (123)
+    When REST "PUT" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON "{\"id\": \"org.eclipse.kapua.service.authentication.credential.CredentialService\", \"properties\": {\"property\": [{\"name\": \"lockoutPolicy.resetAfter\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3800\"]}, {\"name\": \"password.minLength\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"123\"]}, {\"name\": \"lockoutPolicy.lockDuration\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"10800\"]}, {\"name\": \"lockoutPolicy.enabled\", \"array\": false, \"encrypted\": false, \"type\": \"Boolean\", \"value\": [\"true\"]}, {\"name\": \"lockoutPolicy.maxFailures\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3\"]}]}}"
+    Then REST response code is 204
+    When REST "GET" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON ""
+    Then REST response containing text "{\"name\":\"password.minLength\",\"array\":false,\"encrypted\":false,\"type\":\"Integer\",\"value\":[\"123\"]}"
+      #the json is a huge string but basically it's a complete set of properties for the CredentialService, where the "password.minLength" property we want to set has missing "type" and "value" fields (we want to set an unlimited value for it)
     When REST "PUT" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON "{\"id\": \"org.eclipse.kapua.service.authentication.credential.CredentialService\", \"properties\": {\"property\": [{\"name\": \"lockoutPolicy.resetAfter\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3800\"]}, {\"name\": \"password.minLength\", \"array\": false, \"encrypted\": false}, {\"name\": \"lockoutPolicy.lockDuration\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"10800\"]}, {\"name\": \"lockoutPolicy.enabled\", \"array\": false, \"encrypted\": false, \"type\": \"Boolean\", \"value\": [\"true\"]}, {\"name\": \"lockoutPolicy.maxFailures\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3\"]}]}}"
     Then REST response code is 204
+    #and now if I get the configuration there will be no value for the password.minLength (aka it's the default one)
+    When REST "GET" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON ""
+    Then REST response containing text "{\"name\":\"password.minLength\",\"array\":false,\"encrypted\":false},{"
+
+    Scenario: Update of "credentialService" configuration using properly type but with a "" value cause I want to set a default value for a property.
+      Given Server with host "127.0.0.1" on port "8081"
+      Given An authenticated user
+          #this is the json above but in the password.minLength now I set type and a finite value (123)
+      When REST "PUT" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON "{\"id\": \"org.eclipse.kapua.service.authentication.credential.CredentialService\", \"properties\": {\"property\": [{\"name\": \"lockoutPolicy.resetAfter\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3800\"]}, {\"name\": \"password.minLength\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"123\"]}, {\"name\": \"lockoutPolicy.lockDuration\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"10800\"]}, {\"name\": \"lockoutPolicy.enabled\", \"array\": false, \"encrypted\": false, \"type\": \"Boolean\", \"value\": [\"true\"]}, {\"name\": \"lockoutPolicy.maxFailures\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3\"]}]}}"
+      Then REST response code is 204
+      When REST "GET" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON ""
+      Then REST response containing text "{\"name\":\"password.minLength\",\"array\":false,\"encrypted\":false,\"type\":\"Integer\",\"value\":[\"123\"]}"
+          #this is the json above but in the password.minLength now I set type and a "" value to restore property to the default value
+      When REST "PUT" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON "{\"id\": \"org.eclipse.kapua.service.authentication.credential.CredentialService\", \"properties\": {\"property\": [{\"name\": \"lockoutPolicy.resetAfter\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3800\"]}, {\"name\": \"password.minLength\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"\"]}, {\"name\": \"lockoutPolicy.lockDuration\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"10800\"]}, {\"name\": \"lockoutPolicy.enabled\", \"array\": false, \"encrypted\": false, \"type\": \"Boolean\", \"value\": [\"true\"]}, {\"name\": \"lockoutPolicy.maxFailures\", \"array\": false, \"encrypted\": false, \"type\": \"Integer\", \"value\": [\"3\"]}]}}"
+      Then REST response code is 204
+      #and now if I get the configuration there will be no value for the password.minLength (aka it's the default one)
+      When REST "GET" call at "/v1/_/serviceConfigurations/org.eclipse.kapua.service.authentication.credential.CredentialService" with JSON ""
+      Then REST response containing text "{\"name\":\"password.minLength\",\"array\":false,\"encrypted\":false},{"
+
 
   @teardown
   Scenario: Stop full docker environment
