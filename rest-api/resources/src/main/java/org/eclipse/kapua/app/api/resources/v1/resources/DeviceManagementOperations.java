@@ -70,6 +70,7 @@ public class DeviceManagementOperations extends AbstractKapuaResource {
             @PathParam("scopeId") ScopeId scopeId,
             @PathParam("deviceId") EntityId deviceId,
             @QueryParam("resource") String resource,
+            @QueryParam("appId") String appId,
             @QueryParam("status") DeviceManagementOperationStatus operationStatus,
             @QueryParam("askTotalCount") boolean askTotalCount,
             @QueryParam("sortParam") String sortParam,
@@ -87,6 +88,10 @@ public class DeviceManagementOperations extends AbstractKapuaResource {
         }
         if (operationStatus != null) {
             andPredicate.and(query.attributePredicate(DeviceManagementOperationAttributes.STATUS, operationStatus));
+        }
+
+        if (!Strings.isNullOrEmpty(appId)) {
+            andPredicate.and(query.attributePredicate(DeviceManagementOperationAttributes.APP_ID, appId));
         }
 
         if (!Strings.isNullOrEmpty(sortParam)) {
