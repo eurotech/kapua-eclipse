@@ -11,12 +11,12 @@
     Contributors:
         Eurotech - initial API and implementation
  -->
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 
-    <include relativeToChangelogFile="true" file="./1.1.0/changelog-configuration-job-1.1.0.post.xml"/>
-    <include relativeToChangelogFile="true" file="./2.0.0/changelog-configuration-job-2.0.0.post.xml"/>
+    <include relativeToChangelogFile="true" file="./configuration_job_step_definition_property_update.xml"/>
 
 </databaseChangeLog>
