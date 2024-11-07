@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2019, 2022 Eurotech and/or its affiliates and others
+
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+        Eurotech - initial API and implementation
+ -->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd"
+        logicalFilePath="KapuaDB/configuration_job_step_definition_property_update.xml">
+
+    <include relativeToChangelogFile="true" file="../common-properties.xml"/>
+
+    <changeSet id="configuration_job_step_definition_property_update-2.0.0" author="eurotech">
+        <update tableName="job_job_step_definition_properties">
+            <column name="example_value" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;
+&lt;deviceConfigurations xmlns:ns0=&quot;http://www.osgi.org/xmlns/metatype/v1.2.0&quot;&gt;&#10;
+   &lt;configuration&gt;&#10;
+      &lt;id&gt;org.eclipse.kura.demo.heater.Heater&lt;/id&gt;&#10;
+      &lt;properties&gt;&#10;
+         &lt;property name=&quot;temperature.increment&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;Float&quot;&gt;&#10;
+            &lt;value&gt;0.25&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;publish.rate&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;Integer&quot;&gt;&#10;
+            &lt;value&gt;60&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;program.stopTime&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;String&quot;&gt;&#10;
+            &lt;value&gt;22:00&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;publish.retain&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;Boolean&quot;&gt;&#10;
+            &lt;value&gt;false&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;service.pid&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;String&quot;&gt;&#10;
+            &lt;value&gt;org.eclipse.kura.demo.heater.Heater&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;kura.service.pid&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;String&quot;&gt;&#10;
+            &lt;value&gt;org.eclipse.kura.demo.heater.Heater&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;program.startTime&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;String&quot;&gt;&#10;
+            &lt;value&gt;06:00&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;mode&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;String&quot;&gt;&#10;
+            &lt;value&gt;Program&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;publish.semanticTopic&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;String&quot;&gt;&#10;
+            &lt;value&gt;data/210&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;manual.setPoint&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;Float&quot;&gt;&#10;
+            &lt;value&gt;30.0&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;publish.qos&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;Integer&quot;&gt;&#10;
+            &lt;value&gt;2&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;temperature.initial&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;Float&quot;&gt;&#10;
+            &lt;value&gt;13.0&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+         &lt;property name=&quot;program.setPoint&quot; array=&quot;false&quot; encrypted=&quot;false&quot; type=&quot;Float&quot;&gt;&#10;
+            &lt;value&gt;30.0&lt;/value&gt;&#10;
+         &lt;/property&gt;&#10;
+      &lt;/properties&gt;&#10;
+   &lt;/configuration&gt;&#10;
+&lt;/deviceConfigurations&gt;"/>
+            <where>name = 'configuration'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>
