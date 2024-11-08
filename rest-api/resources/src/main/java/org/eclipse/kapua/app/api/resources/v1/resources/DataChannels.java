@@ -12,7 +12,23 @@
  *******************************************************************************/
 package org.eclipse.kapua.app.api.resources.v1.resources;
 
-import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.app.api.core.model.CountResult;
 import org.eclipse.kapua.app.api.core.model.ScopeId;
@@ -32,19 +48,10 @@ import org.eclipse.kapua.service.datastore.model.query.predicate.DatastorePredic
 import org.eclipse.kapua.service.storable.model.query.SortDirection;
 import org.eclipse.kapua.service.storable.model.query.SortField;
 import org.eclipse.kapua.service.storable.model.query.predicate.AndPredicate;
-import org.eclipse.kapua.service.storable.model.query.predicate.TermPredicate;
+import org.eclipse.kapua.service.storable.model.query.predicate.OrPredicate;
+import org.eclipse.kapua.service.storable.model.query.predicate.StorablePredicate;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import java.util.Collections;
+import com.google.common.base.Strings;
 
 @Path("{scopeId}/data/channels")
 public class DataChannels extends AbstractKapuaResource {
@@ -59,31 +66,47 @@ public class DataChannels extends AbstractKapuaResource {
     /**
      * Gets the {@link ChannelInfo} list in the scope.
      *
-     * @param scopeId   The {@link ScopeId} in which to search results.
-     * @param clientId  The client id to filter results.
-     * @param name      The channel name to filter results. It allows '#' wildcard in last channel level
-     * @param sortParam The name of the parameter that will be used as a sorting key
-     * @param sortDir   The sort direction. Can be ASCENDING (default), DESCENDING. Case-insensitive.
-     * @param offset    The result set offset.
-     * @param limit     The result set limit.
+     * @param scopeId
+     *         The {@link ScopeId} in which to search results.
+     * @param clientId
+     *         The client id to filter results.
+     * @param name
+     *         The channel name to filter results. It allows '#' wildcard in last channel level
+     * @param sortParam
+     *         The name of the parameter that will be used as a sorting key
+     * @param sortDir
+     *         The sort direction. Can be ASCENDING (default), DESCENDING. Case-insensitive.
+     * @param offset
+     *         The result set offset.
+     * @param limit
+     *         The result set limit.
      * @return The {@link ChannelInfoListResult} of all the channelInfos associated to the current selected scope.
-     * @throws KapuaException Whenever something bad happens. See specific {@link KapuaService} exceptions.
+     * @throws KapuaException
+     *         Whenever something bad happens. See specific {@link KapuaService} exceptions.
      * @since 1.0.0
      */
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public ChannelInfoListResult simpleQuery(@PathParam("scopeId") ScopeId scopeId,
-                                             @QueryParam("clientId") String clientId,
-                                             @QueryParam("name") String name,
-                                             @QueryParam("sortParam") String sortParam,
-                                             @QueryParam("sortDir") @DefaultValue("ASCENDING") SortOrder sortDir,
-                                             @QueryParam("offset") @DefaultValue("0") int offset,
-                                             @QueryParam("limit") @DefaultValue("50") int limit)
+            @QueryParam("clientId") List<String> clientIds,
+            @QueryParam("name") String name,
+            @QueryParam("sortParam") String sortParam,
+            @QueryParam("sortDir") @DefaultValue("ASCENDING") SortOrder sortDir,
+            @QueryParam("offset") @DefaultValue("0") int offset,
+            @QueryParam("limit") @DefaultValue("50") int limit)
             throws KapuaException {
         AndPredicate andPredicate = datastorePredicateFactory.newAndPredicate();
-        if (!Strings.isNullOrEmpty(clientId)) {
-            TermPredicate clientIdPredicate = datastorePredicateFactory.newTermPredicate(ChannelInfoField.CLIENT_ID, clientId);
-            andPredicate.getPredicates().add(clientIdPredicate);
+        final List<StorablePredicate> clientPredicates = Optional.ofNullable(clientIds)
+                .orElse(new ArrayList<>())
+                .stream()
+                .filter(v -> !Strings.isNullOrEmpty(v))
+                .map(clientId -> datastorePredicateFactory.newTermPredicate(ChannelInfoField.CLIENT_ID, clientId))
+                .collect(Collectors.toList());
+
+        if (!clientPredicates.isEmpty()) {
+            final OrPredicate orPredicate = datastorePredicateFactory.newOrPredicate();
+            orPredicate.setPredicates(clientPredicates);
+            andPredicate.addPredicate(orPredicate);
         }
 
         if (!Strings.isNullOrEmpty(name)) {
@@ -105,18 +128,21 @@ public class DataChannels extends AbstractKapuaResource {
     /**
      * Queries the results with the given {@link ChannelInfoQuery} parameter.
      *
-     * @param scopeId The {@link ScopeId} in which to search results.
-     * @param query   The {@link ChannelInfoQuery} to used to filter results.
+     * @param scopeId
+     *         The {@link ScopeId} in which to search results.
+     * @param query
+     *         The {@link ChannelInfoQuery} to used to filter results.
      * @return The {@link ChannelInfoListResult} of all the result matching the given {@link ChannelInfoQuery} parameter.
-     * @throws KapuaException Whenever something bad happens. See specific {@link KapuaService} exceptions.
+     * @throws KapuaException
+     *         Whenever something bad happens. See specific {@link KapuaService} exceptions.
      * @since 1.0.0
      */
     @POST
     @Path("_query")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public ChannelInfoListResult query(@PathParam("scopeId") ScopeId scopeId,
-                                       ChannelInfoQuery query)
+            ChannelInfoQuery query)
             throws KapuaException {
         query.setScopeId(scopeId);
         query.addFetchAttributes(ChannelInfoField.TIMESTAMP.field());
@@ -126,18 +152,21 @@ public class DataChannels extends AbstractKapuaResource {
     /**
      * Counts the results with the given {@link ChannelInfoQuery} parameter.
      *
-     * @param scopeId The {@link ScopeId} in which to search results.
-     * @param query   The {@link ChannelInfoQuery} to used to filter results.
+     * @param scopeId
+     *         The {@link ScopeId} in which to search results.
+     * @param query
+     *         The {@link ChannelInfoQuery} to used to filter results.
      * @return The count of all the result matching the given {@link ChannelInfoQuery} parameter.
-     * @throws KapuaException Whenever something bad happens. See specific {@link KapuaService} exceptions.
+     * @throws KapuaException
+     *         Whenever something bad happens. See specific {@link KapuaService} exceptions.
      * @since 1.0.0
      */
     @POST
     @Path("_count")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public CountResult count(@PathParam("scopeId") ScopeId scopeId,
-                             ChannelInfoQuery query)
+            ChannelInfoQuery query)
             throws KapuaException {
         query.setScopeId(scopeId);
 
@@ -147,16 +176,18 @@ public class DataChannels extends AbstractKapuaResource {
     /**
      * Returns the ChannelInfo specified by the "channelInfoId" path parameter.
      *
-     * @param channelInfoId The id of the requested ChannelInfo.
+     * @param channelInfoId
+     *         The id of the requested ChannelInfo.
      * @return The requested ChannelInfo object.
-     * @throws KapuaException Whenever something bad happens. See specific {@link KapuaService} exceptions.
+     * @throws KapuaException
+     *         Whenever something bad happens. See specific {@link KapuaService} exceptions.
      * @since 1.0.0
      */
     @GET
     @Path("{channelInfoId}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public ChannelInfo find(@PathParam("scopeId") ScopeId scopeId,
-                            @PathParam("channelInfoId") StorableEntityId channelInfoId)
+            @PathParam("channelInfoId") StorableEntityId channelInfoId)
             throws KapuaException {
         ChannelInfo channelInfo = channelInfoRegistryService.find(scopeId, channelInfoId);
 
