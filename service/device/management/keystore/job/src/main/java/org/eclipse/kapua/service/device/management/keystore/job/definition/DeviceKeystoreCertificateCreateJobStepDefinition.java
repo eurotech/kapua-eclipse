@@ -34,7 +34,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
     public DeviceKeystoreCertificateCreateJobStepDefinition() {
         super(null,
                 "Keystore Certificate Create",
-                "Create a Certificate on a Device keystore",
+                "Execute request to store a certificate to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceKeystoreCertificateCreateTargetProcessor.class.getName(),
@@ -42,6 +42,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceKeystoreCertificateCreatePropertyKeys.KEYSTORE_ID,
+                                "Identifier of the device keystore where the certificate will be added",
                                 String.class.getName(),
                                 null,
                                 "SSLKeystore",
@@ -54,6 +55,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreCertificateCreatePropertyKeys.ALIAS,
+                                "Alias of the certificate",
                                 String.class.getName(),
                                 null,
                                 "ssl-eclipse",
@@ -66,6 +68,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreCertificateCreatePropertyKeys.CERTIFICATE,
+                                "Certificate definition in PEM format",
                                 String.class.getName(),
                                 null,
                                 "-----BEGIN CERTIFICATE-----\n    [...]\n-----END CERTIFICATE-----\n",
@@ -78,6 +81,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreCertificateCreatePropertyKeys.TIMEOUT,
+                                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
                                 Long.class.getName(),
                                 "30000",
                                 null,

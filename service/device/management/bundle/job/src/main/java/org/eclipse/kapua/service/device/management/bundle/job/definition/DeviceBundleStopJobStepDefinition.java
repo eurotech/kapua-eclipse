@@ -33,7 +33,7 @@ public class DeviceBundleStopJobStepDefinition extends JobStepDefinitionRecord {
     public DeviceBundleStopJobStepDefinition() {
         super(null,
                 "Bundle Stop",
-                "Stops a bundle using the Device Bundle Management Service",
+                "Execute request to stop a bundle to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceBundleStopTargetProcessor.class.getName(),
@@ -41,6 +41,7 @@ public class DeviceBundleStopJobStepDefinition extends JobStepDefinitionRecord {
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceBundlePropertyKeys.BUNDLE_ID,
+                                "Numeric identifier of the bundle installed in the device",
                                 String.class.getName(),
                                 null,
                                 null,
@@ -53,6 +54,7 @@ public class DeviceBundleStopJobStepDefinition extends JobStepDefinitionRecord {
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceBundlePropertyKeys.TIMEOUT,
+                                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
                                 Long.class.getName(),
                                 "30000",
                                 null,

@@ -34,7 +34,7 @@ public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinit
     public DeviceKeystoreKeypairCreateJobStepDefinition() {
         super(null,
                 "Keystore Keypair Create",
-                "Create a Keypair on a Device keystore",
+                "Execute request to create and store a private-public key pair to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceKeystoreKeypairCreateTargetProcessor.class.getName(),
@@ -42,6 +42,7 @@ public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinit
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceKeystoreKeypairCreatePropertyKeys.KEYSTORE_ID,
+                                "Identifier of the device keystore where the certificate will be added",
                                 String.class.getName(),
                                 null,
                                 "SSLKeystore",
@@ -54,6 +55,7 @@ public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinit
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreKeypairCreatePropertyKeys.ALIAS,
+                                "Alias of the key pair",
                                 String.class.getName(),
                                 null,
                                 "ssl-eclipse",
@@ -66,6 +68,7 @@ public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinit
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreKeypairCreatePropertyKeys.SIZE,
+                                "Size of the keys (bit length)",
                                 Integer.class.getName(),
                                 null,
                                 "4096",
@@ -78,6 +81,7 @@ public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinit
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreKeypairCreatePropertyKeys.ALGORITHM,
+                                "Name of the algorithm used to create the key pair",
                                 String.class.getName(),
                                 null,
                                 "RSA",
@@ -90,6 +94,7 @@ public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinit
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreKeypairCreatePropertyKeys.SIGNATURE_ALGORITHM,
+                                "Name of the algorithm used to sign the key pair",
                                 String.class.getName(),
                                 null,
                                 "SHA256withRSA",
@@ -102,6 +107,7 @@ public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinit
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreKeypairCreatePropertyKeys.ATTRIBUTES,
+                                "Attributes added to the subject field of the certificate",
                                 String.class.getName(),
                                 null,
                                 "CN=My Common Name,O=My Org,C=US",
@@ -114,6 +120,7 @@ public class DeviceKeystoreKeypairCreateJobStepDefinition extends JobStepDefinit
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreKeypairCreatePropertyKeys.TIMEOUT,
+                                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
                                 Long.class.getName(),
                                 "30000",
                                 null,

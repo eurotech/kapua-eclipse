@@ -35,7 +35,7 @@ public class DevicePackageDownloadJobStepDefinition extends JobStepDefinitionRec
     public DevicePackageDownloadJobStepDefinition() {
         super(null,
                 "Package Download / Install",
-                "Downloads a package using the Device Packages Management Service",
+                "Execute request to download/install a deployment package to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DevicePackageDownloadTargetProcessor.class.getName(),
@@ -43,6 +43,7 @@ public class DevicePackageDownloadJobStepDefinition extends JobStepDefinitionRec
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DevicePackageDownloadPropertyKeys.PACKAGE_DOWNLOAD_REQUEST,
+                                "XML string that defines the package download request sent",
                                 DevicePackageDownloadRequest.class.getName(),
                                 null,
                                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<downloadRequest>\n   <uri>http://download.eclipse.org/kura/releases/3.2.0/org.eclipse.kura.demo.heater_1.0.300.dp</uri>\n   <name>heater</name>\n   <version>1.0.300</version>\n   <install>true</install>\n</downloadRequest>",
@@ -55,6 +56,7 @@ public class DevicePackageDownloadJobStepDefinition extends JobStepDefinitionRec
                                 null),
                         new JobStepPropertyRecord(
                                 DevicePackageDownloadPropertyKeys.TIMEOUT,
+                                "The time elapsed from the start of the step execution after which the operation is considered failed",
                                 Long.class.getName(),
                                 "30000",
                                 null,

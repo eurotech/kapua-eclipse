@@ -35,7 +35,7 @@ public class DevicePackageUninstallJobStepDefinition extends JobStepDefinitionRe
     public DevicePackageUninstallJobStepDefinition() {
         super(null,
                 "Package Uninstall",
-                "Uninstalls a package using the Device Packages Management Service",
+                "Execute request to uninstall  a deployment package to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DevicePackageUninstallTargetProcessor.class.getName(),
@@ -43,6 +43,7 @@ public class DevicePackageUninstallJobStepDefinition extends JobStepDefinitionRe
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DevicePackageUninstallPropertyKeys.PACKAGE_UNINSTALL_REQUEST,
+                                "XML string that defines the package uninstall request sent",
                                 DevicePackageUninstallRequest.class.getName(),
                                 null,
                                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<uninstallRequest>\n   <name>heater</name>\n   <version>1.0.300</version>\n   <reboot>true</reboot>\n   <rebootDelay>30000</rebootDelay>\n</uninstallRequest>",
@@ -55,6 +56,7 @@ public class DevicePackageUninstallJobStepDefinition extends JobStepDefinitionRe
                                 null),
                         new JobStepPropertyRecord(
                                 DevicePackageUninstallPropertyKeys.TIMEOUT,
+                                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
                                 Long.class.getName(),
                                 "30000",
                                 null,

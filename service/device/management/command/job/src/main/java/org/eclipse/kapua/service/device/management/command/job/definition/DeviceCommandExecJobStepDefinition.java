@@ -34,7 +34,7 @@ public class DeviceCommandExecJobStepDefinition extends JobStepDefinitionRecord 
     public DeviceCommandExecJobStepDefinition() {
         super(null,
                 "Command Execution",
-                "Execution of a command using the Device Command Management Service",
+                "Request to execute a remote system command on the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceCommandExecTargetProcessor.class.getName(),
@@ -42,6 +42,7 @@ public class DeviceCommandExecJobStepDefinition extends JobStepDefinitionRecord 
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceCommandExecPropertyKeys.COMMAND_INPUT,
+                                "XML string that defines the system command to be executed",
                                 DeviceCommandInput.class.getName(),
                                 null,
                                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<commandInput>\n    <command>ls</command>\n    <timeout>30000</timeout>\n    <runAsynch>false</runAsynch>\n</commandInput>",
@@ -54,6 +55,7 @@ public class DeviceCommandExecJobStepDefinition extends JobStepDefinitionRecord 
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceCommandExecPropertyKeys.TIMEOUT,
+                                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
                                 Long.class.getName(),
                                 "30000",
                                 null,
