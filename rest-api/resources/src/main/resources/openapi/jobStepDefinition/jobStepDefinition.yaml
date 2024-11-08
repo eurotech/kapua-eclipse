@@ -28,6 +28,9 @@ components:
       properties:
         name:
           type: string
+        description:
+          type: string
+          description: The description that may contain textual information for the user on how to input this property
         propertyType:
           type: string
         propertyValue:
@@ -98,6 +101,7 @@ components:
                   </deviceAsset>
               </deviceAssets>
             name: assets
+            description: Execute request to write values on a specified set of channels and assets to the target devices of the Job
             propertyType: org.eclipse.kapua.service.device.management.asset.DeviceAssets
             required: true
             secret: false
@@ -106,6 +110,7 @@ components:
             required: true
             secret: true
           - name: timeout
+            description: The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device
             propertyType: java.lang.Long
             propertyValue: '30000'
             required: false
@@ -133,7 +138,7 @@ components:
                 modifiedBy: AQ
                 optlock: 0
                 name: Asset Write
-                description: Writes to an asset using the Device Asset Management Service
+                description: Execute request to write values on a specified set of channels and assets to the target devices of the Job
                 processorName: org.eclipse.kapua.service.device.management.asset.job.DeviceAssetWriteTargetProcessor
                 stepProperties:
                   - exampleValue: |-
@@ -151,10 +156,12 @@ components:
                           </deviceAsset>
                       </deviceAssets>
                     name: assets
+                    description: Execute request to write values on a specified set of channels and assets to the target devices of the Job
                     propertyType: org.eclipse.kapua.service.device.management.asset.DeviceAssets
                     required: true
                     secret: false
                   - name: timeout
+                    description: The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device
                     propertyType: java.lang.Long
                     propertyValue: '30000'
                     required: false
@@ -168,18 +175,16 @@ components:
                 modifiedBy: AQ
                 optlock: 0
                 name: Bundle Start
-                description: Starts a bundle using the Device Bundle Management Service
+                description: Execute request to start a bundle to the target devices of the Job
                 processorName: org.eclipse.kapua.service.device.management.bundle.job.DeviceBundleStartTargetProcessor
                 stepProperties:
                   - name: bundleId
+                    description: Numeric identifier of the bundle installed in the device
                     propertyType: java.lang.String
                     required: true
                     secret: false
-                  - name: password
-                    propertyType: java.lang.String
-                    required: true
-                    secret: true
                   - name: timeout
+                    description: The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device
                     propertyType: java.lang.Long
                     propertyValue: '30000'
                     required: false
