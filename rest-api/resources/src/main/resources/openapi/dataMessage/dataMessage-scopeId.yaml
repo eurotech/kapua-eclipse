@@ -20,11 +20,15 @@ paths:
       operationId: dataMessageQuery
       parameters:
         - $ref: '../openapi.yaml#/components/parameters/scopeId'
-        - description: The ClientID to use as a filter for messages
-          name: clientId
+        - name: clientId
           in: query
+          required: false
+          collectionFormat: multi
           schema:
-            type: string
+            type: array
+            items:
+              type: string
+          description: The ClientID to use as a filter for messages
         - description: The Channel to use as a filter for messages
           name: channel
           in: query

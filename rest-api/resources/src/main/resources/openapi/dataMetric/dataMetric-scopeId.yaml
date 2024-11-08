@@ -22,9 +22,13 @@ paths:
         - $ref: '../openapi.yaml#/components/parameters/scopeId'
         - name: clientId
           in: query
+          required: false
+          collectionFormat: multi
           schema:
-            type: string
-          description: The client ID to filter results
+            type: array
+            items:
+              type: string
+          description: The ClientID to filter results
         - name: channel
           in: query
           schema:
