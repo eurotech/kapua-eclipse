@@ -42,6 +42,22 @@ public interface JobStepProperty {
     void setName(String name);
 
     /**
+     * Gets the description
+     *
+     * @return The description
+     * @since 2.1.0
+     */
+    String getDescription();
+
+    /**
+     * Sets the description
+     *
+     * @param description The description
+     * @since 2.1.0
+     */
+    void setDescription(String description);
+
+    /**
      * @return
      * @since 1.0.0
      */

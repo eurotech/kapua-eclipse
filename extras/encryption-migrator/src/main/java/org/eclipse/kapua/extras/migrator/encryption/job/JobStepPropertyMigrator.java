@@ -33,6 +33,10 @@ public class JobStepPropertyMigrator implements JobStepProperty {
     private String name;
 
     @Basic
+    @Column(name = "description", nullable = false, updatable = false)
+    private String description;
+
+    @Basic
     @Column(name = "property_type", nullable = false, updatable = false)
     private String propertyType;
 
@@ -101,6 +105,16 @@ public class JobStepPropertyMigrator implements JobStepProperty {
 
     @Override
     public void setName(String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getDescription() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setDescription(String description) {
         throw new UnsupportedOperationException();
     }
 
