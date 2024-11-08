@@ -33,7 +33,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
     public DeviceKeystoreItemDeleteJobStepDefinition() {
         super(null,
                 "Keystore Item Delete",
-                "Deletes a keystore item a Device",
+                "Execute request to remove a certificate from the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceKeystoreItemDeleteTargetProcessor.class.getName(),
@@ -41,6 +41,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceKeystoreItemDeletePropertyKeys.KEYSTORE_ID,
+                                "Identifier of the device keystore where the certificate will be removed",
                                 String.class.getName(),
                                 null,
                                 "SSLKeystore",
@@ -53,6 +54,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreItemDeletePropertyKeys.ALIAS,
+                                "Alias of the certificate in the destination keystore",
                                 String.class.getName(),
                                 null,
                                 "ssl-eclipse",
@@ -65,6 +67,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreItemDeletePropertyKeys.TIMEOUT,
+                                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
                                 Long.class.getName(),
                                 "30000",
                                 null,

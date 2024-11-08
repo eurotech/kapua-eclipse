@@ -34,7 +34,7 @@ public class DeviceAssetWriteJobStepDefinition extends JobStepDefinitionRecord {
     public DeviceAssetWriteJobStepDefinition() {
         super(null,
                 "Asset Write",
-                "Writes to an asset using the Device Asset Management Service",
+                "Execute request to write values on a specified set of channels and assets to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceAssetWriteTargetProcessor.class.getName(),
@@ -42,6 +42,7 @@ public class DeviceAssetWriteJobStepDefinition extends JobStepDefinitionRecord {
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceAssetWritePropertyKeys.ASSETS,
+                                "XML string that defines the asset, channels and values to be written",
                                 DeviceAssets.class.getName(),
                                 null,
                                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n <deviceAssets>\n     <deviceAsset>\n         <name>assetName</name>\n         <channels>\n             <channel>\n                 <valueType>binary</valueType>\n                 <value>EGVzdCBzdHJpbmcgdmFsdWU=</value>\n                 <name>binaryTest</name>\n             </channel>\n         </channels>\n     </deviceAsset>\n</deviceAssets>",
@@ -54,6 +55,7 @@ public class DeviceAssetWriteJobStepDefinition extends JobStepDefinitionRecord {
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceAssetWritePropertyKeys.TIMEOUT,
+                                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
                                 Long.class.getName(),
                                 "30000",
                                 null,
