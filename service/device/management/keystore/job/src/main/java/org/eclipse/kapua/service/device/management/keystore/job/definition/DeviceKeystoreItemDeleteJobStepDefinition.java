@@ -20,6 +20,7 @@ import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
+import org.eclipse.kapua.service.job.step.definition.device.management.TimeoutJobStepPropertyRecord;
 
 /**
  * {@link JobStepDefinition} to perform {@link DeviceKeystoreManagementService#deleteKeystoreItem(KapuaId, KapuaId, String, String, Long)}
@@ -65,19 +66,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
                                 null,
                                 null,
                                 null),
-                        new JobStepPropertyRecord(
-                                DeviceKeystoreItemDeletePropertyKeys.TIMEOUT,
-                                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
-                                Long.class.getName(),
-                                "30000",
-                                null,
-                                Boolean.FALSE,
-                                Boolean.FALSE,
-                                null,
-                                null,
-                                "0",
-                                null,
-                                null)
+                        new TimeoutJobStepPropertyRecord()
                 )
         );
     }

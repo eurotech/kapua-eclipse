@@ -22,6 +22,7 @@ import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
+import org.eclipse.kapua.service.job.step.definition.device.management.TimeoutJobStepPropertyRecord;
 
 /**
  * {@link JobStepDefinition} to perform {@link DevicePackageManagementService#downloadExec(KapuaId, KapuaId, DevicePackageDownloadRequest, DevicePackageDownloadOptions)}
@@ -54,19 +55,7 @@ public class DevicePackageDownloadJobStepDefinition extends JobStepDefinitionRec
                                 null,
                                 null,
                                 null),
-                        new JobStepPropertyRecord(
-                                DevicePackageDownloadPropertyKeys.TIMEOUT,
-                                "The time elapsed from the start of the step execution after which the operation is considered failed",
-                                Long.class.getName(),
-                                "30000",
-                                null,
-                                Boolean.FALSE,
-                                Boolean.FALSE,
-                                null,
-                                null,
-                                "0",
-                                null,
-                                null)
+                        new TimeoutJobStepPropertyRecord()
                 )
         );
     }
