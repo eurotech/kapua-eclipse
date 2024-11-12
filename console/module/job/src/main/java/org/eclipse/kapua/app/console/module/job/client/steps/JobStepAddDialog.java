@@ -28,6 +28,7 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -115,7 +116,7 @@ public class JobStepAddDialog extends EntityAddEditDialog {
         jobStepPropertiesPanel = new FormPanel(FORM_LABEL_WIDTH);
         propertiesButtonPanel = new HorizontalPanel();
 
-        DialogUtils.resizeDialog(this, 600, 500);
+        DialogUtils.resizeDialog(this, 600, 600);
     }
 
     protected String getExampleButtonText() {
@@ -292,6 +293,7 @@ public class JobStepAddDialog extends EntityAddEditDialog {
                 textField.setEmptyText(KapuaSafeHtmlUtils.htmlUnescape(property.getPropertyValue()));
                 textField.setData(PROPERTY_TYPE, property.getPropertyType());
                 textField.setData(PROPERTY_NAME, property.getPropertyName());
+
                 jobStepPropertiesPanel.add(textField);
             } else if (
                     propertyType.equals(Long.class.getName()) ||
@@ -370,6 +372,16 @@ public class JobStepAddDialog extends EntityAddEditDialog {
                 jobStepPropertiesPanel.add(propertiesButtonPanel);
             }
 
+            if (property.getDescription() != null) {
+                LabelField fieldTooltip = new LabelField();
+                fieldTooltip.setStyleAttribute("margin-top", "-5px");
+                fieldTooltip.setStyleAttribute("color", "gray");
+                fieldTooltip.setStyleAttribute("font-size", "10px");
+                fieldTooltip.setValue(property.getDescription());
+
+                jobStepPropertiesPanel.add(fieldTooltip);
+            }
+
             jobStepPropertiesPanel.layout(true);
         }
         jobStepPropertiesPanel.layout(true);
@@ -396,7 +408,8 @@ public class JobStepAddDialog extends EntityAddEditDialog {
     protected List<GwtJobStepProperty> readStepProperties() {
         List<GwtJobStepProperty> jobStepProperties = new ArrayList<GwtJobStepProperty>();
         for (Component component : jobStepPropertiesPanel.getItems()) {
-            if (component instanceof Field) {
+            if (component instanceof Field &&
+                    !(component instanceof LabelField)) { // Exclude LabelFields that contains the description of the JobStepDefinition.jobStepProperty
                 Field<?> field = (Field<?>) component;
                 GwtJobStepProperty property = new GwtJobStepProperty();
                 property.setPropertyValue(!field.getRawValue().isEmpty() ? field.getRawValue() : null);
