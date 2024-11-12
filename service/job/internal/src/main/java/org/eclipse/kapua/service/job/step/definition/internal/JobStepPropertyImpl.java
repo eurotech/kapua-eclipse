@@ -28,7 +28,7 @@ public class JobStepPropertyImpl implements JobStepProperty {
     private String name;
 
     @Basic
-    @Column(name = "description", nullable = false, updatable = false)
+    @Column(name = "description", nullable = false, updatable = true)
     private String description;
 
     @Basic
