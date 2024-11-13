@@ -72,6 +72,20 @@ public class GwtTriggerDefinition extends GwtEntityModel {
         return get("triggerProperties");
     }
 
+    public GwtTriggerProperty getTriggerProperty(String name) {
+        if (getTriggerProperties() == null) {
+            return null;
+        }
+
+        for (GwtTriggerProperty gwtTriggerProperty : getTriggerProperties()) {
+            if (gwtTriggerProperty.getPropertyName().equals(name)) {
+                return gwtTriggerProperty;
+            }
+        }
+
+        return null;
+    }
+
     public void setTriggerProperties(List<GwtTriggerProperty> triggerProperties) {
         set("triggerProperties", triggerProperties);
     }
