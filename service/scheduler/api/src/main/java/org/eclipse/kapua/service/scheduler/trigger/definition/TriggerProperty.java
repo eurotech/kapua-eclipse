@@ -46,6 +46,22 @@ public interface TriggerProperty {
     void setName(String name);
 
     /**
+     * Gets the description
+     *
+     * @return The description
+     * @since 2.1.0
+     */
+    String getDescription();
+
+    /**
+     * Sets the description
+     *
+     * @param description The description
+     * @since 2.1.0
+     */
+    void setDescription(String description);
+
+    /**
      * Gets the property type.
      *
      * @return The property type.
