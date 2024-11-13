@@ -33,6 +33,14 @@ public class GwtTriggerProperty extends KapuaBaseModel {
         set("propertyName", propertyName);
     }
 
+    public String getDescription() {
+        return get("description");
+    }
+
+    public void setDescription(String description) {
+        set("description", description);
+    }
+
     public String getPropertyType() {
         return get("propertyType");
     }
