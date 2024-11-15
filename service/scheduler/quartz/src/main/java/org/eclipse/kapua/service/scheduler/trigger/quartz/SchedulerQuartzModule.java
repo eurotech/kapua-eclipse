@@ -28,7 +28,9 @@ import org.eclipse.kapua.service.scheduler.trigger.TriggerRepository;
 import org.eclipse.kapua.service.scheduler.trigger.TriggerService;
 import org.eclipse.kapua.service.scheduler.trigger.definition.TriggerDefinitionFactory;
 import org.eclipse.kapua.service.scheduler.trigger.definition.TriggerDefinitionRepository;
+import org.eclipse.kapua.storage.TxManager;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 public class SchedulerQuartzModule extends AbstractKapuaModule {
@@ -44,9 +46,19 @@ public class SchedulerQuartzModule extends AbstractKapuaModule {
 
     @Provides
     @Singleton
+    @Named("schedulerTxManager")
+    TxManager jobTxManager(
+            KapuaJpaTxManagerFactory jpaTxManagerFactory
+    ) {
+        return jpaTxManagerFactory.create("kapua-scheduler");
+    }
+
+    @Provides
+    @Singleton
     TriggerService triggerService(
             AuthorizationService authorizationService,
             PermissionFactory permissionFactory,
+            @Named("schedulerTxManager") TxManager txManager,
             TriggerRepository triggerRepository,
             TriggerFactory triggerFactory,
             TriggerDefinitionRepository triggerDefinitionRepository,
@@ -55,7 +67,7 @@ public class SchedulerQuartzModule extends AbstractKapuaModule {
         return new TriggerServiceImpl(
                 authorizationService,
                 permissionFactory,
-                jpaTxManagerFactory.create("kapua-scheduler"),
+                txManager,
                 triggerRepository,
                 triggerFactory,
                 triggerDefinitionRepository,

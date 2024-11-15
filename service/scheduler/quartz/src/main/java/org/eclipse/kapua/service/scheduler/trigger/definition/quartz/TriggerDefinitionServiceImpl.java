@@ -67,7 +67,6 @@ public class TriggerDefinitionServiceImpl implements TriggerDefinitionService {
         ArgumentValidator.notNull(triggerDefinitionCreator.getScopeId(), "triggerDefinitionCreator.scopeId");
         ArgumentValidator.notNull(triggerDefinitionCreator.getTriggerType(), "triggerDefinitionCreator.stepType");
         ArgumentValidator.validateEntityName(triggerDefinitionCreator.getName(), "triggerDefinitionCreator.name");
-        ArgumentValidator.notEmptyOrNull(triggerDefinitionCreator.getProcessorName(), "triggerDefinitionCreator.processorName");
 
         // Check access
         authorizationService.checkPermission(permissionFactory.newPermission(Domains.JOB, Actions.write, null));
@@ -88,7 +87,7 @@ public class TriggerDefinitionServiceImpl implements TriggerDefinitionService {
         ArgumentValidator.notNull(triggerDefinition.getScopeId(), "stepDefinition.scopeId");
         ArgumentValidator.notNull(triggerDefinition.getTriggerType(), "triggerDefinition.stepType");
         ArgumentValidator.validateEntityName(triggerDefinition.getName(), "triggerDefinition.name");
-        ArgumentValidator.notEmptyOrNull(triggerDefinition.getProcessorName(), "triggerDefinition.processorName");
+
         // Check access
         authorizationService.checkPermission(permissionFactory.newPermission(Domains.JOB, Actions.write, null));
 
