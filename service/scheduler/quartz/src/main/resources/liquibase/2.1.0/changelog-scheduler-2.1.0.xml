@@ -16,9 +16,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd"
-        logicalFilePath="KapuaDB/changelog-job-2.1.0.xml">
+        logicalFilePath="KapuaDB/changelog-scheduler-2.1.0.xml">
 
     <include relativeToChangelogFile="true" file="trigger_properties-description.xml"/>
+    <include relativeToChangelogFile="true" file="trigger_definition-nullable_processor.xml"/>
     <include relativeToChangelogFile="true" file="trigger_definition_properties-description.xml"/>
 
 </databaseChangeLog>

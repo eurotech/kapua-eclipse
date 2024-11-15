@@ -32,6 +32,7 @@ import org.eclipse.kapua.locator.LocatorConfig;
 
 import com.google.inject.Provides;
 import com.google.inject.multibindings.ProvidesIntoSet;
+import org.eclipse.kapua.service.scheduler.trigger.definition.quartz.TriggerDefinitionAligner;
 
 public class AppModule extends AbstractKapuaModule {
 
@@ -39,6 +40,8 @@ public class AppModule extends AbstractKapuaModule {
     protected void configureModule() {
         bind(DatabaseCheckUpdate.class).in(Singleton.class);
         bind(KapuaApiCoreSetting.class).in(Singleton.class);
+
+        bind(TriggerDefinitionAligner.class).in(Singleton.class);
 
         // Switching manually-configured JAXBContextProvider to autodiscovery one below
         // bind(JAXBContextProvider.class).to(RestApiJAXBContextProvider.class).in(Singleton.class);

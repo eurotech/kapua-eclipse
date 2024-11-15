@@ -21,9 +21,7 @@
 
     <include relativeToChangelogFile="true" file="../common-properties.xml"/>
 
-    <changeSet id="changelog-trigger_properties-2.1.0_addDescription" author="eurotech">
-        <addColumn tableName="schdl_trigger_properties">
-            <column name="description" type="text"/>
-        </addColumn>
+    <changeSet id="changelog-trigger_definition-2.1.0-nullable_processor_name" author="eurotech">
+        <dropNotNullConstraint tableName="schdl_trigger_definition" columnName="processor_name" columnDataType="varchar(255)"/>
     </changeSet>
 </databaseChangeLog>
