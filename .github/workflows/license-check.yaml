@@ -12,11 +12,10 @@ on:
     types: [created]
 
 jobs:
-  # Documentation: https://github.com/eclipse/dash-licenses#reusable-github-workflow-for-automatic-license-check-and-ip-team-review-requests
+  # Documentation: https://github.com/eclipse-dash/dash-licenses#reusable-github-workflow-for-automatic-license-check-and-ip-team-review-requests
   eclipse-dash-license-tool-run:
-#    if: ${{ github.event.issue.pull_request }}
     name: Eclipse Dash License Tool
-    uses: eclipse/dash-licenses/.github/workflows/mavenLicenseCheck.yml@master
+    uses: eclipse-dash/dash-licenses/.github/workflows/mavenLicenseCheck.yml@master
     with:
       projectId: iot.kapua
     secrets:
