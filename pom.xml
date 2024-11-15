@@ -48,7 +48,7 @@
 
         <!-- Dependencies versions -->
         <camel.version>3.21.0</camel.version> <!-- latest 3.11.0 -->
-        <spring.version>5.3.23</spring.version> <!-- latest 5.3.8 -->
+        <spring.version>6.0.15</spring.version> <!-- latest 5.3.8 -->
         <spring-security.version>5.7.5</spring-security.version> <!-- latest 5.5.1 -->
         <spring-boot.version>2.7.18</spring-boot.version>
 
