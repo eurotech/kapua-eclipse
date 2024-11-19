@@ -80,7 +80,7 @@
 
     <module name="RegexpHeader">
         <property name="header"
-            value="^/\*{79}$\n^ \* Copyright \(c\) (|\d{4}, )2022 (.*) and others\.?$\n^ \*$\n^ \* This program and the accompanying materials are made$\n^ \* available under the terms of the Eclipse Public License 2.0$\n^ \* which is available at https://www.eclipse.org/legal/epl-2.0/$\n^ \*$\n^ \* SPDX-License-Identifier: EPL-2.0$\n^ \*$\n^ \* Contributors:$\n^ \*     (.*)(| - .*)$\n^ \*{79}/\n^package" />
+            value="^/\*{79}$\n^ \* Copyright \(c\) (|\d{4}, )\d{4} (.*) and others\.?$\n^ \*$\n^ \* This program and the accompanying materials are made$\n^ \* available under the terms of the Eclipse Public License 2.0$\n^ \* which is available at https://www.eclipse.org/legal/epl-2.0/$\n^ \*$\n^ \* SPDX-License-Identifier: EPL-2.0$\n^ \*$\n^ \* Contributors:$\n^ \*     (.*)(| - .*)$\n^ \*{79}/\n^package" />
         <property name="charset" value="UTF-8" />
         <property name="multiLines" value="11" />
         <property name="fileExtensions" value="java" />
@@ -88,7 +88,7 @@
 
     <module name="RegexpHeader">
         <property name="header"
-            value="^&lt;\?xml.*&gt;$\n^&lt;!--$\n^    Copyright \(c\) (|\d{4}, )2022 (.*) and others\.?$\n^$\n^    This program and the accompanying materials are made$\n^    available under the terms of the Eclipse Public License 2\.0$\n^    which is available at https\:\/\/www.eclipse.org/legal/epl-2.0/$\n^$\n^    SPDX-License-Identifier: EPL-2.0$\n^$\n^    Contributors\:$\n^        (.*)(| - .*)$\n^ ?--&gt;$" />
+            value="^&lt;\?xml.*&gt;$\n^&lt;!--$\n^    Copyright \(c\) (|\d{4}, )\d{4} (.*) and others\.?$\n^$\n^    This program and the accompanying materials are made$\n^    available under the terms of the Eclipse Public License 2\.0$\n^    which is available at https\:\/\/www.eclipse.org/legal/epl-2.0/$\n^$\n^    SPDX-License-Identifier: EPL-2.0$\n^$\n^    Contributors\:$\n^        (.*)(| - .*)$\n^ ?--&gt;$" />
         <property name="charset" value="UTF-8" />
         <property name="multiLines" value="12" />
         <property name="fileExtensions" value="xml" />
