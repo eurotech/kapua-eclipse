@@ -20,6 +20,7 @@ import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
+import org.eclipse.kapua.service.job.step.definition.device.management.TimeoutJobStepPropertyRecord;
 
 /**
  * {@link JobStepDefinition} to perform {@link DeviceKeystoreManagementService#deleteKeystoreItem(KapuaId, KapuaId, String, String, Long)}
@@ -33,7 +34,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
     public DeviceKeystoreItemDeleteJobStepDefinition() {
         super(null,
                 "Keystore Item Delete",
-                "Deletes a keystore item a Device",
+                "Execute request to remove a certificate from the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceKeystoreItemDeleteTargetProcessor.class.getName(),
@@ -41,6 +42,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceKeystoreItemDeletePropertyKeys.KEYSTORE_ID,
+                                "Identifier of the device keystore where the certificate will be removed",
                                 String.class.getName(),
                                 null,
                                 "SSLKeystore",
@@ -53,6 +55,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreItemDeletePropertyKeys.ALIAS,
+                                "Alias of the certificate in the destination keystore",
                                 String.class.getName(),
                                 null,
                                 "ssl-eclipse",
@@ -63,18 +66,7 @@ public class DeviceKeystoreItemDeleteJobStepDefinition extends JobStepDefinition
                                 null,
                                 null,
                                 null),
-                        new JobStepPropertyRecord(
-                                DeviceKeystoreItemDeletePropertyKeys.TIMEOUT,
-                                Long.class.getName(),
-                                "30000",
-                                null,
-                                Boolean.FALSE,
-                                Boolean.FALSE,
-                                null,
-                                null,
-                                "0",
-                                null,
-                                null)
+                        new TimeoutJobStepPropertyRecord()
                 )
         );
     }

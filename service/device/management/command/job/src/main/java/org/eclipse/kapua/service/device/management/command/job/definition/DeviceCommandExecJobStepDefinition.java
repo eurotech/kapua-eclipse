@@ -21,6 +21,7 @@ import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
+import org.eclipse.kapua.service.job.step.definition.device.management.TimeoutJobStepPropertyRecord;
 
 /**
  * {@link JobStepDefinition} to perform {@link DeviceCommandManagementService#exec(KapuaId, KapuaId, DeviceCommandInput, Long)}.
@@ -34,7 +35,7 @@ public class DeviceCommandExecJobStepDefinition extends JobStepDefinitionRecord 
     public DeviceCommandExecJobStepDefinition() {
         super(null,
                 "Command Execution",
-                "Execution of a command using the Device Command Management Service",
+                "Request to execute a remote system command on the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceCommandExecTargetProcessor.class.getName(),
@@ -42,6 +43,7 @@ public class DeviceCommandExecJobStepDefinition extends JobStepDefinitionRecord 
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceCommandExecPropertyKeys.COMMAND_INPUT,
+                                "XML string that defines the system command to be executed",
                                 DeviceCommandInput.class.getName(),
                                 null,
                                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<commandInput>\n    <command>ls</command>\n    <timeout>30000</timeout>\n    <runAsynch>false</runAsynch>\n</commandInput>",
@@ -52,18 +54,7 @@ public class DeviceCommandExecJobStepDefinition extends JobStepDefinitionRecord 
                                 null,
                                 null,
                                 null),
-                        new JobStepPropertyRecord(
-                                DeviceCommandExecPropertyKeys.TIMEOUT,
-                                Long.class.getName(),
-                                "30000",
-                                null,
-                                Boolean.FALSE,
-                                Boolean.FALSE,
-                                null,
-                                null,
-                                "0",
-                                null,
-                                null)
+                        new TimeoutJobStepPropertyRecord()
                 )
         );
     }

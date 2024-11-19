@@ -22,6 +22,7 @@ import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
+import org.eclipse.kapua.service.job.step.definition.device.management.TimeoutJobStepPropertyRecord;
 
 /**
  * {@link JobStepDefinition} to perform {@link DevicePackageManagementService#uninstallExec(KapuaId, KapuaId, DevicePackageUninstallRequest, DevicePackageUninstallOptions)}
@@ -35,7 +36,7 @@ public class DevicePackageUninstallJobStepDefinition extends JobStepDefinitionRe
     public DevicePackageUninstallJobStepDefinition() {
         super(null,
                 "Package Uninstall",
-                "Uninstalls a package using the Device Packages Management Service",
+                "Execute request to uninstall  a deployment package to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DevicePackageUninstallTargetProcessor.class.getName(),
@@ -43,6 +44,7 @@ public class DevicePackageUninstallJobStepDefinition extends JobStepDefinitionRe
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DevicePackageUninstallPropertyKeys.PACKAGE_UNINSTALL_REQUEST,
+                                "XML string that defines the package uninstall request sent",
                                 DevicePackageUninstallRequest.class.getName(),
                                 null,
                                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<uninstallRequest>\n   <name>heater</name>\n   <version>1.0.300</version>\n   <reboot>true</reboot>\n   <rebootDelay>30000</rebootDelay>\n</uninstallRequest>",
@@ -53,18 +55,7 @@ public class DevicePackageUninstallJobStepDefinition extends JobStepDefinitionRe
                                 null,
                                 null,
                                 null),
-                        new JobStepPropertyRecord(
-                                DevicePackageUninstallPropertyKeys.TIMEOUT,
-                                Long.class.getName(),
-                                "30000",
-                                null,
-                                Boolean.FALSE,
-                                Boolean.FALSE,
-                                null,
-                                null,
-                                "0",
-                                null,
-                                null)
+                        new TimeoutJobStepPropertyRecord()
                 )
         );
     }

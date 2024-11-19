@@ -21,6 +21,7 @@ import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
+import org.eclipse.kapua.service.job.step.definition.device.management.TimeoutJobStepPropertyRecord;
 
 /**
  * {@link JobStepDefinition} to perform {@link DeviceKeystoreManagementService#createKeystoreCertificate(KapuaId, KapuaId, DeviceKeystoreCertificate, Long)}.
@@ -34,7 +35,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
     public DeviceKeystoreCertificateCreateJobStepDefinition() {
         super(null,
                 "Keystore Certificate Create",
-                "Create a Certificate on a Device keystore",
+                "Execute request to store a certificate to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceKeystoreCertificateCreateTargetProcessor.class.getName(),
@@ -42,6 +43,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceKeystoreCertificateCreatePropertyKeys.KEYSTORE_ID,
+                                "Identifier of the device keystore where the certificate will be added",
                                 String.class.getName(),
                                 null,
                                 "SSLKeystore",
@@ -54,6 +56,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreCertificateCreatePropertyKeys.ALIAS,
+                                "Alias of the certificate",
                                 String.class.getName(),
                                 null,
                                 "ssl-eclipse",
@@ -66,6 +69,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                                 null),
                         new JobStepPropertyRecord(
                                 DeviceKeystoreCertificateCreatePropertyKeys.CERTIFICATE,
+                                "Certificate definition in PEM format",
                                 String.class.getName(),
                                 null,
                                 "-----BEGIN CERTIFICATE-----\n    [...]\n-----END CERTIFICATE-----\n",
@@ -76,18 +80,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                                 null,
                                 null,
                                 null),
-                        new JobStepPropertyRecord(
-                                DeviceKeystoreCertificateCreatePropertyKeys.TIMEOUT,
-                                Long.class.getName(),
-                                "30000",
-                                null,
-                                Boolean.FALSE,
-                                Boolean.FALSE,
-                                null,
-                                null,
-                                "0",
-                                null,
-                                null)
+                        new TimeoutJobStepPropertyRecord()
                 )
         );
     }

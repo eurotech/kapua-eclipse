@@ -75,6 +75,7 @@ public class JobStepDefinitionAligner {
 
         jobStepPropertyComparator = Comparator
                 .comparing(JobStepProperty::getName, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(JobStepProperty::getDescription, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepProperty::getPropertyType, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepProperty::getPropertyValue, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(JobStepProperty::getExampleValue, Comparator.nullsFirst(Comparator.naturalOrder()))
@@ -232,6 +233,7 @@ public class JobStepDefinitionAligner {
                         new JobStepDefinitionPropertyImpl(dbJobStepDefinition, wiredJobStepProperty);
                 entityManager.persist(dbMissingJobStepProperty);
             } else {
+                dbJobStepPropertyEntity.getJobStepProperty().setDescription(wiredJobStepProperty.getDescription());
                 dbJobStepPropertyEntity.getJobStepProperty().setPropertyType(wiredJobStepProperty.getPropertyType());
                 dbJobStepPropertyEntity.getJobStepProperty().setPropertyValue(wiredJobStepProperty.getPropertyValue());
                 dbJobStepPropertyEntity.getJobStepProperty().setRequired(wiredJobStepProperty.getRequired());

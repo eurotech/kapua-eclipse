@@ -20,6 +20,7 @@ import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
+import org.eclipse.kapua.service.job.step.definition.device.management.TimeoutJobStepPropertyRecord;
 
 /**
  * {@link JobStepDefinition} to perform {@link DeviceBundleManagementService#start(KapuaId, KapuaId, String, Long)}.
@@ -33,7 +34,7 @@ public class DeviceBundleStartJobStepDefinition extends JobStepDefinitionRecord 
     public DeviceBundleStartJobStepDefinition() {
         super(null,
                 "Bundle Start",
-                "Starts a bundle using the Device Bundle Management Service",
+                "Execute request to start a bundle to the target devices of the Job",
                 JobStepType.TARGET,
                 null,
                 DeviceBundleStartTargetProcessor.class.getName(),
@@ -41,6 +42,7 @@ public class DeviceBundleStartJobStepDefinition extends JobStepDefinitionRecord 
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceBundlePropertyKeys.BUNDLE_ID,
+                                "Numeric identifier of the bundle installed in the device",
                                 String.class.getName(),
                                 null,
                                 null,
@@ -51,18 +53,7 @@ public class DeviceBundleStartJobStepDefinition extends JobStepDefinitionRecord 
                                 null,
                                 null,
                                 null),
-                        new JobStepPropertyRecord(
-                                DeviceBundlePropertyKeys.TIMEOUT,
-                                Long.class.getName(),
-                                "30000",
-                                null,
-                                Boolean.FALSE,
-                                Boolean.FALSE,
-                                null,
-                                null,
-                                "0",
-                                null,
-                                null)
+                        new TimeoutJobStepPropertyRecord()
                 )
         );
     }
