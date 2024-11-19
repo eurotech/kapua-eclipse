@@ -454,6 +454,14 @@ Feature: Tag Service
     When I assign tag "Tag1" to device "Device1"
     Then An exception was thrown
 
+  Scenario: Creating Tag With An Existing Name
+  Try to create tag with an existing name. Kapua should throw Exception.
+
+    Given I expect the exception "KapuaDuplicateNameException"
+    When I create tag with name "Tag"
+    And I create tag with name "Tag"
+    Then An exception was thrown
+
   @teardown
   Scenario: Reset Security Context for all scenarios
     Given Clean Locator Instance
