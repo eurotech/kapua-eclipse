@@ -21,6 +21,9 @@
     </appender>
 
     <logger name="liquibase" level="WARN"/>
+    <logger name="org.apache.activemq.audit.base" level="WARN"/>
+    <logger name="org.apache.activemq.audit.message" level="WARN"/>
+    <logger name="org.apache.activemq.audit.resource" level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="console"/>
