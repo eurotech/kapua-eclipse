@@ -14,6 +14,7 @@ package org.eclipse.kapua.service.job.step.definition.internal;
 
 import org.eclipse.kapua.commons.model.query.AbstractKapuaNamedQuery;
 import org.eclipse.kapua.model.id.KapuaId;
+import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionQuery;
 
 /**
@@ -26,10 +27,22 @@ public class JobStepDefinitionQueryImpl extends AbstractKapuaNamedQuery implemen
     /**
      * Constructor.
      *
-     * @param scopeId The {@link #getScopeId()}.
+     * @param scopeId
+     *         The {@link #getScopeId()}.
      * @since 1.0.0
      */
     public JobStepDefinitionQueryImpl(KapuaId scopeId) {
         super(scopeId);
+    }
+
+    /**
+     * This enables {@link JobStepDefinitionQuery} to retrieve also not scoped {@link JobStepDefinition}s since they are public.
+     *
+     * @return {@code true}
+     * @since 2.0.0
+     */
+    @Override
+    public boolean getNotScopedEntities() {
+        return true;
     }
 }

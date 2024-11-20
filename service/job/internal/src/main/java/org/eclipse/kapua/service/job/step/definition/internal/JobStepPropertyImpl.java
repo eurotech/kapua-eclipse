@@ -32,7 +32,7 @@ public class JobStepPropertyImpl implements JobStepProperty {
     private String propertyType;
 
     @Basic
-    @Column(name = "property_value", nullable = false, updatable = false)
+    @Column(name = "property_value", nullable = false, updatable = true)
     @Convert(converter = SecretAttributeConverter.class)
     private String propertyValue;
 
@@ -82,6 +82,7 @@ public class JobStepPropertyImpl implements JobStepProperty {
         setMaxLength(jobStepProperty.getMaxLength());
         setMinValue(jobStepProperty.getMinValue());
         setMaxValue(jobStepProperty.getMaxValue());
+        setValidationRegex(jobStepProperty.getValidationRegex());
     }
 
     public JobStepPropertyImpl(String name, String propertyType, String propertyValue, String propertyExampleValue) {

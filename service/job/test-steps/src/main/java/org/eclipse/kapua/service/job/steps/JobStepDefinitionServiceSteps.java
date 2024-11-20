@@ -285,10 +285,14 @@ public class JobStepDefinitionServiceSteps extends JobServiceTestBase {
         Assert.assertEquals("The step definition has a wrong step type!", stepDefinitionCreator.getStepType(), stepDefinition.getStepType());
         Assert.assertNotNull("The step definition has no properties!", stepDefinition.getStepProperties());
         Assert.assertEquals("The step definition has a wrong number of properties!", stepDefinitionCreator.getStepProperties().size(), stepDefinition.getStepProperties().size());
-        for (int i = 0; i < stepDefinitionCreator.getStepProperties().size(); i++) {
-            Assert.assertEquals(stepDefinitionCreator.getStepProperties().get(i).getName(), stepDefinition.getStepProperties().get(i).getName());
-            Assert.assertEquals(stepDefinitionCreator.getStepProperties().get(i).getPropertyType(), stepDefinition.getStepProperties().get(i).getPropertyType());
-            Assert.assertEquals(stepDefinitionCreator.getStepProperties().get(i).getPropertyValue(), stepDefinition.getStepProperties().get(i).getPropertyValue());
+
+        for (JobStepProperty jobStepPropertyCreator : stepDefinitionCreator.getStepProperties()) {
+            JobStepProperty jobStepPropertyCreated = stepDefinition.getStepProperty(jobStepPropertyCreator.getName());
+
+            Assert.assertNotNull("JobStepProperty not present: " + jobStepPropertyCreator.getName(), jobStepPropertyCreated);
+            Assert.assertEquals(jobStepPropertyCreator.getName(), jobStepPropertyCreated.getName());
+            Assert.assertEquals(jobStepPropertyCreator.getPropertyType(), jobStepPropertyCreated.getPropertyType());
+            Assert.assertEquals(jobStepPropertyCreator.getPropertyValue(), jobStepPropertyCreated.getPropertyValue());
         }
     }
 

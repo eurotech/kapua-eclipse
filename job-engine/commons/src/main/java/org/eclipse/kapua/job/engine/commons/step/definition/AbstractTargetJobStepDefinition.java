@@ -16,10 +16,7 @@ import org.eclipse.kapua.commons.model.AbstractKapuaNamedEntity;
 import org.eclipse.kapua.job.engine.commons.operation.DefaultTargetReader;
 import org.eclipse.kapua.job.engine.commons.operation.DefaultTargetWriter;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
-import org.eclipse.kapua.service.job.step.definition.JobStepProperty;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
-
-import java.util.List;
 
 public abstract class AbstractTargetJobStepDefinition extends AbstractKapuaNamedEntity implements JobStepDefinition {
 
@@ -54,10 +51,6 @@ public abstract class AbstractTargetJobStepDefinition extends AbstractKapuaNamed
 
     @Override
     public void setWriterName(String writesName) {
-    }
-
-    @Override
-    public void setStepProperties(List<JobStepProperty> jobStepProperties) {
     }
 
 }

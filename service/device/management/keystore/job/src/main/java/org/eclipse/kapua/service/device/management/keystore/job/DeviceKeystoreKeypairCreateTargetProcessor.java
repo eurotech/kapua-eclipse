@@ -19,7 +19,7 @@ import org.eclipse.kapua.job.engine.commons.wrappers.JobTargetWrapper;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.device.management.keystore.DeviceKeystoreManagementFactory;
 import org.eclipse.kapua.service.device.management.keystore.DeviceKeystoreManagementService;
-import org.eclipse.kapua.service.device.management.keystore.job.definition.DeviceKeypairCreatePropertyKeys;
+import org.eclipse.kapua.service.device.management.keystore.job.definition.DeviceKeystoreKeypairCreatePropertyKeys;
 import org.eclipse.kapua.service.device.management.keystore.model.DeviceKeystoreCertificate;
 import org.eclipse.kapua.service.device.management.keystore.model.DeviceKeystoreKeypair;
 import org.eclipse.kapua.service.job.operation.TargetProcessor;
@@ -53,13 +53,13 @@ public class DeviceKeystoreKeypairCreateTargetProcessor extends AbstractDeviceTa
     @Override
     public void processTarget(JobTarget jobTarget) throws KapuaException {
 
-        String keystoreId = stepContextWrapper.getStepProperty(DeviceKeypairCreatePropertyKeys.KEYSTORE_ID, String.class);
-        String alias = stepContextWrapper.getStepProperty(DeviceKeypairCreatePropertyKeys.ALIAS, String.class);
-        Integer size = stepContextWrapper.getStepProperty(DeviceKeypairCreatePropertyKeys.SIZE, Integer.class);
-        String algorithm = stepContextWrapper.getStepProperty(DeviceKeypairCreatePropertyKeys.ALGORITHM, String.class);
-        String signatureAlgorithm = stepContextWrapper.getStepProperty(DeviceKeypairCreatePropertyKeys.SIGNATURE_ALGORITHM, String.class);
-        String attributes = stepContextWrapper.getStepProperty(DeviceKeypairCreatePropertyKeys.ATTRIBUTES, String.class);
-        Long timeout = stepContextWrapper.getStepProperty(DeviceKeypairCreatePropertyKeys.TIMEOUT, Long.class);
+        String keystoreId = stepContextWrapper.getStepProperty(DeviceKeystoreKeypairCreatePropertyKeys.KEYSTORE_ID, String.class);
+        String alias = stepContextWrapper.getStepProperty(DeviceKeystoreKeypairCreatePropertyKeys.ALIAS, String.class);
+        Integer size = stepContextWrapper.getStepProperty(DeviceKeystoreKeypairCreatePropertyKeys.SIZE, Integer.class);
+        String algorithm = stepContextWrapper.getStepProperty(DeviceKeystoreKeypairCreatePropertyKeys.ALGORITHM, String.class);
+        String signatureAlgorithm = stepContextWrapper.getStepProperty(DeviceKeystoreKeypairCreatePropertyKeys.SIGNATURE_ALGORITHM, String.class);
+        String attributes = stepContextWrapper.getStepProperty(DeviceKeystoreKeypairCreatePropertyKeys.ATTRIBUTES, String.class);
+        Long timeout = stepContextWrapper.getStepProperty(DeviceKeystoreKeypairCreatePropertyKeys.TIMEOUT, Long.class);
 
         DeviceKeystoreKeypair deviceKeystoreKeypair = deviceKeystoreManagementFactory.newDeviceKeystoreKeypair();
 

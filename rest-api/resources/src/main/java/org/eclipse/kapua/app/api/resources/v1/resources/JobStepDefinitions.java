@@ -18,7 +18,6 @@ import org.eclipse.kapua.app.api.core.model.CountResult;
 import org.eclipse.kapua.app.api.core.model.EntityId;
 import org.eclipse.kapua.app.api.core.model.ScopeId;
 import org.eclipse.kapua.app.api.core.resources.AbstractKapuaResource;
-import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.model.query.SortOrder;
 import org.eclipse.kapua.service.KapuaService;
 import org.eclipse.kapua.service.job.Job;
@@ -71,7 +70,7 @@ public class JobStepDefinitions extends AbstractKapuaResource {
             @QueryParam("offset") @DefaultValue("0") int offset,
             @QueryParam("limit") @DefaultValue("50") int limit) throws KapuaException {
 
-        JobStepDefinitionQuery query = jobStepDefinitionFactory.newQuery(KapuaId.ANY);
+        JobStepDefinitionQuery query = jobStepDefinitionFactory.newQuery(scopeId);
 
         if (!Strings.isNullOrEmpty(sortParam)) {
             query.setSortCriteria(query.fieldSortCriteria(sortParam, sortDir));
@@ -99,7 +98,7 @@ public class JobStepDefinitions extends AbstractKapuaResource {
     public JobStepDefinitionListResult query(
             @PathParam("scopeId") ScopeId scopeId,
             JobStepDefinitionQuery query) throws KapuaException {
-        query.setScopeId(KapuaId.ANY);
+        query.setScopeId(scopeId);
 
         return jobStepDefinitionService.query(query);
     }
@@ -120,7 +119,7 @@ public class JobStepDefinitions extends AbstractKapuaResource {
     public CountResult count(
             @PathParam("scopeId") ScopeId scopeId,
             JobStepQuery query) throws KapuaException {
-        query.setScopeId(KapuaId.ANY);
+        query.setScopeId(scopeId);
 
         return new CountResult(jobStepDefinitionService.count(query));
     }
@@ -140,7 +139,7 @@ public class JobStepDefinitions extends AbstractKapuaResource {
     public JobStepDefinition find(
             @PathParam("scopeId") ScopeId scopeId,
             @PathParam("stepDefinitionId") EntityId stepDefinitionId) throws KapuaException {
-        return jobStepDefinitionService.find(KapuaId.ANY, stepDefinitionId);
+        return jobStepDefinitionService.find(scopeId, stepDefinitionId);
     }
 
 }

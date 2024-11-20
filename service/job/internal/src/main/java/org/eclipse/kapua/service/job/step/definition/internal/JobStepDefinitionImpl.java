@@ -12,24 +12,30 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.job.step.definition.internal;
 
-import org.eclipse.kapua.KapuaException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.eclipse.kapua.commons.model.AbstractKapuaEntity;
 import org.eclipse.kapua.commons.model.AbstractKapuaNamedEntity;
+import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 import org.eclipse.kapua.service.job.step.definition.JobStepProperty;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
-
-import javax.persistence.Basic;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link JobStepDefinition} implementation.
@@ -41,6 +47,18 @@ import java.util.List;
 public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements JobStepDefinition {
 
     private static final long serialVersionUID = 3747451706859757246L;
+
+    /**
+     * This overrides the {@link AbstractKapuaEntity#scopeId} JPA mapping which prevents the field to be updated. The {@link JobStepDefinitionAligner} may require to change the
+     * {@link JobStepDefinition#getScopeId()}.
+     *
+     * @since 2.0.0
+     */
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "eid", column = @Column(name = "scope_id", nullable = true, updatable = true))
+    })
+    protected KapuaEid scopeId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "job_step_type", nullable = false, updatable = false)
@@ -58,9 +76,8 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
     @Column(name = "writer_name", nullable = false, updatable = false)
     private String writerName;
 
-    @ElementCollection
-    @CollectionTable(name = "job_job_step_definition_properties", joinColumns = @JoinColumn(name = "step_definition_id", referencedColumnName = "id"))
-    private List<JobStepPropertyImpl> jobStepProperties;
+    @OneToMany(mappedBy = "jobStepDefinition", cascade = CascadeType.PERSIST)
+    private List<JobStepDefinitionPropertyImpl> jobStepProperties;
 
     /**
      * Constructor.
@@ -73,7 +90,8 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
     /**
      * Constructor.
      *
-     * @param scopeId The scope {@link KapuaId} to set into the {@link JobStepDefinition}
+     * @param scopeId
+     *         The {@link JobStepDefinition#getScopeId()}
      * @since 1.0.0
      */
     public JobStepDefinitionImpl(KapuaId scopeId) {
@@ -84,10 +102,10 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
      * Clone constructor.
      *
      * @param jobStepDefinition
-     * @throws KapuaException
+     *         The {@link JobStepDefinition} to clone.
      * @since 1.1.0
      */
-    public JobStepDefinitionImpl(JobStepDefinition jobStepDefinition) throws KapuaException {
+    public JobStepDefinitionImpl(JobStepDefinition jobStepDefinition) {
         super(jobStepDefinition);
 
         setStepType(jobStepDefinition.getStepType());
@@ -95,6 +113,31 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
         setProcessorName(jobStepDefinition.getProcessorName());
         setWriterName(jobStepDefinition.getWriterName());
         setStepProperties(jobStepDefinition.getStepProperties());
+    }
+
+    /**
+     * Gets the {@link JobStepDefinitionImpl#scopeId} instead of the {@link AbstractKapuaEntity#scopeId}.
+     *
+     * @return The {@link JobStepDefinitionImpl#scopeId}
+     * @see #scopeId
+     * @since 2.0.0
+     */
+    @Override
+    public KapuaEid getScopeId() {
+        return scopeId;
+    }
+
+    /**
+     * Sets the {@link JobStepDefinitionImpl#scopeId} instead of the {@link AbstractKapuaEntity#scopeId}.
+     *
+     * @param scopeId
+     *         The {@link JobStepDefinitionImpl#scopeId}
+     * @see #scopeId
+     * @since 2.0.0
+     */
+    @Override
+    public void setScopeId(KapuaId scopeId) {
+        this.scopeId = KapuaEid.parseKapuaId(scopeId);
     }
 
     @Override
@@ -138,22 +181,57 @@ public class JobStepDefinitionImpl extends AbstractKapuaNamedEntity implements J
         this.writerName = writesName;
     }
 
-    @Override
-    public List<JobStepPropertyImpl> getStepProperties() {
-        if (jobStepProperties == null) {
-            jobStepProperties = new ArrayList<>();
-        }
-
+    public List<JobStepDefinitionPropertyImpl> getJobStepProperties() {
         return jobStepProperties;
     }
 
     @Override
+    public List<JobStepProperty> getStepProperties() {
+        if (jobStepProperties == null) {
+            jobStepProperties = new ArrayList<>();
+        }
+
+        return jobStepProperties.stream()
+                .map(JobStepDefinitionPropertyImpl::getJobStepProperty)
+                .collect(Collectors.toList());
+    }
+
+    public List<JobStepDefinitionPropertyImpl> getStepPropertiesEntitites() {
+        return jobStepProperties;
+    }
+
     public void setStepProperties(List<JobStepProperty> jobStepProperties) {
         this.jobStepProperties = new ArrayList<>();
 
-        for (JobStepProperty sp : jobStepProperties) {
-            this.jobStepProperties.add(JobStepPropertyImpl.parse(sp));
+        for (JobStepProperty jobStepProperty : jobStepProperties) {
+            this.jobStepProperties.add(JobStepDefinitionPropertyImpl.parse(this, jobStepProperty));
         }
-
     }
+
+    @Override
+    public JobStepProperty getStepProperty(String name) {
+        return Optional.ofNullable(getStepProperties())
+                .flatMap(jobStepProperties -> jobStepProperties
+                        .stream()
+                        .filter(jobStepProperty -> jobStepProperty.getName().equals(name))
+                        .findAny())
+                .orElse(null);
+    }
+
+    /**
+     * Parses the given {@link JobStepDefinition} into a {@link JobStepDefinitionImpl}.
+     *
+     * @param jobStepDefinition
+     *         The {@link JobStepDefinition} to parse.
+     * @return The parsed {@link JobStepDefinitionImpl}.
+     * @since 2.0.0
+     */
+    public static JobStepDefinitionImpl parse(JobStepDefinition jobStepDefinition) {
+        return jobStepDefinition != null ?
+                (jobStepDefinition instanceof JobStepDefinitionImpl ?
+                        (JobStepDefinitionImpl) jobStepDefinition :
+                        new JobStepDefinitionImpl(jobStepDefinition))
+                : null;
+    }
+
 }

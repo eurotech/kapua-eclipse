@@ -15,13 +15,14 @@ package org.eclipse.kapua.service.job.execution.internal;
 import com.google.inject.Provides;
 import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.commons.jpa.KapuaJpaRepositoryConfiguration;
-import org.eclipse.kapua.commons.jpa.KapuaJpaTxManagerFactory;
 import org.eclipse.kapua.service.authorization.AuthorizationService;
 import org.eclipse.kapua.service.authorization.permission.PermissionFactory;
 import org.eclipse.kapua.service.job.execution.JobExecutionFactory;
 import org.eclipse.kapua.service.job.execution.JobExecutionRepository;
 import org.eclipse.kapua.service.job.execution.JobExecutionService;
+import org.eclipse.kapua.storage.TxManager;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 public class JobExecutionModule extends AbstractKapuaModule {
@@ -35,12 +36,12 @@ public class JobExecutionModule extends AbstractKapuaModule {
     JobExecutionService jobExecutionService(
             AuthorizationService authorizationService,
             PermissionFactory permissionFactory,
-            JobExecutionRepository jobExecutionRepository,
-            KapuaJpaTxManagerFactory jpaTxManagerFactory) {
+            @Named("jobTxManager") TxManager txManager,
+            JobExecutionRepository jobExecutionRepository) {
         return new JobExecutionServiceImpl(
                 authorizationService,
                 permissionFactory,
-                jpaTxManagerFactory.create("kapua-job"),
+                txManager,
                 jobExecutionRepository);
     }
 

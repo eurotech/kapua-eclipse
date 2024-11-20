@@ -15,7 +15,7 @@ package org.eclipse.kapua.service.device.management.keystore.job.definition;
 import org.eclipse.kapua.service.job.step.definition.JobPropertyKey;
 
 
-public class DeviceKeypairCreatePropertyKeys implements JobPropertyKey {
+public class DeviceKeystoreKeypairCreatePropertyKeys implements JobPropertyKey {
 
     /**
      * @since 1.5.0
@@ -57,6 +57,6 @@ public class DeviceKeypairCreatePropertyKeys implements JobPropertyKey {
      *
      * @since 1.5.0
      */
-    private DeviceKeypairCreatePropertyKeys() {
+    private DeviceKeystoreKeypairCreatePropertyKeys() {
     }
 }
