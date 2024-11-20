@@ -15,6 +15,8 @@ package org.eclipse.kapua.service.job.step.definition;
 public class JobStepPropertyRecord implements JobStepProperty {
 
     private String name;
+
+    private String description;
     private String propertyType;
     private String propertyValue;
     private String exampleValue;
@@ -50,6 +52,51 @@ public class JobStepPropertyRecord implements JobStepProperty {
         this.validationRegex = validationRegex;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param name The {@link JobStepProperty#getName()}
+     * @param description The {@link JobStepProperty#getDescription()}
+     * @param propertyType The {@link JobStepProperty#getPropertyType()}
+     * @param propertyValue The {@link JobStepProperty#getPropertyValue()}
+     * @param exampleValue The {@link JobStepProperty#getExampleValue()}
+     * @param required The {@link JobStepProperty#getRequired()}
+     * @param secret The {@link JobStepProperty#getSecret()}
+     * @param minLength The {@link JobStepProperty#getMinLength()}
+     * @param maxLength The {@link JobStepProperty#getMaxLength()}
+     * @param minValue The {@link JobStepProperty#getMinValue()}
+     * @param maxValue The {@link JobStepProperty#getMaxValue()}
+     * @param validationRegex The {@link JobStepProperty#getValidationRegex()}
+     *
+     * @since 6.1.0
+     */
+    public JobStepPropertyRecord(String name,
+            String description,
+            String propertyType,
+            String propertyValue,
+            String exampleValue,
+            Boolean required,
+            Boolean secret,
+            Integer minLength,
+            Integer maxLength,
+            String minValue,
+            String maxValue,
+            String validationRegex) {
+        this(name,
+                propertyType,
+                propertyValue,
+                exampleValue,
+                required,
+                secret,
+                minLength,
+                maxLength,
+                minValue,
+                maxValue,
+                validationRegex);
+
+        this.description = description;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -58,6 +105,16 @@ public class JobStepPropertyRecord implements JobStepProperty {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

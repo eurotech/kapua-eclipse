@@ -28,6 +28,10 @@ public class JobStepPropertyImpl implements JobStepProperty {
     private String name;
 
     @Basic
+    @Column(name = "description", nullable = false, updatable = true)
+    private String description;
+
+    @Basic
     @Column(name = "property_type", nullable = false, updatable = false)
     private String propertyType;
 
@@ -73,6 +77,7 @@ public class JobStepPropertyImpl implements JobStepProperty {
 
     private JobStepPropertyImpl(JobStepProperty jobStepProperty) {
         setName(jobStepProperty.getName());
+        setDescription(jobStepProperty.getDescription());
         setPropertyType(jobStepProperty.getPropertyType());
         setPropertyValue(jobStepProperty.getPropertyValue());
         setRequired(jobStepProperty.getRequired());
@@ -100,6 +105,16 @@ public class JobStepPropertyImpl implements JobStepProperty {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
