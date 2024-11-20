@@ -13,7 +13,6 @@
 package org.eclipse.kapua.app.api.core.settings;
 
 import org.eclipse.kapua.commons.setting.SettingKey;
-import org.eclipse.kapua.service.job.step.definition.JobStepDefinition;
 
 /**
  * REST API {@link SettingKey}s
@@ -38,14 +37,7 @@ public enum KapuaApiCoreSettingKeys implements SettingKey {
      *
      * @since 2.0.0
      */
-    API_DEVICE_MANAGEMENT_PACKAGE_RESPONSE_LEGACY_MODE("api.device.management.package.response.legacy.mode"),
-
-    /**
-     * Regex to exclude {@link JobStepDefinition}s when returning results from GET request
-     *
-     * @since 2.0.0
-     */
-    JOB_STEP_DEFINITION_EXCLUDE_REGEX("api.job.step.definition.exclude.regex");
+    API_DEVICE_MANAGEMENT_PACKAGE_RESPONSE_LEGACY_MODE("api.device.management.package.response.legacy.mode");
 
     private final String key;
 

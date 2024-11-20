@@ -18,9 +18,6 @@ import org.eclipse.kapua.app.api.core.model.CountResult;
 import org.eclipse.kapua.app.api.core.model.EntityId;
 import org.eclipse.kapua.app.api.core.model.ScopeId;
 import org.eclipse.kapua.app.api.core.resources.AbstractKapuaResource;
-import org.eclipse.kapua.app.api.core.settings.KapuaApiCoreSetting;
-import org.eclipse.kapua.app.api.core.settings.KapuaApiCoreSettingKeys;
-import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.model.query.SortOrder;
 import org.eclipse.kapua.service.KapuaService;
@@ -52,8 +49,6 @@ public class JobStepDefinitions extends AbstractKapuaResource {
     public JobStepDefinitionService jobStepDefinitionService;
     @Inject
     public JobStepDefinitionFactory jobStepDefinitionFactory;
-
-    private static final String JOB_STEP_DEFINITION_EXCLUDE_REGEX = KapuaLocator.getInstance().getComponent(KapuaApiCoreSetting .class).getString(KapuaApiCoreSettingKeys.JOB_STEP_DEFINITION_EXCLUDE_REGEX);
 
     /**
      * Gets the {@link JobStep} list for a given {@link Job}.
@@ -106,14 +101,7 @@ public class JobStepDefinitions extends AbstractKapuaResource {
             JobStepDefinitionQuery query) throws KapuaException {
         query.setScopeId(KapuaId.ANY);
 
-        JobStepDefinitionListResult jobStepDefinitions = jobStepDefinitionService.query(query);
-
-        if (!Strings.isNullOrEmpty(JOB_STEP_DEFINITION_EXCLUDE_REGEX)) {
-            jobStepDefinitions.getItems()
-                    .removeIf(jobStepDefinition -> jobStepDefinition.getName().matches(JOB_STEP_DEFINITION_EXCLUDE_REGEX));
-        }
-
-        return jobStepDefinitions;
+        return jobStepDefinitionService.query(query);
     }
 
     /**
