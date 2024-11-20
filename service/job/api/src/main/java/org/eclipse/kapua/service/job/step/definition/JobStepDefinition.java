@@ -12,14 +12,13 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.job.step.definition;
 
-import java.util.List;
+import org.eclipse.kapua.model.KapuaNamedEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.eclipse.kapua.model.KapuaNamedEntity;
+import java.util.List;
 
 /**
  * {@link JobStepDefinition} {@link org.eclipse.kapua.model.KapuaEntity} definition.
@@ -54,8 +53,9 @@ public interface JobStepDefinition extends KapuaNamedEntity {
 
     void setWriterName(String writesName);
 
-    <P extends JobStepProperty> List<P> getStepProperties();
+    List<JobStepProperty> getStepProperties();
 
     JobStepProperty getStepProperty(String name);
 
+    void setStepProperties(List<JobStepProperty> jobStepProperties);
 }
