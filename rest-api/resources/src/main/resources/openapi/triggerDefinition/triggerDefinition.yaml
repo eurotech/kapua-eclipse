@@ -28,6 +28,9 @@ components:
       properties:
         name:
           type: string
+        description:
+          type: string
+          description: The description that may contain textual information for the user on how to input this property
         propertyType:
           type: string
         propertyValue:
@@ -71,10 +74,13 @@ components:
         triggerProperties:
           - name: cronExpression
             propertyType: java.lang.String
+            description: The cron expression that defines the schedule of executions. Check documentation for CRON syntax.
           - name: jobId
             propertyType: org.eclipse.kapua.model.id.KapuaId
+            description: Identifier of the job this schedule will be applied to
           - name: scopeId
             propertyType: org.eclipse.kapua.model.id.KapuaId
+            description: Identifier of the scope of the job this schedule will be applied to
         triggerType: TIMER
     triggerDefinitionListResult:
       allOf:
@@ -104,10 +110,13 @@ components:
                 triggerProperties:
                   - name: cronExpression
                     propertyType: java.lang.String
+                    description: The cron expression that defines the schedule of executions. Check documentation for CRON syntax.
                   - name: jobId
                     propertyType: org.eclipse.kapua.model.id.KapuaId
+                    description: Identifier of the job this schedule will be applied to
                   - name: scopeId
                     propertyType: org.eclipse.kapua.model.id.KapuaId
+                    description: Identifier of the scope of the job this schedule will be applied to
                 triggerType: TIMER
               - type: triggerDefinition
                 id: Ag
@@ -123,10 +132,13 @@ components:
                 triggerProperties:
                   - name: interval
                     propertyType: java.lang.Integer
+                    description: Fixed time between job executions in seconds
                   - name: jobId
                     propertyType: org.eclipse.kapua.model.id.KapuaId
+                    description: Identifier of the job this schedule will be applied to
                   - name: scopeId
                     propertyType: org.eclipse.kapua.model.id.KapuaId
+                    description: Identifier of the scope of the job this schedule will be applied to
                 triggerType: TIMER
               - type: triggerDefinition
                 id: Aw
@@ -140,10 +152,10 @@ components:
                 description: Starts the job when the device target connects
                 processorName: '???'
                 triggerProperties:
-                  - name: delay
-                    propertyType: java.lang.Integer
                   - name: jobId
                     propertyType: org.eclipse.kapua.model.id.KapuaId
+                    description: Identifier of the job this schedule will be applied to
                   - name: scopeId
                     propertyType: org.eclipse.kapua.model.id.KapuaId
+                    description: Identifier of the scope of the job this schedule will be applied to
                 triggerType: EVENT

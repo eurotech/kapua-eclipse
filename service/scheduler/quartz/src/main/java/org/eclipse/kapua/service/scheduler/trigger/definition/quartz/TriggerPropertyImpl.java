@@ -32,6 +32,10 @@ public class TriggerPropertyImpl implements TriggerProperty {
     private String name;
 
     @Basic
+    @Column(name = "description", nullable = false, updatable = true)
+    private String description;
+
+    @Basic
     @Column(name = "property_type", nullable = false, updatable = false)
     private String propertyType;
 
@@ -55,6 +59,7 @@ public class TriggerPropertyImpl implements TriggerProperty {
      */
     private TriggerPropertyImpl(TriggerProperty triggerProperty) {
         setName(triggerProperty.getName());
+        setDescription(triggerProperty.getDescription());
         setPropertyType(triggerProperty.getPropertyType());
         setPropertyValue(triggerProperty.getPropertyValue());
     }
@@ -81,6 +86,16 @@ public class TriggerPropertyImpl implements TriggerProperty {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

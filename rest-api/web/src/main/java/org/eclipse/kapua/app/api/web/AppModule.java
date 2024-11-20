@@ -19,6 +19,7 @@ import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.commons.liquibase.DatabaseCheckUpdate;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProvider;
 import org.eclipse.kapua.commons.util.xml.XmlUtil;
+import org.eclipse.kapua.service.scheduler.trigger.definition.quartz.TriggerDefinitionAligner;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -28,6 +29,8 @@ public class AppModule extends AbstractKapuaModule {
     protected void configureModule() {
         bind(DatabaseCheckUpdate.class).asEagerSingleton();
         bind(KapuaApiCoreSetting.class).in(Singleton.class);
+
+        bind(TriggerDefinitionAligner.class).in(Singleton.class);
     }
 
     @Provides

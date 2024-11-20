@@ -125,7 +125,7 @@ public class JobScheduleAddDialog extends EntityAddEditDialog {
         retryInterval = new KapuaNumberField();
         cronExpression = new KapuaTextField<String>();
 
-        DialogUtils.resizeDialog(this, 500, 350);
+        DialogUtils.resizeDialog(this, 500, 370);
     }
 
     @Override
@@ -273,6 +273,19 @@ public class JobScheduleAddDialog extends EntityAddEditDialog {
             retryInterval.setMaxLength(9);
             retryInterval.setToolTip(JOB_MSGS.dialogAddScheduleRetryIntervalTooltip());
             triggerPropertiesPanel.add(retryInterval);
+
+            GwtTriggerProperty triggerProperty = gwtTriggerDefinition.getTriggerProperty("interval");
+
+            if (triggerProperty != null && triggerProperty.getDescription() != null) {
+                LabelField fieldTooltip = new LabelField();
+                fieldTooltip.setStyleAttribute("margin-top", "-5px");
+                fieldTooltip.setStyleAttribute("color", "gray");
+                fieldTooltip.setStyleAttribute("font-size", "10px");
+                fieldTooltip.setValue(triggerProperty.getDescription());
+
+                triggerPropertiesPanel.add(fieldTooltip);
+            }
+
         } else if (TRIGGER_DEFINITION_NAME_CRON.equals(gwtTriggerDefinition.getTriggerDefinitionName())) {
             cronExpression.clearInvalid();
             cronExpression.setFieldLabel("* " + JOB_MSGS.dialogAddScheduleCronScheduleLabel());
@@ -287,6 +300,18 @@ public class JobScheduleAddDialog extends EntityAddEditDialog {
             cronExpressionLabel.setStyleAttribute("color", "gray");
             cronExpressionLabel.setStyleAttribute("font-size", "10px");
             triggerPropertiesPanel.add(cronExpressionLabel);
+
+            GwtTriggerProperty triggerProperty = gwtTriggerDefinition.getTriggerProperty("cronExpression");
+
+            if (triggerProperty != null && triggerProperty.getDescription() != null) {
+                LabelField fieldTooltip = new LabelField();
+                fieldTooltip.setStyleAttribute("margin-top", "-5px");
+                fieldTooltip.setStyleAttribute("color", "gray");
+                fieldTooltip.setStyleAttribute("font-size", "10px");
+                fieldTooltip.setValue(triggerProperty.getDescription());
+
+                triggerPropertiesPanel.add(fieldTooltip);
+            }
 
             cronExpression.addListener(Events.Blur, new Listener<BaseEvent>() {
                 @Override

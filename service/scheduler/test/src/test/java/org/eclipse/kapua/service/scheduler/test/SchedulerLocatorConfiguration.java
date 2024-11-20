@@ -66,6 +66,7 @@ import org.eclipse.kapua.service.scheduler.trigger.definition.quartz.TriggerDefi
 import org.eclipse.kapua.service.scheduler.trigger.quartz.TriggerFactoryImpl;
 import org.eclipse.kapua.service.scheduler.trigger.quartz.TriggerImplJpaRepository;
 import org.eclipse.kapua.service.scheduler.trigger.quartz.TriggerServiceImpl;
+import org.eclipse.kapua.storage.TxManager;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -122,13 +123,14 @@ public class SchedulerLocatorConfiguration {
                 final JobImplJpaRepository jobRepository = new JobImplJpaRepository(jpaRepoConfig);
                 final TriggerImplJpaRepository triggerRepository = new TriggerImplJpaRepository(jpaRepoConfig);
 
+                final TxManager schedulerTxManager = new KapuaJpaTxManagerFactory(maxInsertAttempts).create("kapua-scheduler");
                 final TriggerDefinitionFactoryImpl triggerDefinitionFactory = new TriggerDefinitionFactoryImpl();
                 final TriggerDefinitionImplJpaRepository triggerDefinitionRepository = new TriggerDefinitionImplJpaRepository(jpaRepoConfig);
                 final TriggerFactoryImpl triggerFactory = new TriggerFactoryImpl();
                 final TriggerServiceImpl triggerService = new TriggerServiceImpl(
                         mockedAuthorization,
                         permissionFactory,
-                        new KapuaJpaTxManagerFactory(maxInsertAttempts).create("kapua-scheduler"),
+                        schedulerTxManager,
                         triggerRepository,
                         triggerFactory,
                         triggerDefinitionRepository,
@@ -148,7 +150,7 @@ public class SchedulerLocatorConfiguration {
                 bind(TriggerDefinitionService.class).toInstance(new TriggerDefinitionServiceImpl(
                         mockedAuthorization,
                         permissionFactory,
-                        new KapuaJpaTxManagerFactory(maxInsertAttempts).create("kapua-scheduler"),
+                        schedulerTxManager,
                         triggerDefinitionRepository,
                         triggerDefinitionFactory));
                 bind(TriggerDefinitionFactory.class).toInstance(triggerDefinitionFactory);
