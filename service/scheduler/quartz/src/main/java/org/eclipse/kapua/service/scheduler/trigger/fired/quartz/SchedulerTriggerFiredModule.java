@@ -22,7 +22,9 @@ import org.eclipse.kapua.service.scheduler.trigger.TriggerRepository;
 import org.eclipse.kapua.service.scheduler.trigger.fired.FiredTriggerFactory;
 import org.eclipse.kapua.service.scheduler.trigger.fired.FiredTriggerRepository;
 import org.eclipse.kapua.service.scheduler.trigger.fired.FiredTriggerService;
+import org.eclipse.kapua.storage.TxManager;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 public class SchedulerTriggerFiredModule extends AbstractKapuaModule {
@@ -36,6 +38,7 @@ public class SchedulerTriggerFiredModule extends AbstractKapuaModule {
     FiredTriggerService firedTriggerService(
             AuthorizationService authorizationService,
             PermissionFactory permissionFactory,
+            @Named("schedulerTxManager") TxManager txManager,
             FiredTriggerRepository firedTriggerRepository,
             FiredTriggerFactory firedTriggerFactory,
             TriggerRepository triggerRepository,
@@ -43,7 +46,7 @@ public class SchedulerTriggerFiredModule extends AbstractKapuaModule {
         return new FiredTriggerServiceImpl(
                 authorizationService,
                 permissionFactory,
-                jpaTxManagerFactory.create("kapua-scheduler"),
+                txManager,
                 firedTriggerRepository,
                 firedTriggerFactory,
                 triggerRepository);

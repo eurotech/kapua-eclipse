@@ -164,6 +164,7 @@ public class KapuaGwtJobModelConverter {
         for (TriggerProperty triggerProperty : triggerPropertyList) {
             GwtTriggerProperty gwtTriggerProperty = new GwtTriggerProperty();
             gwtTriggerProperty.setPropertyName(triggerProperty.getName());
+            gwtTriggerProperty.setDescription(triggerProperty.getDescription());
             gwtTriggerProperty.setPropertyType(triggerProperty.getPropertyType());
             gwtTriggerProperty.setPropertyValue(triggerProperty.getPropertyValue());
             gwtTriggerPropertyList.add(gwtTriggerProperty);
