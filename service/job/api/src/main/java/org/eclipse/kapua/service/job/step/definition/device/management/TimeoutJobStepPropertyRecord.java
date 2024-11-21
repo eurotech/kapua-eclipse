@@ -48,7 +48,7 @@ public class TimeoutJobStepPropertyRecord extends JobStepPropertyRecord {
      */
     public TimeoutJobStepPropertyRecord() {
         super("timeout",
-                "The amount of time the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
+                "The amount of time in milliseconds the step waits a response before the operation is considered failed. The time is calculated from when the request is sent to the device",
                 Long.class.getName(),
                 "30000",
                 null,
