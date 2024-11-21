@@ -16,6 +16,7 @@ import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.form.Field;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.eclipse.kapua.app.console.module.api.client.GwtKapuaErrorCode;
@@ -89,16 +90,32 @@ public class JobStepEditDialog extends JobStepAddDialog {
 
                 Map<String, Object> propertiesMap = new HashMap<String, Object>();
                 for (GwtJobStepProperty property : gwtJobStep.getStepProperties()) {
-                    if (property.getPropertyType().equals(Long.class.getName())) {
+
+                    String fieldPropertyType = property.getPropertyType();
+
+                    if (fieldPropertyType.equals(Long.class.getName())) {
                         propertiesMap.put(property.getPropertyName(),
                                 property.getPropertyValue() == null ? null : Long.valueOf(property.getPropertyValue()));
+                    } else if (fieldPropertyType.equals(Integer.class.getName())) {
+                        propertiesMap.put(property.getPropertyName(),
+                                property.getPropertyValue() == null ? null : Integer.valueOf(property.getPropertyValue()));
+                    } else if (fieldPropertyType.equals(Float.class.getName())) {
+                        propertiesMap.put(property.getPropertyName(),
+                                property.getPropertyValue() == null ? null : Float.valueOf(property.getPropertyValue()));
+                    } else if (fieldPropertyType.equals(Double.class.getName())) {
+                        propertiesMap.put(property.getPropertyName(),
+                                property.getPropertyValue() == null ? null : Double.valueOf(property.getPropertyValue()));
+                    } else if (fieldPropertyType.equals(Boolean.class.getName())) {
+                        propertiesMap.put(property.getPropertyName(),
+                                property.getPropertyValue() == null ? null : Boolean.valueOf(property.getPropertyValue()));
                     } else {
                         propertiesMap.put(property.getPropertyName(), property.getPropertyValue());
                     }
                 }
 
                 for (Component component : jobStepPropertiesPanel.getItems()) {
-                    if (component instanceof Field) {
+                    if (component instanceof Field &&
+                            !(component instanceof LabelField)) { // Exclude LabelFields that contains the description of the JobStepDefinition.jobStepProperty
                         Field<Object> field = (Field<Object>) component;
                         field.setValue(propertiesMap.get(field.getData(PROPERTY_NAME)));
                     }

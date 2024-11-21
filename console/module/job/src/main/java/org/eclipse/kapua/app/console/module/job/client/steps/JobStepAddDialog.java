@@ -96,6 +96,7 @@ public class JobStepAddDialog extends EntityAddEditDialog {
 
     protected static final String PROPERTY_NAME = "propertyName";
     protected static final String PROPERTY_TYPE = "propertyType";
+    protected static final String PROPERTY_EXAMPLE_VALUE = "propertyExampleValue";
 
 
     public JobStepAddDialog(GwtSession currentSession, String jobId) {
@@ -116,11 +117,11 @@ public class JobStepAddDialog extends EntityAddEditDialog {
         jobStepPropertiesPanel = new FormPanel(FORM_LABEL_WIDTH);
         propertiesButtonPanel = new HorizontalPanel();
 
-        DialogUtils.resizeDialog(this, 600, 600);
+        DialogUtils.resizeDialog(this, 600, 630);
     }
 
     protected String getExampleButtonText() {
-        return MSGS.exampleButton();
+        return "Fill with example values";
     }
 
     @Override
@@ -291,8 +292,9 @@ public class JobStepAddDialog extends EntityAddEditDialog {
                 applyFieldLimits(property, textField);
 
                 textField.setEmptyText(KapuaSafeHtmlUtils.htmlUnescape(property.getPropertyValue()));
-                textField.setData(PROPERTY_TYPE, property.getPropertyType());
                 textField.setData(PROPERTY_NAME, property.getPropertyName());
+                textField.setData(PROPERTY_TYPE, property.getPropertyType());
+                textField.setData(PROPERTY_EXAMPLE_VALUE, property.getExampleValue());
 
                 jobStepPropertiesPanel.add(textField);
             } else if (
@@ -305,9 +307,10 @@ public class JobStepAddDialog extends EntityAddEditDialog {
                 applyFieldLimits(property, numberField);
 
                 numberField.setEmptyText(KapuaSafeHtmlUtils.htmlUnescape(property.getPropertyValue()));
-                numberField.setData(PROPERTY_TYPE, property.getPropertyType());
-                numberField.setData(PROPERTY_NAME, property.getPropertyName());
                 numberField.setToolTip(JOB_MSGS.dialogAddStepTimeoutTooltip());
+                numberField.setData(PROPERTY_NAME, property.getPropertyName());
+                numberField.setData(PROPERTY_TYPE, property.getPropertyType());
+                numberField.setData(PROPERTY_EXAMPLE_VALUE, property.getExampleValue());
 
                 if (propertyType.equals(Long.class.getName())) {
                     numberField.setMinValue(property.getMinValue() != null ? Long.parseLong(property.getMinValue()) : -MAX_SAFE_INTEGER);
@@ -322,6 +325,7 @@ public class JobStepAddDialog extends EntityAddEditDialog {
                     numberField.setMinValue(property.getMinValue() != null ? Double.parseDouble(property.getMinValue()) : Double.MIN_VALUE);
                     numberField.setMaxValue(property.getMaxValue() != null ? Double.parseDouble(property.getMaxValue()) : Double.MAX_VALUE);
                 }
+
                 jobStepPropertiesPanel.add(numberField);
             } else if (propertyType.equals(Boolean.class.getName())) {
                 String fieldLabel = camelCaseToNormalCase(property.getPropertyName());
@@ -329,16 +333,20 @@ public class JobStepAddDialog extends EntityAddEditDialog {
                 CheckBox checkBox = new CheckBox();
                 checkBox.setFieldLabel(property.getRequired() ? "* " + fieldLabel : fieldLabel);
                 checkBox.setValue(Boolean.valueOf(property.getPropertyValue()));
-                checkBox.setData(PROPERTY_TYPE, property.getPropertyType());
                 checkBox.setData(PROPERTY_NAME, property.getPropertyName());
+                checkBox.setData(PROPERTY_TYPE, property.getPropertyType());
+                checkBox.setData(PROPERTY_EXAMPLE_VALUE, property.getExampleValue());
+
                 jobStepPropertiesPanel.add(checkBox);
             } else {
                 final KapuaTextArea textArea = new KapuaTextArea();
 
                 applyFieldLimits(property, textArea);
 
-                textArea.setData(PROPERTY_TYPE, property.getPropertyType());
                 textArea.setData(PROPERTY_NAME, property.getPropertyName());
+                textArea.setData(PROPERTY_TYPE, property.getPropertyType());
+                textArea.setData(PROPERTY_EXAMPLE_VALUE, KapuaSafeHtmlUtils.htmlUnescape(property.getExampleValue()));
+
                 jobStepPropertiesPanel.add(textArea);
 
                 JOB_STEP_SERVICE.getJobStepPropertyLengthMax(new AsyncCallback<Integer>() {
@@ -354,22 +362,6 @@ public class JobStepAddDialog extends EntityAddEditDialog {
                         textArea.setMaxLength(jobStepPropertyMaxLength);
                     }
                 });
-
-                if (property.getExampleValue() != null) {
-                    final String exampleValue = KapuaSafeHtmlUtils.htmlUnescape(property.getExampleValue());
-                    exampleButton = new KapuaButton(getExampleButtonText(), new KapuaIcon(IconSet.EDIT), new SelectionListener<ButtonEvent>() {
-
-                        @Override
-                        public void componentSelected(ButtonEvent ce) {
-                            textArea.setValue(exampleValue);
-                        }
-
-                    });
-                    exampleButton.setStyleAttribute("padding-left", (FORM_LABEL_WIDTH + 5) + "px");
-                    propertiesButtonPanel.add(exampleButton);
-                    propertiesButtonPanel.setStyleAttribute("margin-bottom", "4px");
-                }
-                jobStepPropertiesPanel.add(propertiesButtonPanel);
             }
 
             if (property.getDescription() != null) {
@@ -384,6 +376,51 @@ public class JobStepAddDialog extends EntityAddEditDialog {
 
             jobStepPropertiesPanel.layout(true);
         }
+
+        exampleButton = new KapuaButton(getExampleButtonText(), new KapuaIcon(IconSet.EDIT), new SelectionListener<ButtonEvent>() {
+
+            @Override
+            public void componentSelected(ButtonEvent ce) {
+                for (Component component : jobStepPropertiesPanel.getItems()) {
+                    if (component instanceof Field &&
+                            !(component instanceof LabelField)) { // Exclude LabelFields that contains the description of the JobStepDefinition.jobStepProperty
+
+                        String fieldPropertyType = component.getData(PROPERTY_TYPE);
+                        String fieldPropertyExampleValue = component.getData(PROPERTY_EXAMPLE_VALUE);
+
+                        if (fieldPropertyExampleValue != null) {
+                           if (fieldPropertyType.equals(Long.class.getName())) {
+                               Field<Long> field = (Field<Long>) component;
+                               field.setValue(Long.parseLong(fieldPropertyExampleValue));
+                           } else if (fieldPropertyType.equals(Integer.class.getName())) {
+                               Field<Integer> field = (Field<Integer>) component;
+                               field.setValue(Integer.parseInt(fieldPropertyExampleValue));
+                           } else if (fieldPropertyType.equals(Float.class.getName())) {
+                               Field<Float> field = (Field<Float>) component;
+                               field.setValue(Float.parseFloat(fieldPropertyExampleValue));
+                           } else if (fieldPropertyType.equals(Double.class.getName())) {
+                               Field<Double> field = (Field<Double>) component;
+                               field.setValue(Double.parseDouble(fieldPropertyExampleValue));
+                           } else if (fieldPropertyType.equals(Boolean.class.getName())) {
+                                Field<Boolean> field = (Field<Boolean>) component;
+                                field.setValue(Boolean.valueOf(fieldPropertyExampleValue));
+                           }
+                           else {
+                               Field<String> field = (Field<String>) component;
+                               field.setValue(fieldPropertyExampleValue);
+                           }
+                        }
+                    }
+
+                }
+            }
+
+        });
+        exampleButton.setStyleAttribute("padding-left", (FORM_LABEL_WIDTH + 5) + "px");
+        propertiesButtonPanel.add(exampleButton);
+        propertiesButtonPanel.setStyleAttribute("margin-bottom", "4px");
+        jobStepPropertiesPanel.add(propertiesButtonPanel);
+
         jobStepPropertiesPanel.layout(true);
     }
 
