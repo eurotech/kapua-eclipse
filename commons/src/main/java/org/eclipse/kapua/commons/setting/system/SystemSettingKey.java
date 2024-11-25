@@ -172,13 +172,13 @@ public enum SystemSettingKey implements SettingKey {
      *
      * @since 2.1.0
      */
-    DB_POOL_SIZE("commons.db.pool.size"),
+    DB_POOL_SIZE_FIXED("commons.db.pool.size.fixed"),
 
     /**
      * Database pool minimum pool size.
      *
      * @since 1.0.0
-     * @deprecated Since 2.1.0. Please make use of {@link #DB_POOL_SIZE}
+     * @deprecated Since 2.1.0. Please make use of {@link #DB_POOL_SIZE_FIXED}
      */
     @Deprecated
     DB_POOL_SIZE_MIN("commons.db.pool.size.min"),
@@ -187,7 +187,7 @@ public enum SystemSettingKey implements SettingKey {
      * Database pool maximum pool size.
      *
      * @since 1.0.0
-     * @deprecated Since 2.1.0. Please make use of {@link #DB_POOL_SIZE}
+     * @deprecated Since 2.1.0. Please make use of {@link #DB_POOL_SIZE_FIXED}
      */
     @Deprecated
     DB_POOL_SIZE_MAX("commons.db.pool.size.max"),
