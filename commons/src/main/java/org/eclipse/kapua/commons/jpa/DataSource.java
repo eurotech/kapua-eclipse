@@ -40,7 +40,7 @@ public final class DataSource {
             hikariDataSource.setPassword(config.getString(SystemSettingKey.DB_PASSWORD));
 
             // Pool
-            hikariDataSource.setMaximumPoolSize(config.getInt(SystemSettingKey.DB_POOL_SIZE, 5));
+            hikariDataSource.setMaximumPoolSize(config.getInt(SystemSettingKey.DB_POOL_SIZE_FIXED, 5));
             // Commented out since is not good for performances
             // See official documentation https://github.com/brettwooldridge/HikariCP
             // This property controls the minimum number of idle connections that HikariCP tries to maintain in the pool.
