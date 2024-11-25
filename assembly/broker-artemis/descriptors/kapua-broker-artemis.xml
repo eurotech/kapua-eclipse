@@ -36,10 +36,16 @@
             <outputDirectory>/opt/artemis</outputDirectory>
             <directory>${project.build.directory}/dependencies/artemis/apache-artemis-${artemis.version}</directory>
             <fileMode>0644</fileMode>
-            <!-- <excludes>
+            <excludes>
+                <exclude>lib/log4j-over-slf4j-*.jar</exclude>
+                <exclude>lib/log4j-core-*.jar</exclude>
+                <exclude>lib/log4j-slf4j-impl-*.jar</exclude>
+                <exclude>lib/log4j-slf4j2-impl-*.jar</exclude>
+                <!--
                 <exclude>activemq-all-*</exclude>
                 <exclude>webapps-demo/</exclude>
-            </excludes> -->
+                -->
+            </excludes>
         </fileSet>
 
         <fileSet>
@@ -65,8 +71,7 @@
             <includes>
                 <include>ch.qos.logback:logback-core</include>
                 <include>ch.qos.logback:logback-classic</include>
-                <include>org.slf4j:log4j-over-slf4j</include>
-                <include>org.slf4j:slf4j-api</include>
+                <include>org.apache.logging.log4j:log4j-to-slf4j</include>
                 <include>commons-io:commons-io</include>
                 <include>commons-configuration:commons-configuration</include>
                 <include>commons-lang:commons-lang</include>

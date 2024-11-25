@@ -83,32 +83,29 @@ public class AcceptorHandler {
      * @throws Exception
      */
     public void syncAcceptors() throws Exception {
-        logger.info("Init acceptors... server started: {} - {}", server.isStarted(), server.getState());
-        if (server.isStarted()) {
-            List<String> acceptorToRemove = new ArrayList<>();
-            server.getConfiguration().getAcceptorConfigurations().forEach(tc -> {
-                String acceptorName = tc.getName();
-                logger.info("Checking acceptor {}", acceptorName);
-                if (definedAcceptors.get(acceptorName) == null) {
-                    acceptorToRemove.add(acceptorName);
-                    logger.info("Adding acceptor {} to the remove list", acceptorName);
-                } else {
-                    logger.info("Leaving acceptor {} running", acceptorName);
-                }
-            });
-            acceptorToRemove.forEach(acceptorName -> {
-                logger.info("Stopping acceptor {}...", acceptorName);
-                try {
-                    server.getRemotingService().getAcceptor(acceptorName).stop();
-                    server.getRemotingService().destroyAcceptor(acceptorName);
-                    TransportConfiguration tc = getByName(acceptorName);
-                    server.getConfiguration().getAcceptorConfigurations().remove(tc);
-                } catch (Exception e) {
-                    logger.error("Error stopping acceptor {}... Error: {}", acceptorName, e.getMessage(), e);
-                }
-                logger.info("Stopping acceptor {}... DONE", acceptorName);
-            });
-        }
+        List<String> acceptorToRemove = new ArrayList<>();
+        server.getConfiguration().getAcceptorConfigurations().forEach(tc -> {
+            String acceptorName = tc.getName();
+            logger.info("Checking acceptor {}", acceptorName);
+            if (definedAcceptors.get(acceptorName) == null) {
+                acceptorToRemove.add(acceptorName);
+                logger.info("Adding acceptor {} to the remove list", acceptorName);
+            } else {
+                logger.info("Leaving acceptor {} running", acceptorName);
+            }
+        });
+        acceptorToRemove.forEach(acceptorName -> {
+            logger.info("Stopping acceptor {}...", acceptorName);
+            try {
+                server.getRemotingService().getAcceptor(acceptorName).stop();
+                server.getRemotingService().destroyAcceptor(acceptorName);
+                TransportConfiguration tc = getByName(acceptorName);
+                server.getConfiguration().getAcceptorConfigurations().remove(tc);
+            } catch (Exception e) {
+                logger.error("Error stopping acceptor {}... Error: {}", acceptorName, e.getMessage(), e);
+            }
+            logger.info("Stopping acceptor {}... DONE", acceptorName);
+        });
 //        server.getConfiguration().clearAcceptorConfigurations();
 
         definedAcceptors.forEach((name, uri) -> {

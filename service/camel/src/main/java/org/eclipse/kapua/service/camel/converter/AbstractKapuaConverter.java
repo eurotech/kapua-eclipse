@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.component.jms.JmsMessage;
 import org.apache.camel.support.DefaultMessage;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Kapua message converter reference implementation used to convert from Camel incoming messages ({@link JmsMessage}) to a platform specific message type.
+ * Kapua message converter reference implementation used to convert from Camel incoming messages to a platform specific message type.
  *
  * @since 1.0
  */

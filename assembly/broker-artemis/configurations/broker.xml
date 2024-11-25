@@ -91,6 +91,18 @@
         -->
         <!-- allowLinkStealing=true -->
 
+        <!-- CLUSTER CONFIGURATION NOTES -->
+        <!-- The current Kapua deployment deploys a broker with 2 consumers (Lifecycle and Telemetry) plus the Authentication service.
+             If a cluster is needed, the following steps could be followed:
+                - change the run-broker script, section "/opt/artemis/bin/artemis create \", (of the broker container) to create the cluster simply adding "-clustered" option and changing cluster username and password.
+                  (see https://activemq.apache.org/components/artemis/documentation/latest/using-server.html#creating-a-broker-instance)
+                - change this configuration file adding the cluster connectors as per cluster topology
+                  (see https://activemq.apache.org/components/artemis/documentation/latest/clusters.html)
+                - change the consumer/service connection string according to the documentation
+                  (see section 3.2.2 of the link https://activemq.apache.org/components/artemis/documentation/latest/clusters.html)
+             NOTE: The consumers/service could be scaled up also and independently each from the others.
+             IMPORTANT NOTE: while clustering pay attention to the performances as described in chapter 2 of the link https://activemq.apache.org/components/artemis/documentation/latest/clusters.html.
+        -->
         <!-- disable caching at all, otherwise we'll have issues while managing stealing link:
             the remove connection (ServerPlugin#afterDestroyConnection) is called without calling the authenticate (SecurityPlugin#authenticate).
         TODO do further tests to check the performance impact and try to enable authorization cache only -->
@@ -162,5 +174,20 @@
                 </anycast>
             </address>
         </addresses>
+
+        <!-- Uncomment the following if you want to use the Standard LoggingActiveMQServerPlugin pluging to log in events
+        <broker-plugins>
+            <broker-plugin class-name="org.apache.activemq.artemis.core.server.plugin.impl.LoggingActiveMQServerPlugin">
+                <property key="LOG_ALL_EVENTS" value="true"/>
+                <property key="LOG_CONNECTION_EVENTS" value="true"/>
+                <property key="LOG_SESSION_EVENTS" value="true"/>
+                <property key="LOG_CONSUMER_EVENTS" value="true"/>
+                <property key="LOG_DELIVERING_EVENTS" value="true"/>
+                <property key="LOG_SENDING_EVENTS" value="true"/>
+                <property key="LOG_INTERNAL_EVENTS" value="true"/>
+            </broker-plugin>
+        </broker-plugins>
+        -->
+
     </core>
 </configuration>

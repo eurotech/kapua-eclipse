@@ -137,8 +137,8 @@ public class ServerPlugin implements ActiveMQServerPlugin {
             serverContext.init(server);
             acceptorHandler = new AcceptorHandler(server,
                     brokerSetting.getMap(String.class, BrokerSettingKey.ACCEPTORS));
-            //init acceptors
-            acceptorHandler.syncAcceptors();
+            //init activateCallback to handle acceptor initialization instead of calling it from here
+            server.registerActivateCallback(new ActivateCallback(acceptorHandler));
 
             deviceConnectionEventListenerService.addReceiver(serviceEvent -> processDeviceConnectionEvent(serviceEvent));
 

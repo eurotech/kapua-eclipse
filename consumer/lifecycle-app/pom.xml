@@ -469,13 +469,6 @@
                                 </filter>
                             </filters>
                             <transformers>
-                                <!-- added by 2.7 -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</resource>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/spring/org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration.imports</resource>
-                                </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
                                     <resource>META-INF/persistence.xml</resource>
                                 </transformer>
@@ -506,6 +499,14 @@
                                 <!-- kapua translator -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/services/org.eclipse.kapua.translator.Translator</resource>
+                                </transformer>
+
+                                <!-- add by 2.7 -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring/org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration.imports</resource>
                                 </transformer>
                                 <!--
                                                     <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
