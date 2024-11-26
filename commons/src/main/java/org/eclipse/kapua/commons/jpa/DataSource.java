@@ -12,12 +12,17 @@
  *******************************************************************************/
 package org.eclipse.kapua.commons.jpa;
 
+import org.eclipse.kapua.KapuaRuntimeException;
 import org.eclipse.kapua.commons.setting.system.SystemSetting;
 import org.eclipse.kapua.commons.setting.system.SystemSettingKey;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DataSource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DataSource.class);
 
     private static HikariDataSource hikariDataSource;
 
@@ -40,18 +45,25 @@ public final class DataSource {
             hikariDataSource.setPassword(config.getString(SystemSettingKey.DB_PASSWORD));
 
             // Pool
-            hikariDataSource.setMaximumPoolSize(config.getInt(SystemSettingKey.DB_POOL_SIZE_FIXED, 5));
-            // Commented out since is not good for performances
-            // See official documentation https://github.com/brettwooldridge/HikariCP
-            // This property controls the minimum number of idle connections that HikariCP tries to maintain in the pool.
-            // If the idle connections dip below this value, HikariCP will make a best effort to add additional connections
-            // quickly and efficiently. However, for maximum performance and responsiveness to spike demands, we recommend not
-            // setting this value and instead allowing HikariCP to act as a fixed size connection pool.
-            //
-            // hikariDataSource.setMinimumIdle(config.getInt(SystemSettingKey.DB_POOL_SIZE_MIN, 1));
+            String dbConnectionPoolStrategy = config.getString(SystemSettingKey.DB_POOL_SIZE_STRATEGY, "fixed");
 
-            // Fixed size so this parameter is ignored by hikari
-            // hikariDataSource.setIdleTimeout(config.getInt(SystemSettingKey.DB_POOL_IDLE_TIMEOUT, 180000));
+            switch (dbConnectionPoolStrategy) {
+                case "fixed": {
+                    hikariDataSource.setMaximumPoolSize(config.getInt(SystemSettingKey.DB_POOL_SIZE_FIXED, 5));
+                }
+                break;
+                case "minmax": {
+                    LOG.warn("Using deprecated 'minmax' db connection pool sizing strategy. Please consider migrating to 'fixed' strategy");
+                    hikariDataSource.setMinimumIdle(config.getInt(SystemSettingKey.DB_POOL_SIZE_MIN, 1));
+                    hikariDataSource.setMaximumPoolSize(config.getInt(SystemSettingKey.DB_POOL_SIZE_MAX, 20));
+                    hikariDataSource.setIdleTimeout(config.getInt(SystemSettingKey.DB_POOL_IDLE_TIMEOUT, 180000));
+                }
+                break;
+                default: {
+                    throw KapuaRuntimeException.internalError("Unrecognized value for setting 'commons.db.pool.size.strategy'. Available values are 'minmax' and 'fixed'. Value provided: '" + dbConnectionPoolStrategy+ "'");
+                }
+            }
+
             hikariDataSource.setKeepaliveTime(config.getInt(SystemSettingKey.DB_POOL_KEEPALIVE_TIME, 30000));
             hikariDataSource.setMaxLifetime(config.getInt(SystemSettingKey.DB_POOL_MAX_LIFETIME, 1800000));
             hikariDataSource.setConnectionTestQuery(config.getString(SystemSettingKey.DB_POOL_TEST_QUERY, "SELECT 1"));

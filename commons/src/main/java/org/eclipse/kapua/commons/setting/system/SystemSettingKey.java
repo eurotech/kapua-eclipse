@@ -168,7 +168,22 @@ public enum SystemSettingKey implements SettingKey {
     DB_CHARACTER_WILDCARD_SINGLE("commons.db.character.wildcard.single"),
 
     /**
+     * Database pool size strategy.
+     * <p>
+     * Created to maintain backward compatibility with 2.0.x release.
+     * 2.0.x is defaulting to {@code minmax} since the previous strategy was using a variable DB connection pool sizing.
+     * {@code minmax} strategy is deprecated and users should migrate to use {@code fixed} strategy
+     * <p>
+     * See official documentation <a href="https://github.com/brettwooldridge/HikariCP">Hikari CP Docs</a> about performances.
+     *
+     * @since 2.1.0
+     */
+    DB_POOL_SIZE_STRATEGY("commons.db.pool.size.strategy"),
+
+    /**
      * Database fixed pool size.
+     * <p>
+     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code fixed}
      *
      * @since 2.1.0
      */
@@ -176,6 +191,8 @@ public enum SystemSettingKey implements SettingKey {
 
     /**
      * Database pool minimum pool size.
+     * <p>
+     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code minmax}
      *
      * @since 1.0.0
      * @deprecated Since 2.1.0. Please make use of {@link #DB_POOL_SIZE_FIXED}
@@ -185,6 +202,8 @@ public enum SystemSettingKey implements SettingKey {
 
     /**
      * Database pool maximum pool size.
+     * <p>
+     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code minmax}
      *
      * @since 1.0.0
      * @deprecated Since 2.1.0. Please make use of {@link #DB_POOL_SIZE_FIXED}
@@ -194,12 +213,15 @@ public enum SystemSettingKey implements SettingKey {
 
     /**
      * Database pool maximum time before evicting an idle connection
+     * <p>
+     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code minmax}
      *
      * @since 1.0.0
-     * @deprecated Since 2.1.0. No longer used.
+     * @deprecated Since 2.1.0.
      */
     @Deprecated
     DB_POOL_IDLE_TIMEOUT("commons.db.pool.idle.timeout"),
+
     /**
      * Database pool keepalive query interval for idle connections
      */
