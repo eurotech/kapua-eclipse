@@ -61,6 +61,8 @@ import org.eclipse.kapua.commons.rest.model.errors.ServiceConfigurationLimitExce
 import org.eclipse.kapua.commons.rest.model.errors.ServiceConfigurationParentLimitExceededExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.SubjectUnauthorizedExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.ThrowableInfo;
+import org.eclipse.kapua.commons.rest.model.errors.TriggerInvalidDatesExceptionInfo;
+import org.eclipse.kapua.commons.rest.model.errors.TriggerInvalidSchedulingExceptionInfo;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreRecordCreator;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreRecordListResult;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreRecordQuery;
@@ -377,6 +379,10 @@ public class RestApiJAXBContextProvider implements JAXBContextProvider {
                     JobRunningExceptionInfo.class,
                     JobStartingExceptionInfo.class,
                     JobStoppingExceptionInfo.class,
+
+                    // Scheduler Exception Info
+                    TriggerInvalidDatesExceptionInfo.class,
+                    TriggerInvalidSchedulingExceptionInfo.class,
 
                     // Device Management Exception Info
                     DeviceManagementRequestContentExceptionInfo.class,
