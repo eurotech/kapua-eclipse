@@ -17,6 +17,7 @@ import org.eclipse.kapua.commons.setting.system.SystemSetting;
 import org.eclipse.kapua.commons.setting.system.SystemSettingKey;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.eclipse.kapua.commons.util.log.ConfigurationPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +69,49 @@ public final class DataSource {
             hikariDataSource.setMaxLifetime(config.getInt(SystemSettingKey.DB_POOL_MAX_LIFETIME, 1800000));
             hikariDataSource.setConnectionTestQuery(config.getString(SystemSettingKey.DB_POOL_TEST_QUERY, "SELECT 1"));
             hikariDataSource.setLeakDetectionThreshold(config.getInt(SystemSettingKey.DB_POOL_LEAKDETECTION_THRESHOLD, 0));
+
+            printDbPoolConfiguration(hikariDataSource, dbConnectionPoolStrategy);
         }
 
         return hikariDataSource;
+    }
+
+    private static void printDbPoolConfiguration(HikariDataSource hikariDataSource, String dbConnectionPoolStrategy) {
+        // Print Configurations
+        ConfigurationPrinter dbPoolConfigPrinter = ConfigurationPrinter
+                .create()
+                .withLogger(LOG)
+                .withLogLevel(ConfigurationPrinter.LogLevel.INFO)
+                .withTitle("HikariDataSource Configuration")
+                .addParameter("Pool Name", hikariDataSource.getPoolName())
+                .openSection("DB Connection info")
+                .addParameter("Driver", hikariDataSource.getDriverClassName())
+                .addParameter("JDBC URL", hikariDataSource.getJdbcUrl())
+                .addParameter("Username", hikariDataSource.getUsername())
+                .addParameter("Password", "******")
+                .closeSection()
+                .openSection("Client Pool info")
+                .addParameter("Sizing strategy", dbConnectionPoolStrategy);
+
+        switch (dbConnectionPoolStrategy) {
+            case "fixed": {
+                dbPoolConfigPrinter.addParameter("Size", hikariDataSource.getMaximumPoolSize());
+            }
+            break;
+            case "minmax": {
+                dbPoolConfigPrinter.addParameter("Min idle", hikariDataSource.getMinimumIdle());
+                dbPoolConfigPrinter.addParameter("Max size", hikariDataSource.getMaximumPoolSize());
+                dbPoolConfigPrinter.addParameter("Idle timeout", hikariDataSource.getIdleTimeout());
+            }
+        }
+
+        dbPoolConfigPrinter
+                .addParameter("Connection test query", hikariDataSource.getConnectionTestQuery())
+                .addParameter("Keepalive time", hikariDataSource.getKeepaliveTime())
+                .addParameter("Max lifetime", hikariDataSource.getMaxLifetime())
+                .addParameter("Leak detection threshold", hikariDataSource.getLeakDetectionThreshold() == 0 ? "disabled" : hikariDataSource.getLeakDetectionThreshold());
+
+        dbPoolConfigPrinter.printLog();
     }
 
     @Override
