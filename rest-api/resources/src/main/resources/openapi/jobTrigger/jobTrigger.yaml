@@ -169,3 +169,13 @@ components:
                   - name: scopeId
                     propertyType: org.eclipse.kapua.model.id.KapuaId
                     propertyValue: AQ
+
+    triggerCannotFireExceptionInfo:
+      description: The trigger schedule data is invalid
+      allOf:
+        - $ref: '../openapi.yaml#/components/schemas/exceptionInfo'
+      example:
+        type: triggerCannotFireExceptionInfo
+        httpErrorCode": 400
+        message: Trigger with given startsOn and endsOn for triggerDefinitionId '1' will never fire according to the given schedule
+        kapuaErrorCode: TRIGGER_INVALID_SCHEDULE

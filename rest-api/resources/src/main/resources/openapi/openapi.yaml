@@ -1161,6 +1161,8 @@ components:
       $ref: './jobTrigger/jobTrigger.yaml#/components/schemas/jobTriggerCreator'
     jobTriggerListResult:
       $ref: './jobTrigger/jobTrigger.yaml#/components/schemas/jobTriggerListResult'
+    triggerCannotFireExceptionInfo:
+      $ref: './jobTrigger/jobTrigger.yaml#/components/schemas/triggerCannotFireExceptionInfo'
     ### Job Trigger Fired Entities ###
     firedTrigger:
       $ref: './jobTriggerFired/jobTriggerFired.yaml#/components/schemas/firedTrigger'
