@@ -116,6 +116,7 @@ public class JobScheduleServiceSteps extends TestBase {
         TriggerCreator triggerCreator = triggerFactory.newCreator(getCurrentScopeId());
         KapuaId triggerDefinitionId = (KapuaId) stepData.get(TRIGGER_DEFINITION_ID);
         triggerCreator.setName(schedulerName);
+        triggerCreator.setDescription("A trigger description");
         triggerCreator.setStartsOn(new Date());
         triggerCreator.setTriggerDefinitionId(triggerDefinitionId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -149,6 +150,7 @@ public class JobScheduleServiceSteps extends TestBase {
         KapuaId currentTriggerDefId = (KapuaId) stepData.get(TRIGGER_DEFINITION_ID);
         KapuaId jobId = (KapuaId) stepData.get("CurrentJobId");
         triggerCreator.setName(triggerName);
+        triggerCreator.setDescription("A trigger description");
         triggerCreator.setTriggerDefinitionId(currentTriggerDefId);
         triggerCreator.getTriggerProperties().add(triggerDefinitionFactory.newTriggerProperty("jobId", KAPUA_ID_CLASS_NAME, jobId.toCompactId()));
         triggerCreator.getTriggerProperties().add(triggerDefinitionFactory.newTriggerProperty("scopeId", KAPUA_ID_CLASS_NAME, getCurrentScopeId().toCompactId()));
@@ -170,6 +172,7 @@ public class JobScheduleServiceSteps extends TestBase {
         TriggerCreator triggerCreator = triggerFactory.newCreator(getCurrentScopeId());
         KapuaId currentTriggerDefId = (KapuaId) stepData.get(TRIGGER_DEFINITION_ID);
         triggerCreator.setName(triggerName);
+        triggerCreator.setDescription("A trigger description");
         triggerCreator.setTriggerDefinitionId(currentTriggerDefId);
         List<TriggerProperty> tmpPropList = new ArrayList<>();
         for (CucTriggerProperty prop : list) {
@@ -201,6 +204,7 @@ public class JobScheduleServiceSteps extends TestBase {
         try {
             Trigger trigger = (Trigger) stepData.get(TRIGGER);
             trigger.setName(newTriggerName);
+            trigger.setDescription("A trigger updated description");
             primeException();
             Trigger updatedTrigger = triggerService.update(trigger);
             stepData.put(UPDATED_TRIGGER, updatedTrigger);
