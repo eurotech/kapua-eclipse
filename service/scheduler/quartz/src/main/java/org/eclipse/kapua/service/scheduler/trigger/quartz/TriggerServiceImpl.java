@@ -152,6 +152,7 @@ public class TriggerServiceImpl implements TriggerService {
             try {
                 Trigger toBeCreated = triggerFactory.newEntity(triggerCreator.getScopeId());
                 toBeCreated.setName(triggerCreator.getName());
+                toBeCreated.setDescription(triggerCreator.getDescription());
                 toBeCreated.setStartsOn(triggerCreator.getStartsOn());
                 toBeCreated.setEndsOn(triggerCreator.getEndsOn());
                 toBeCreated.setTriggerDefinitionId(triggerCreator.getTriggerDefinitionId());
