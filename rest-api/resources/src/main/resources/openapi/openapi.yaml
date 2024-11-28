@@ -1161,8 +1161,10 @@ components:
       $ref: './jobTrigger/jobTrigger.yaml#/components/schemas/jobTriggerCreator'
     jobTriggerListResult:
       $ref: './jobTrigger/jobTrigger.yaml#/components/schemas/jobTriggerListResult'
-    triggerCannotFireExceptionInfo:
-      $ref: './jobTrigger/jobTrigger.yaml#/components/schemas/triggerCannotFireExceptionInfo'
+    triggerInvalidDatesExceptionInfo:
+      $ref: './jobTrigger/jobTrigger.yaml#/components/schemas/triggerInvalidDatesExceptionInfo'
+    triggerInvalidSchedulingExceptionInfo:
+      $ref: './jobTrigger/jobTrigger.yaml#/components/schemas/triggerInvalidSchedulingExceptionInfo'
     ### Job Trigger Fired Entities ###
     firedTrigger:
       $ref: './jobTriggerFired/jobTriggerFired.yaml#/components/schemas/firedTrigger'
