@@ -170,12 +170,57 @@ components:
                     propertyType: org.eclipse.kapua.model.id.KapuaId
                     propertyValue: AQ
 
-    triggerCannotFireExceptionInfo:
-      description: The trigger schedule data is invalid
+    triggerInvalidDatesExceptionInfo:
+      description: The trigger data range is invalid
       allOf:
         - $ref: '../openapi.yaml#/components/schemas/exceptionInfo'
+        - properties:
+            startsOn:
+              type: string
+              description: The given startsOn
+              format: 'date-time'
+            endsOn:
+              type: string
+              description: The given endsOn
+              format: 'date-time'
+            currentDate:
+              type: string
+              description: The current date
+              format: 'date-time'
       example:
-        type: triggerCannotFireExceptionInfo
-        httpErrorCode": 400
-        message: Trigger with given startsOn and endsOn for triggerDefinitionId '1' will never fire according to the given schedule
-        kapuaErrorCode: TRIGGER_INVALID_SCHEDULE
+        type: triggerInvalidDatesExceptionInfo,
+        httpErrorCode: 400,
+        message: Trigger with given startsOn and endsOn will never fire according to the current date,
+        kapuaErrorCode: TRIGGER_INVALID_DATES,
+        startsOn: 2021-01-31T00:00:00.000Z,
+        endsOn: 2023-01-31T00:00:00.000Z,
+        currentDate: 2024-11-28T14:49:46.671Z
+    triggerInvalidSchedulingExceptionInfo:
+      description: The trigger schedule with the given data range is invalid
+      allOf:
+        - $ref: '../openapi.yaml#/components/schemas/exceptionInfo'
+        - properties:
+            startsOn:
+              type: string
+              description: The given startsOn
+              format: 'date-time'
+            endsOn:
+              type: string
+              description: The given endsOn
+              format: 'date-time'
+            triggerDefinitionId:
+              description: The given TriggerDefinition.id
+              allOf:
+                - $ref: '../openapi.yaml#/components/schemas/kapuaId'
+            scheduling:
+              type: string
+              description: The given scheduling
+      example:
+        type: triggerInvalidSchedulingExceptionInfo,
+        httpErrorCode: 400,
+        message: Trigger with given startsOn and endsOn triggerDefinitionId '1' will never fire according to the given schedule '* * * * * ? 2020',
+        kapuaErrorCode: TRIGGER_INVALID_SCHEDULE,
+        startsOn: 2021-01-31T00:00:00.000Z,
+        endsOn: 2025-01-31T00:00:00.000Z,
+        triggerDefinitionId: AQ,
+        scheduling: '* * * * * ? 2020'
