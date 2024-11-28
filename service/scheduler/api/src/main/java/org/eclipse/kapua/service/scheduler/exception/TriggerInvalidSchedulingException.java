@@ -33,20 +33,20 @@ public class TriggerInvalidSchedulingException extends TriggerCannotFireExceptio
     /**
      * Constructor.
      *
-     * @param cause              The root {@link Throwable} of this {@link TriggerInvalidSchedulingException}.
-     * @param startsOn           The {@link Trigger#getStartsOn()}
-     * @param endsOn             The {@link Trigger#getEndsOn()}
-     * @param triggerDefintionId The {@link Trigger#getTriggerDefinitionId()}
-     * @param scheduling         The scheduling extracted from the {@link Trigger#getTriggerProperties()}
+     * @param cause               The root {@link Throwable} of this {@link TriggerInvalidSchedulingException}.
+     * @param startsOn            The {@link Trigger#getStartsOn()}
+     * @param endsOn              The {@link Trigger#getEndsOn()}
+     * @param triggerDefinitionId The {@link Trigger#getTriggerDefinitionId()}
+     * @param scheduling          The scheduling extracted from the {@link Trigger#getTriggerProperties()}
      * @since 1.5.0
      */
 
-    public TriggerInvalidSchedulingException(Throwable cause, Date startsOn, Date endsOn, KapuaId triggerDefintionId, String scheduling) {
-        super(SchedulerServiceErrorCodes.TRIGGER_INVALID_SCHEDULE, cause, startsOn, endsOn, triggerDefintionId, scheduling);
+    public TriggerInvalidSchedulingException(Throwable cause, Date startsOn, Date endsOn, KapuaId triggerDefinitionId, String scheduling) {
+        super(SchedulerServiceErrorCodes.TRIGGER_INVALID_SCHEDULE, cause, triggerDefinitionId, scheduling);
 
-        this.startsOn = endsOn;
+        this.startsOn = startsOn;
         this.endsOn = endsOn;
-        this.triggerDefinitionId = triggerDefintionId;
+        this.triggerDefinitionId = triggerDefinitionId;
         this.scheduling = scheduling;
     }
 

@@ -94,7 +94,7 @@ Feature: Scheduler Service
     And A regular trigger creator with the name "triggerExample" is created
     And The trigger is set to start on "10-10-2018" at "6:00"
     And The trigger is set to end on "09-10-2018" at "6:00"
-    And I expect the exception "TriggerInvalidDatesException" with the text "*"
+    And I expect the exception "TriggerInvalidDatesException" with the text "Trigger with given startsOn and endsOn will never fire according to the current date"
     Then I create a new trigger from the existing creator with previously defined date properties
     And An exception was thrown
 
