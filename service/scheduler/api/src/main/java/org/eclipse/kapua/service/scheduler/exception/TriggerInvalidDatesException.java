@@ -35,9 +35,9 @@ public class TriggerInvalidDatesException extends TriggerCannotFireException {
      * @param currentDate The current {@link Date}
      */
     public TriggerInvalidDatesException(Date startsOn, Date endsOn, Date currentDate) {
-        super(SchedulerServiceErrorCodes.TRIGGER_INVALID_DATES, null, startsOn, endsOn, currentDate);
+        super(SchedulerServiceErrorCodes.TRIGGER_INVALID_DATES, null);
 
-        this.startsOn = endsOn;
+        this.startsOn = startsOn;
         this.endsOn = endsOn;
         this.currentDate = currentDate;
     }
