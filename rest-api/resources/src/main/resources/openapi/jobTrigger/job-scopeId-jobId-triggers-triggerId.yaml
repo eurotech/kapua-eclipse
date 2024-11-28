@@ -63,7 +63,20 @@ paths:
               schema:
                 $ref: './jobTrigger.yaml#/components/schemas/jobTrigger'
         400:
-          $ref: '../openapi.yaml#/components/responses/illegalArgument'
+          description: Provided data is not accepted
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '../openapi.yaml#/components/schemas/illegalArgumentExceptionInfo'
+                  - $ref: './jobTrigger.yaml#/components/schemas/triggerInvalidDatesExceptionInfo'
+                  - $ref: './jobTrigger.yaml#/components/schemas/triggerInvalidSchedulingExceptionInfo'
+            application/xml:
+              schema:
+                oneOf:
+                  - $ref: '../openapi.yaml#/components/schemas/illegalArgumentExceptionInfo'
+                  - $ref: './jobTrigger.yaml#/components/schemas/triggerInvalidDatesExceptionInfo'
+                  - $ref: './jobTrigger.yaml#/components/schemas/triggerInvalidSchedulingExceptionInfo'
         401:
           $ref: '../openapi.yaml#/components/responses/unauthenticated'
         403:
