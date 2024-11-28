@@ -52,6 +52,7 @@ components:
             modifiedBy: AQ
             optlock: 1
             name: cron
+            description: A trigger description
             endsOn: '2019-12-07T01:30:00+01:00'
             startsOn: '2019-12-06T12:00:00+01:00'
             triggerDefinitionId: AQ
@@ -87,6 +88,7 @@ components:
       example:
         type: triggerCreator
         name: A trigger
+        description: A trigger description
         startsOn: '2021-01-31T00:00:00.000Z'
         triggerDefinitionId: AQ
         triggerProperties:
@@ -117,6 +119,7 @@ components:
                 modifiedBy: AQ
                 optlock: 1
                 name: interval
+                description: A trigger description
                 startsOn: '2019-12-06T12:00:00+01:00'
                 triggerDefinitionId: Ag
                 triggerProperties:
@@ -138,6 +141,7 @@ components:
                 modifiedBy: AQ
                 optlock: 1
                 name: cron
+                description: A trigger description
                 endsOn: '2019-12-07T01:30:00+01:00'
                 startsOn: '2019-12-06T12:00:00+01:00'
                 triggerDefinitionId: AQ
@@ -160,6 +164,7 @@ components:
                 modifiedBy: AQ
                 optlock: 1
                 name: device_conn
+                description: A trigger description
                 startsOn: '2019-12-06T12:00:00+01:00'
                 triggerDefinitionId: Aw
                 triggerProperties:
