@@ -4,6 +4,14 @@ Below are described most important changes, features, additions and bugfixes tha
 
 This report is only partial for Eclipse Kapua release 2.0.0-SNAPSHOT, since we started to maintain it mid-release development.
 
+## Changes
+
+#### Deprecation of `db.pool.size.min` and `db.pool.size.max` sizing options
+
+With [#4112](https://github.com/eclipse/kapua/pull/4112) we deprecated `commons.db.pool.size.min` and `commons.db.pool.size.max` settings, switching to a new `commons.db.pool.size.fixed` setting which will configure the database connection pool to a fixed size with a default value of `5`.
+
+Backward compatibility is granted by `db.pool.size.strategy`. Default value is `range`, but it should be changed to `fixed` strategy because `range` strategy will be removed in future releases.
+
 ## DB Changes
 
 #### New column in MFA Option table
