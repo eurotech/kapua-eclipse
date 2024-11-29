@@ -10,7 +10,7 @@ This report is only partial for Eclipse Kapua release 2.0.0-SNAPSHOT, since we s
 
 With [#4112](https://github.com/eclipse/kapua/pull/4112) we deprecated `commons.db.pool.size.min` and `commons.db.pool.size.max` settings, switching to a new `commons.db.pool.size.fixed` setting which will configure the database connection pool to a fixed size with a default value of `5`.
 
-Backward compatibility is granted by `db.pool.size.strategy`. Default value is `fixed`, but it can be changed to `range` to continue use of a variable database connection pool. Be aware that at some point `range` strategy will be removed and only fixed size will be available.
+Backward compatibility is granted by `db.pool.size.strategy`. Default value is `range`, but it should be changed to `fixed` strategy because `range` strategy will be removed in future releases.
 
 ## DB Changes
 
