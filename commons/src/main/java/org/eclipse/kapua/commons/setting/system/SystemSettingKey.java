@@ -171,8 +171,8 @@ public enum SystemSettingKey implements SettingKey {
      * Database pool size strategy.
      * <p>
      * Created to maintain backward compatibility with 2.0.x release.
-     * 2.0.x is defaulting to {@code minmax} since the previous strategy was using a variable DB connection pool sizing.
-     * {@code minmax} strategy is deprecated and users should migrate to use {@code fixed} strategy
+     * 2.0.x is defaulting to {@code range} since the previous strategy was using a variable DB connection pool sizing.
+     * {@code range} strategy is deprecated and users should migrate to use {@code fixed} strategy
      * <p>
      * See official documentation <a href="https://github.com/brettwooldridge/HikariCP">Hikari CP Docs</a> about performances.
      *
@@ -192,7 +192,7 @@ public enum SystemSettingKey implements SettingKey {
     /**
      * Database pool minimum pool size.
      * <p>
-     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code minmax}
+     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code range}
      *
      * @since 1.0.0
      * @deprecated Since 2.1.0. Please make use of {@link #DB_POOL_SIZE_FIXED}
@@ -203,7 +203,7 @@ public enum SystemSettingKey implements SettingKey {
     /**
      * Database pool maximum pool size.
      * <p>
-     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code minmax}
+     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code range}
      *
      * @since 1.0.0
      * @deprecated Since 2.1.0. Please make use of {@link #DB_POOL_SIZE_FIXED}
@@ -214,7 +214,7 @@ public enum SystemSettingKey implements SettingKey {
     /**
      * Database pool maximum time before evicting an idle connection
      * <p>
-     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code minmax}
+     * Taken into account when {@link #DB_POOL_SIZE_STRATEGY} is {@code range}
      *
      * @since 1.0.0
      * @deprecated Since 2.1.0.

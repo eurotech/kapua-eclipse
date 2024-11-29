@@ -53,15 +53,15 @@ public final class DataSource {
                     hikariDataSource.setMaximumPoolSize(config.getInt(SystemSettingKey.DB_POOL_SIZE_FIXED, 5));
                 }
                 break;
-                case "minmax": {
-                    LOG.warn("Using deprecated 'minmax' db connection pool sizing strategy. Please consider migrating to 'fixed' strategy");
+                case "range": {
+                    LOG.warn("Using deprecated 'range' db connection pool sizing strategy. Please consider migrating to 'fixed' strategy");
                     hikariDataSource.setMinimumIdle(config.getInt(SystemSettingKey.DB_POOL_SIZE_MIN, 1));
                     hikariDataSource.setMaximumPoolSize(config.getInt(SystemSettingKey.DB_POOL_SIZE_MAX, 20));
                     hikariDataSource.setIdleTimeout(config.getInt(SystemSettingKey.DB_POOL_IDLE_TIMEOUT, 180000));
                 }
                 break;
                 default: {
-                    throw KapuaRuntimeException.internalError("Unrecognized value for setting 'commons.db.pool.size.strategy'. Available values are 'minmax' and 'fixed'. Value provided: '" + dbConnectionPoolStrategy+ "'");
+                    throw KapuaRuntimeException.internalError("Unrecognized value for setting 'commons.db.pool.size.strategy'. Available values are 'range' and 'fixed'. Value provided: '" + dbConnectionPoolStrategy+ "'");
                 }
             }
 
@@ -98,7 +98,7 @@ public final class DataSource {
                 dbPoolConfigPrinter.addParameter("Size", hikariDataSource.getMaximumPoolSize());
             }
             break;
-            case "minmax": {
+            case "range": {
                 dbPoolConfigPrinter.addParameter("Min idle", hikariDataSource.getMinimumIdle());
                 dbPoolConfigPrinter.addParameter("Max size", hikariDataSource.getMaximumPoolSize());
                 dbPoolConfigPrinter.addParameter("Idle timeout", hikariDataSource.getIdleTimeout());
