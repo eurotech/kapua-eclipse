@@ -12,12 +12,11 @@
  *******************************************************************************/
 package org.eclipse.kapua.client.security.bean;
 
-import org.eclipse.kapua.model.id.KapuaId;
-import org.eclipse.kapua.service.device.registry.connection.DeviceConnection;
-
 import java.security.cert.Certificate;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.kapua.model.id.KapuaId;
 
 public class AuthContext {
 
@@ -136,9 +135,9 @@ public class AuthContext {
     }
 
     /**
-     * Gets the {@link DeviceConnection#getAuthenticationType()} used when connecting.
+     * Gets the device connection's authentication type used when connecting.
      *
-     * @return The {@link DeviceConnection#getAuthenticationType()} used when connecting.
+     * @return The device connection's authentication type used when connecting.
      * @since 2.0.0
      */
     public String getAuthenticationType() {
@@ -146,9 +145,10 @@ public class AuthContext {
     }
 
     /**
-     * Sets the {@link DeviceConnection#getAuthenticationType()} used to connection.
+     * Sets the device connection's authentication type used to connection.
      *
-     * @param authenticationType The {@link DeviceConnection#getAuthenticationType()} used to connection.
+     * @param authenticationType
+     *         The device connection's authentication type used to connection.
      * @since 2.0.0
      */
     public void setAuthenticationType(String authenticationType) {

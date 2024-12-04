@@ -12,9 +12,14 @@
  *******************************************************************************/
 package org.eclipse.kapua.qa.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.bind.JAXBContext;
+
+import org.eclipse.kapua.ExceptionInfo;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.configuration.metatype.TscalarImpl;
-import org.eclipse.kapua.commons.rest.model.errors.ExceptionInfo;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreRecordCreator;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreRecordListResult;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreRecordQuery;
@@ -93,13 +98,8 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBContext;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * JAXB context provided for proper (un)marshalling of interface annotated classes.
- * This particular implementation is used only in unit and integration tests.
+ * JAXB context provided for proper (un)marshalling of interface annotated classes. This particular implementation is used only in unit and integration tests.
  * <p>
  * Application and interfaces have their own implementation of provider.
  */
@@ -112,7 +112,7 @@ public class TestJAXBContextProvider implements JAXBContextProvider {
     @Override
     public JAXBContext getJAXBContext() throws KapuaException {
         if (context == null) {
-            Class<?>[] classes = new Class<?>[]{
+            Class<?>[] classes = new Class<?>[] {
                     KapuaTmetadata.class,
                     KapuaTocd.class,
                     KapuaTad.class,

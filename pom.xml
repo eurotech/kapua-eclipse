@@ -55,7 +55,6 @@
         <aopalliance.version>1.0</aopalliance.version>
         <artemis.version>2.38.0</artemis.version>
         <assertj.version>3.2.0</assertj.version>
-        <checker-framework.version>3.15.0</checker-framework.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-cli.version>1.4</commons-cli.version>
         <commons-codec.version>1.15</commons-codec.version>
@@ -77,8 +76,6 @@
         <googleauth.version>1.5.0</googleauth.version>
         <gson.version>2.10</gson.version>
         <guava.version>32.1.2-jre</guava.version>
-        <guava-failureaccess.version>1.0.1</guava-failureaccess.version>
-        <guava-listenablefuture.version>9999.0-empty-to-avoid-conflict-with-guava</guava-listenablefuture.version>
         <guice.version>5.1.0</guice.version>
         <hamcrest-core.version>2.2</hamcrest-core.version>
         <h2.version>1.4.200</h2.version>
@@ -990,17 +987,12 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.kapua</groupId>
-                <artifactId>kapua-commons-rest-errors</artifactId>
+                <artifactId>kapua-commons-jersey-rest</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.kapua</groupId>
-                <artifactId>kapua-commons-rest-model</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.kapua</groupId>
-                <artifactId>kapua-commons-rest-filters</artifactId>
+                <artifactId>kapua-commons-jersey-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -1326,6 +1318,7 @@
                 <version>${project.version}</version>
             </dependency>
 
+
             <dependency>
                 <groupId>org.eclipse.kapua</groupId>
                 <artifactId>kapua-console-web</artifactId>
@@ -1499,21 +1492,7 @@
                         <groupId>com.google.j2objc</groupId>
                         <artifactId>j2objc-annotations</artifactId>
                     </exclusion>
-                    <exclusion>
-                        <groupId>org.checkerframework</groupId>
-                        <artifactId>checker-qual</artifactId>
-                    </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>failureaccess</artifactId>
-                <version>${guava-failureaccess.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>listenablefuture</artifactId>
-                <version>${guava-listenablefuture.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.inject</groupId>
@@ -1854,11 +1833,6 @@
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
                 <version>${javassist.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.checkerframework</groupId>
-                <artifactId>checker-qual</artifactId>
-                <version>${checker-framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
@@ -2660,7 +2634,7 @@
 
         <!-- Core -->
         <module>commons</module>
-        <module>commons-rest</module>
+        <module>commons-jersey</module>
         <module>locator</module>
         <module>service</module>
         <module>message</module>
