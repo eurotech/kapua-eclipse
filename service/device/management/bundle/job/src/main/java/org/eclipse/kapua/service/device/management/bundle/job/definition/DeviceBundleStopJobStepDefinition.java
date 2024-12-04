@@ -42,7 +42,7 @@ public class DeviceBundleStopJobStepDefinition extends JobStepDefinitionRecord {
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceBundlePropertyKeys.BUNDLE_ID,
-                                "Numeric identifier of the bundle installed in the device",
+                                "Numeric identifier of the bundle to be started. The identifier can be found in the Bundles view within the Device Overview page or can be retrieved via the REST API",
                                 String.class.getName(),
                                 null,
                                 null,
