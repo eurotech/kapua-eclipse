@@ -39,15 +39,6 @@ public class JpaJobInstanceDataRepositoryImpl implements JpaJobInstanceDataRepos
     }
 
     @Override
-    public int deleteByName(TxContext tx, String jobName) {
-        final EntityManager em = JpaAwareTxContext.extractEntityManager(tx);
-
-        TypedQuery<Integer> deleteByNameQuery = em.createNamedQuery("JobInstanceData.deleteByName", Integer.class);
-        deleteByNameQuery.setParameter("name", jobName);
-        return deleteByNameQuery.executeUpdate();
-    }
-
-    @Override
     public JpaJobInstanceData find(TxContext tx, long id) {
         final EntityManager em = JpaAwareTxContext.extractEntityManager(tx);
         return em.find(JpaJobInstanceData.class, id);
@@ -101,5 +92,23 @@ public class JpaJobInstanceDataRepositoryImpl implements JpaJobInstanceDataRepos
         selectQuery.setParameter("name", PartitionedStepBuilder.JOB_ID_SEPARATOR + "%");
         final List<JpaJobInstanceData> queryResult = selectQuery.getResultList();
         return queryResult;
+    }
+
+    @Override
+    public int deleteByName(TxContext tx, String jobName) {
+        final EntityManager em = JpaAwareTxContext.extractEntityManager(tx);
+
+        TypedQuery<Integer> deleteByNameQuery = em.createNamedQuery("JobInstanceData.deleteByName", Integer.class);
+        deleteByNameQuery.setParameter("name", jobName);
+        return deleteByNameQuery.executeUpdate();
+    }
+
+    @Override
+    public int deleteById(TxContext tx, long jobInstanceId) {
+        final EntityManager em = JpaAwareTxContext.extractEntityManager(tx);
+
+        TypedQuery<Integer> deleteByNameQuery = em.createNamedQuery("JobInstanceData.deleteById", Integer.class);
+        deleteByNameQuery.setParameter("id", jobInstanceId);
+        return deleteByNameQuery.executeUpdate();
     }
 }
