@@ -152,7 +152,7 @@ public class AuthenticationModule extends AbstractKapuaModule {
             EventStoreRecordRepository eventStoreRecordRepository,
             ServiceEventBus serviceEventBus,
             KapuaAuthenticationSetting kapuaAuthenticationSetting,
-            @Named("eventsModuleName") String eventModuleName
+            @Named("authenticationEvtSubscriptionGroupId") String subscriptionGroupId
     ) throws ServiceEventBusException {
         return new AuthenticationServiceModule(
                 credentialService,
@@ -170,7 +170,7 @@ public class AuthenticationModule extends AbstractKapuaModule {
                         serviceEventBus
                 ),
                 serviceEventBus,
-                eventModuleName);
+                subscriptionGroupId);
     }
 
     @ProvidesIntoSet

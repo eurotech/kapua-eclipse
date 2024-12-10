@@ -15,9 +15,14 @@ package org.eclipse.kapua.job.engine.app.web;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.eclipse.kapua.KapuaException;
+import org.eclipse.kapua.commons.ContainerIdResolver;
+import org.eclipse.kapua.commons.DefaultContainerIdResolver;
 import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.commons.core.JaxbClassProvider;
 import org.eclipse.kapua.commons.liquibase.DatabaseCheckUpdate;
+import org.eclipse.kapua.commons.setting.system.SystemSetting;
+import org.eclipse.kapua.commons.setting.system.SystemSettingKey;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProvider;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProviderImpl;
 import org.eclipse.kapua.commons.util.xml.XmlRootAnnotatedJaxbClassesScanner;
@@ -49,9 +54,45 @@ public class AppModule extends AbstractKapuaModule {
         return "job-engine";
     }
 
+    @Singleton
     @Provides
-    @Named("eventsModuleName")
-    String eventModuleName() {
-        return "job_engine";
+    ContainerIdResolver containerIdResolver(SystemSetting systemSetting) throws KapuaException {
+        return new DefaultContainerIdResolver(systemSetting.getString(SystemSettingKey.CONTAINER_ID));
+    }
+
+    @Provides
+    @Named("accountEvtSubscriptionGroupId")
+    String accountEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "eng-job-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("authenticationEvtSubscriptionGroupId")
+    String authenticationEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "eng-job-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("authorizationEvtSubscriptionGroupId")
+    String authorizationEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "eng-job-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("deviceConnectionEvtSubscriptionGroupId")
+    String deviceConnectionEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "brk-tel-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("deviceRegistryEvtSubscriptionGroupId")
+    String deviceRegistryEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "eng-job-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("userEvtSubscriptionGroupId")
+    String userEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "eng-job-" + containerIdResolver.getContainerId();
     }
 }

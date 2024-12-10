@@ -15,16 +15,21 @@ package org.eclipse.kapua.app.api.web;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.app.api.core.model.StorableEntityId;
 import org.eclipse.kapua.app.api.core.model.device.management.JsonGenericRequestMessage;
 import org.eclipse.kapua.app.api.core.model.device.management.JsonGenericResponseMessage;
 import org.eclipse.kapua.app.api.core.settings.KapuaApiCoreSetting;
 import org.eclipse.kapua.app.api.core.settings.KapuaApiCoreSettingKeys;
 import org.eclipse.kapua.app.api.resources.v1.resources.model.device.management.keystore.DeviceKeystoreCertificateInfo;
+import org.eclipse.kapua.commons.ContainerIdResolver;
+import org.eclipse.kapua.commons.DefaultContainerIdResolver;
 import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.commons.core.JaxbClassProvider;
 import org.eclipse.kapua.commons.core.SimpleJaxbClassProvider;
 import org.eclipse.kapua.commons.liquibase.DatabaseCheckUpdate;
+import org.eclipse.kapua.commons.setting.system.SystemSetting;
+import org.eclipse.kapua.commons.setting.system.SystemSettingKey;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProvider;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProviderImpl;
 import org.eclipse.kapua.commons.util.xml.XmlRootAnnotatedJaxbClassesScanner;
@@ -75,10 +80,46 @@ public class AppModule extends AbstractKapuaModule {
         return "rest-api";
     }
 
+    @Singleton
     @Provides
-    @Named("eventsModuleName")
-    String eventModuleName() {
-        return "rest_api";
+    ContainerIdResolver containerIdResolver(SystemSetting systemSetting) throws KapuaException {
+        return new DefaultContainerIdResolver(systemSetting.getString(SystemSettingKey.CONTAINER_ID));
+    }
+
+    @Provides
+    @Named("accountEvtSubscriptionGroupId")
+    String accountEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "rest-api-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("authenticationEvtSubscriptionGroupId")
+    String authenticationEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "rest-api-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("authorizationEvtSubscriptionGroupId")
+    String authorizationEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "rest-api-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("deviceConnectionEvtSubscriptionGroupId")
+    String deviceConnectionEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "brk-tel-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("deviceRegistryEvtSubscriptionGroupId")
+    String deviceRegistryEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "rest-api-" + containerIdResolver.getContainerId();
+    }
+
+    @Provides
+    @Named("userEvtSubscriptionGroupId")
+    String userEvtSubscriptionGroupId(ContainerIdResolver containerIdResolver) {
+        return "rest-api-" + containerIdResolver.getContainerId();
     }
 
 }

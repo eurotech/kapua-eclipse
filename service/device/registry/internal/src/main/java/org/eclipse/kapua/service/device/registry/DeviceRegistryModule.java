@@ -138,7 +138,7 @@ public class DeviceRegistryModule extends AbstractKapuaModule {
             ServiceEventBus serviceEventBus,
             KapuaDeviceRegistrySettings kapuaDeviceRegistrySettings,
             KapuaJpaTxManagerFactory jpaTxManagerFactory,
-            @Named("eventsModuleName") String eventModuleName
+            @Named("deviceRegistryEvtSubscriptionGroupId") String subscriptionGroupId
     ) throws ServiceEventBusException {
         return new DeviceServiceModule(
                 deviceConnectionService,
@@ -156,7 +156,7 @@ public class DeviceRegistryModule extends AbstractKapuaModule {
                         serviceEventBus
                 ),
                 serviceEventBus,
-                eventModuleName);
+                subscriptionGroupId);
     }
 
     @Provides
