@@ -19,8 +19,6 @@ import java.util.List;
 public interface JpaJobInstanceDataRepository {
     JpaJobInstanceData create(TxContext tx, String name, String appTag, String jobXml);
 
-    int deleteByName(TxContext tx, String jobName);
-
     JpaJobInstanceData find(TxContext tx, long id);
 
     Integer getJobInstanceCount(TxContext tx, String jobName, String appTag);
@@ -28,4 +26,15 @@ public interface JpaJobInstanceDataRepository {
     List<Long> getJobInstanceIds(TxContext tx, String jobName, String appTag, Integer offset, Integer limit);
 
     List<JpaJobInstanceData> getExternalJobInstanceData(TxContext tx);
+
+    int deleteByName(TxContext tx, String jobName);
+
+    /**
+     * Deletes {@link JpaJobInstanceData} by its {@link JpaJobInstanceData#getId()}.
+     *
+     * @param tx The {@link TxContext}
+     * @param jobInstanceId The {@link JpaJobInstanceData#getId()} to delete.
+     * @since 2.1.0
+     */
+    int deleteById(TxContext tx, long jobInstanceId);
 }
