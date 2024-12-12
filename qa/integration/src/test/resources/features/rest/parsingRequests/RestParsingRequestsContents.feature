@@ -18,7 +18,8 @@ Feature: REST API tests for parsing of requests
 
   @setup
   Scenario: Initialize security context, then start rest-api container and dependencies
-    Given Init Security Context
+    Given Init Jaxb Context
+    And Init Security Context
     And start rest-API container and dependencies with auth token TTL "10000"ms and refresh token TTL "20000"ms and cors endpoint refresh interval 5s
 
   Scenario: Creation of a device with a wrong format "status" field
