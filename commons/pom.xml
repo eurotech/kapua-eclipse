@@ -52,12 +52,10 @@
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
-                        <compilerArg>
-                            -Amapstruct.unmappedTargetPolicy=ERROR
-                            -Amapstruct.unmappedSourcePolicy=WARN
-                            -Amapstruct.suppressGeneratorTimestamp=true
-                            -Amapstruct.suppressGeneratorVersionInfoComment=true
-                        </compilerArg>
+                        <compilerArg>-Amapstruct.unmappedTargetPolicy=ERROR</compilerArg>
+                        <compilerArg>-Amapstruct.unmappedSourcePolicy=WARN</compilerArg>
+                        <compilerArg>-Amapstruct.suppressGeneratorTimestamp=true</compilerArg>
+                        <compilerArg>-Amapstruct.suppressGeneratorVersionInfoComment=true</compilerArg>
                     </compilerArgs>
                 </configuration>
             </plugin>
