@@ -57,8 +57,10 @@ Feature: Account Job Service Integration Tests
     And I create a job with the name "job3"
     Then No exception was thrown
     Given I expect the exception "KapuaMaxNumberOfItemsReachedException" with the text "*"
+    And I expect the response status code 403
     When I create a job with the name "job4"
     Then An exception was thrown
+    And Response status code match
     And I logout
 
   Scenario: Creating Jobs Under Account That Does Not Allow Jobs

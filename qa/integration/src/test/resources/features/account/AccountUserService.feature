@@ -55,8 +55,10 @@ Feature: Account User Service Integration Tests
     And I create user with name "user2"
     And I create user with name "user3"
     Given I expect the exception "KapuaMaxNumberOfItemsReachedException" with the text "*"
+    And I expect the response status code 403
     When I create user with name "user4"
     Then An exception was thrown
+    And Response status code match
     And I logout
 
   Scenario: Creating Users Under Account That Does Not Allow Users

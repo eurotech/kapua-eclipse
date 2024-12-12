@@ -55,8 +55,10 @@ Feature: Account Tag Service Integration Tests
     And I create tag with name "tag2" without description
     And I create tag with name "tag3" without description
     Given I expect the exception "KapuaMaxNumberOfItemsReachedException" with the text "*"
+    And I expect the response status code 403
     When I create tag with name "tag4" without description
     Then An exception was thrown
+    And Response status code match
     And I logout
 
   Scenario: Creating Tags Under Account That Does Not Allow Tags
