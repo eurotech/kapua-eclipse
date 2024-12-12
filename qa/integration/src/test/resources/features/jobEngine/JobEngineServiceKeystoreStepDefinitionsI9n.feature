@@ -48,7 +48,7 @@ Feature: Job Engine Service - Keystore Step Definitions
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob - Keystore Steps" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search for events from device "rpione3" in account "kapua-sys" I find 2 events within 30 seconds
     And KuraMock is disconnected
@@ -79,7 +79,7 @@ Feature: Job Engine Service - Keystore Step Definitions
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob - Keystore Steps" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search for events from device "rpione3" in account "kapua-sys" I find 2 events within 30 seconds
     And KuraMock is disconnected
@@ -137,7 +137,7 @@ Feature: Job Engine Service - Keystore Step Definitions
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 3 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 3 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob - Keystore Steps" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search for events from device "rpione3" in account "kapua-sys" I find 5 events within 30 seconds
     And KuraMock is disconnected

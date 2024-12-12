@@ -68,7 +68,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is different than 2 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 2 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 2 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    When Bundles are requested
 #    Then A bundle named "slf4j.api" with id 34 and version "1.7.21" is present and "ACTIVE"
@@ -117,7 +117,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is different than 2 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 2 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 2 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    When Bundles are requested
 #    And A bundle named "org.eclipse.kura.linux.bluetooth" with id 77 and version "1.0.300" is present and "RESOLVED"
@@ -165,7 +165,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is different than 2 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 2 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 2 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    And Packages are requested and 2 packages are received
 #    Then KuraMock is disconnected
@@ -212,7 +212,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is different than 2 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 2 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 2 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    Then Packages are requested and 2 packages are received
 #    Then KuraMock is disconnected
@@ -259,7 +259,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is different than 2 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 2 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 2 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    When Device assets are requested
 #    Then Asset with name "asset1" and channel with name "channel1" and value 1233 are received
@@ -309,7 +309,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is 0 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    When Bundles are requested
 #    Then A bundle named "slf4j.api" with id 34 and version "1.7.21" is present and "ACTIVE"
@@ -357,7 +357,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is 0 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    When Bundles are requested
 #    And A bundle named "org.eclipse.kura.linux.bluetooth" with id 77 and version "1.0.300" is present and "RESOLVED"
@@ -404,7 +404,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is 0 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    When Packages are requested and 2 packages are received
 #    Then KuraMock is disconnected
@@ -450,7 +450,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is 0 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    And Configuration is requested
 #    Then A Configuration named "org.eclipse.kura.clock.ClockService" has property "clock.ntp.retry.interval" with value "10"
@@ -498,7 +498,7 @@ Feature: JobEngineService stop job tests with online device
 #    And I search for the last job target in the database
 #    And I confirm the step index is different than 1 and status is "PROCESS_AWAITING"
 #    And I start a job
-#    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+#    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
 #    When I query for the execution items for the current job and I count 2 or more finished within 30 seconds
 #    When Device assets are requested
 #    Then Asset with name "asset1" and channel with name "channel1" and value 1233 are received
