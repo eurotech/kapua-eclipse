@@ -169,6 +169,7 @@
         <karaf-maven-plugin.version>4.4.2</karaf-maven-plugin.version>
         <license-maven-plugin.version>1.9</license-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.5</nexus-staging-maven-plugin.version>
+        <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
         <sql-maven-plugin.version>1.5</sql-maven-plugin.version>
         <surefire.version>3.0.0-M7</surefire.version>
 
@@ -177,7 +178,10 @@
         <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
 
+        <!-- Sonar Configuration-->
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>eclipse_kapua</sonar.projectKey>
+        <sonar.organization>eclipse-github</sonar.organization>
     </properties>
 
     <build>
@@ -495,6 +499,11 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -2832,6 +2841,27 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>sonarScan</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>sonar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
     <licenses>
