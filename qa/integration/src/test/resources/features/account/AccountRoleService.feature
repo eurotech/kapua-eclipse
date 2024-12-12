@@ -56,8 +56,10 @@ Feature: Account Role Service Integration Tests
     And I create role "role2" in account "acc1"
     And I create role "role3" in account "acc1"
     Given I expect the exception "KapuaMaxNumberOfItemsReachedException" with the text "*"
+    And I expect the response status code 403
     When I create role "role4" in account "acc1"
     Then An exception was thrown
+    And Response status code match
     And I logout
 
   Scenario: Creating Roles Under Account That Does Not Allow Roles

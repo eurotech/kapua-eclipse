@@ -55,6 +55,7 @@ import org.eclipse.kapua.commons.rest.model.errors.JobRunningExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.JobScopedEngineExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.JobStartingExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.JobStoppingExceptionInfo;
+import org.eclipse.kapua.commons.rest.model.errors.MaxNumberOfItemsReachedExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.MfaRequiredExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.SelfManagedOnlyExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.ServiceConfigurationLimitExceededExceptionInfo;
@@ -365,6 +366,7 @@ public class RestApiJAXBContextProvider implements JAXBContextProvider {
                     IllegalArgumentExceptionInfo.class,
                     IllegalNullArgumentExceptionInfo.class,
                     MfaRequiredExceptionInfo.class,
+                    MaxNumberOfItemsReachedExceptionInfo.class,
 
                     // Jobs Exception Info
                     CleanJobDataExceptionInfo.class,
