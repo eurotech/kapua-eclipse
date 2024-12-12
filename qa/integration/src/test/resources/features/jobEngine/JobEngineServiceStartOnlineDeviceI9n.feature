@@ -48,7 +48,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search for events from device "rpione3" in account "kapua-sys" I find 2 events within 30 seconds
     And KuraMock is disconnected
@@ -80,7 +80,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 3 events within 30 seconds
     And Bundles are requested
@@ -114,7 +114,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 3 events within 30 seconds
     And Bundles are requested
@@ -147,7 +147,7 @@ Feature: JobEngineService start job tests with online device
       | timeout       | java.lang.Long                                                                | 10000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
     Then I create a new JobStep from the existing creator
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     When I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 3 events within 30 seconds
     And The type of the last event is "CONFIGURATION"
@@ -181,7 +181,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution items or more and I confirm the executed jobs are finished within 45 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 3 or more events within 30 seconds
     And Packages are requested and 2 packages are received
@@ -214,7 +214,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 3 events within 30 seconds
     When Device assets are requested
@@ -247,7 +247,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution items or more and I confirm the executed jobs are finished within 45 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 3 or more events within 30 seconds
     And Packages are requested and 0 packages are received
@@ -288,7 +288,7 @@ Feature: JobEngineService start job tests with online device
     Then No exception was thrown
     And I count the JobSteps and I find 2 JobStep within 30 seconds
     And I start a job
-    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
     When I query for the job with the name "TestJob" and I count 1 execution items or more and I confirm the executed jobs are finished within 45 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 3 or more events within 30 seconds
     And Packages are requested and 2 packages are received
@@ -328,7 +328,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     And I count the JobSteps and I find 2 JobStep within 30 seconds
     And I start a job
-    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
     Given I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 4 events within 30 seconds
     And Bundles are requested
@@ -368,7 +368,7 @@ Feature: JobEngineService start job tests with online device
     And No exception was thrown
     And I count the JobSteps and I find 2 JobStep within 30 seconds
     Then I start a job
-    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
     Given I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 5 events within 30 seconds
     And Configuration is requested
@@ -407,7 +407,7 @@ Feature: JobEngineService start job tests with online device
     And No exception was thrown
     And I count the JobSteps and I find 2 JobStep within 30 seconds
     And I start a job
-    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution items or more and I confirm the executed jobs are finished within 45 seconds
     When I search for events from device "rpione3" in account "kapua-sys" I find 3 or more events within 30 seconds
     When Device assets are requested
@@ -446,7 +446,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search events from devices in account "kapua-sys" and 3 events are found
     When KuraMock is disconnected
@@ -479,7 +479,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search events from devices in account "kapua-sys" and 3 events are found
     And Bundles are requested
@@ -514,7 +514,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_FAILED" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_FAILED" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search events from devices in account "kapua-sys" and 2 events are found
     And Bundles are requested
@@ -549,7 +549,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search events from devices in account "kapua-sys" and 3 events are found
     Then Bundles are requested
@@ -581,7 +581,7 @@ Feature: JobEngineService start job tests with online device
       | timeout       | java.lang.Long                                                                | 10000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
     When I create a new JobStep from the existing creator
     Then I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     And I search events from devices in account "kapua-sys" and 3 events are found
     Then Configuration is requested
@@ -616,7 +616,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution items and I confirm the executed jobs is finished within 20 seconds
     And I search events from devices in account "kapua-sys" and 3 events are found
     And Device assets are requested
@@ -649,7 +649,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     Given I query for the job with the name "TestJob" and I count 1 execution items or more and I confirm the executed jobs are finished within 45 seconds
     When I search events from devices in account "kapua-sys" and 3 or more events are found
     And Packages are requested and 0 packages are received
@@ -681,7 +681,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     Then No exception was thrown
     And I start a job
-    And I confirm job target has step index 0 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 0 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution items or more and I confirm the executed jobs are finished within 45 seconds
     And I search events from devices in account "kapua-sys" and 3 or more events are found
     When Packages are requested and 2 packages are received
@@ -723,7 +723,7 @@ Feature: JobEngineService start job tests with online device
     Then No exception was thrown
     And I count the JobSteps and I find 2 JobStep within 30 seconds
     And I start a job
-    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution items or more and I confirm the executed jobs are finished within 45 seconds
     When I search events from devices in account "kapua-sys" and 3 or more events are found
     And Packages are requested and 2 packages are received
@@ -764,7 +764,7 @@ Feature: JobEngineService start job tests with online device
     When I create a new JobStep from the existing creator
     And I count the JobSteps and I find 2 JobStep within 30 seconds
     And I start a job
-    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
     Given I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     When I search events from devices in account "kapua-sys" and 4 events are found
     And Bundles are requested
@@ -805,7 +805,7 @@ Feature: JobEngineService start job tests with online device
     And No exception was thrown
     And I count the JobSteps and I find 2 JobStep within 30 seconds
     Then I start a job
-    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution item and I confirm the executed job is finished within 20 seconds
     When I search events from devices in account "kapua-sys" and 5 events are found
     Then Configuration is requested
@@ -845,7 +845,7 @@ Feature: JobEngineService start job tests with online device
     And No exception was thrown
     And I count the JobSteps and I find 2 JobStep within 30 seconds
     And I start a job
-    And I confirm job target has step index 1 and status "PROCESS_OK" within 180 seconds
+    And I confirm job target has step index 1 and status "PROCESS_OK" within 31 seconds
     And I query for the job with the name "TestJob" and I count 1 execution items or more and I confirm the executed jobs are finished within 45 seconds
     When I search events from devices in account "kapua-sys" and 3 or more events are found
     And Device assets are requested
