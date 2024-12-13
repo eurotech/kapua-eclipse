@@ -27,26 +27,25 @@ import io.cucumber.java.en.Given;
 @ScenarioScoped
 public class InitShiro {
 
-    private static final Logger logger = LoggerFactory.getLogger(InitShiro.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InitShiro.class);
 
     @Given("^Init Security Context$")
     public void start() throws IOException {
-        logger.info("Init shiro security manager...");
+        LOG.info("Init shiro security manager...");
         try {
             SecurityManager securityManager = SecurityUtils.getSecurityManager();
-            logger.info("Found Shiro security manager {}", securityManager);
+            LOG.info("Found Shiro security manager {}", securityManager);
         } catch (UnavailableSecurityManagerException e) {
-            logger.info("Init shiro security manager...");
+            LOG.info("Init shiro security manager...");
             SecurityUtil.initSecurityManager();
         }
-        logger.info("Init shiro security manager... DONE");
+        LOG.info("Init shiro security manager... DONE");
     }
 
     @Given("^Reset Security Context$")
     public void stop() {
-        logger.info("Reset shiro security manager...");
+        LOG.info("Reset shiro security manager...");
         SecurityUtils.setSecurityManager(null);
-        logger.info("Reset shiro security manager... DONE");
+        LOG.info("Reset shiro security manager... DONE");
     }
-
 }
