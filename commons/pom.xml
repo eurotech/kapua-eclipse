@@ -42,13 +42,13 @@
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
+                            <version>${mapstruct.version}</version>
                         </path>
                         <!-- other annotation processors -->
                         <path>
                             <groupId>org.hibernate</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${org.hibernate.hibernate-jpamodelgen.version}</version>
+                            <version>${hibernate-jpamodelgen.version}</version>
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
