@@ -57,6 +57,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,7 @@ public class DockerSteps {
     private static final String API_IMAGE = "kapua-api";
     private static final List<String> DEFAULT_DEPLOYMENT_CONTAINERS_NAME;
     private static final List<String> DEFAULT_BASE_DEPLOYMENT_CONTAINERS_NAME;
-    private static final int WAIT_COUNT = 120;//total wait time = 240 secs (120 * 2000ms)
+    private static final int WAIT_COUNT = 120; //total wait time = 240 secs (120 * 2000ms)
     private static final long WAIT_STEP = 2000;
     private static final long WAIT_FOR_DB = 10000;
     private static final long WAIT_FOR_ES = 10000;
@@ -106,6 +107,7 @@ public class DockerSteps {
         DEFAULT_DEPLOYMENT_CONTAINERS_NAME.add(BasicSteps.AUTH_SERVICE_CONTAINER_NAME);
         DEFAULT_DEPLOYMENT_CONTAINERS_NAME.add(BasicSteps.MESSAGE_BROKER_CONTAINER_NAME);
         DEFAULT_DEPLOYMENT_CONTAINERS_NAME.add(BasicSteps.API_CONTAINER_NAME);
+
         DEFAULT_BASE_DEPLOYMENT_CONTAINERS_NAME = new ArrayList<>();
         DEFAULT_BASE_DEPLOYMENT_CONTAINERS_NAME.add(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
         DEFAULT_BASE_DEPLOYMENT_CONTAINERS_NAME.add(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
@@ -235,6 +237,66 @@ public class DockerSteps {
         }
     }
 
+    /**
+     * Starts Docker container requested.
+     *
+     * @param dockerContainers The Docker containers to start
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @Given("Start Docker environment with resources")
+    public void startDockerEnvironmentWithResources(List<String> dockerContainers) throws Exception {
+        cleanDockerEnvironmentInternal();
+
+        pullImage(ES_IMAGE);
+
+        createNetwork();
+
+        for (String dockerContainer : dockerContainers) {
+            switch (dockerContainer) {
+                case "db":
+                    startDBContainer(BasicSteps.DB_CONTAINER_NAME);
+                    synchronized (this) {
+                        this.wait(WAIT_FOR_DB);
+                    }
+                    break;
+                case "es":
+                    startESContainer(BasicSteps.ES_CONTAINER_NAME);
+                    synchronized (this) {
+                        this.wait(WAIT_FOR_ES);
+                    }
+                    break;
+                case "events-broker":
+                    startEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
+                    synchronized (this) {
+                        this.wait(WAIT_FOR_EVENTS_BROKER);
+                    }
+                    break;
+                case "job-engine":
+                    startJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
+                    synchronized (this) {
+                        this.wait(WAIT_FOR_JOB_ENGINE);
+                    }
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unknown container resource: " + dockerContainer);
+            }
+        }
+    }
+
+    private void cleanDockerEnvironmentInternal() throws DockerException, InterruptedException {
+        removeContainers(
+                Arrays.asList(
+                        BasicSteps.JOB_ENGINE_CONTAINER_NAME,
+                        BasicSteps.EVENTS_BROKER_CONTAINER_NAME,
+                        BasicSteps.ES_CONTAINER_NAME,
+                        BasicSteps.DB_CONTAINER_NAME
+                )
+        );
+
+        removeNetwork();
+    }
+
     @Given("Start base docker environment")
     public void startBaseDockerEnvironment() throws Exception {
         stopBaseDockerEnvironment();
@@ -320,14 +382,14 @@ public class DockerSteps {
         }
     }
 
-    private boolean areServicesReady() throws JsonParseException, JsonMappingException, IOException {
+    private boolean areServicesReady() throws IOException {
         if (isServiceReady(LIFECYCLE_CHECK_WEB_APP) && isServiceReady(TELEMETRY_CHECK_WEB_APP) && isServiceReady(AUTH_SERVICE_CHECK_WEB_APP)) {
             return true;
         }
         return false;
     }
 
-    private boolean isServiceReady(String type) throws JsonParseException, JsonMappingException, IOException {
+    private boolean isServiceReady(String type) throws IOException {
         URL serviceUrl = new URL(LIFECYCLE_HEALTH_URL);//lifecycle endpoint
         if (TELEMETRY_CHECK_WEB_APP.equals(type)) {
             serviceUrl = new URL(TELEMETRY_HEALTH_URL);//telemetry endpoint
@@ -336,22 +398,22 @@ public class DockerSteps {
         }
         logger.debug("Querying {} consumer status for url: {}", type, serviceUrl);
         HttpURLConnection conn = null;
-        DataOutputStream out = null;
-        BufferedReader in = null;
-        InputStreamReader isr = null;
+
         try {
             conn = (HttpURLConnection) serviceUrl.openConnection();
             conn.setConnectTimeout(HTTP_COMMUNICATION_TIMEOUT);
             conn.setReadTimeout(HTTP_COMMUNICATION_TIMEOUT);
-            //works with spring boot actuator servlet mappings
+            // Works with spring boot actuator servlet mappings
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
+
             int status = conn.getResponseCode();
             if (status == 200) {
-                isr = new InputStreamReader(conn.getInputStream());
-                in = new BufferedReader(isr);
-                return isRunning(MAPPER.readValue(in, Map.class));
+                try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+                     BufferedReader in = new BufferedReader(isr)) {
+                    return isRunning(MAPPER.readValue(in, Map.class));
+                }
             } else {
                 logger.info("Querying {} consumer status for url: {} - ERROR", type, serviceUrl);
                 return false;
@@ -359,27 +421,6 @@ public class DockerSteps {
         } catch (IOException e) {
             //nothing to do
         } finally {
-            if (isr != null) {
-                try {
-                    isr.close();
-                } catch (Exception e) {
-                    logger.warn("Cannot close InputStreamReader", e.getMessage(), e);
-                }
-            }
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    logger.warn("Cannot close BufferedReader", e.getMessage(), e);
-                }
-            }
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (Exception e) {
-                    logger.warn("Cannot close DataOutputStream", e.getMessage(), e);
-                }
-            }
             if (conn != null) {
                 try {
                     conn.disconnect();
@@ -636,7 +677,7 @@ public class DockerSteps {
     }
 
     @Then("Remove container with name {string}")
-    public void removeContainers(List<String> names) throws DockerException, InterruptedException {
+    public void removeContainers(List<String> names) {
         for (String name : names) {
             removeContainer(name);
             //search for images with / at the beginning
