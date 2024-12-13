@@ -19,14 +19,12 @@
         <groupId>org.eclipse.kapua</groupId>
         <artifactId>kapua</artifactId>
         <version>2.1.0-SNAPSHOT</version>
-        <relativePath>..</relativePath>
     </parent>
 
     <artifactId>kapua-simulator-kura</artifactId>
     <description>This is a framework for simulating Eclipse Kura IoT gateway instances</description>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <docker.account>kapua</docker.account>
         <osgi.version>6.0.0</osgi.version>
     </properties>

@@ -70,6 +70,7 @@
         <commons-logging.version>1.2</commons-logging.version>
         <commons-pool.version>2.3</commons-pool.version>
         <compress-lzf.version>1.0.3</compress-lzf.version>
+        <cucumber.version>6.11.0</cucumber.version>
         <!-- Do NOT bump eclipselink further than this version. For details, see issue: https://github.com/eclipse/kapua/issues/3955 -->
         <eclipselink.version>2.7.12</eclipselink.version>
         <dropwizard-metrics.version>3.2.2</dropwizard-metrics.version>
@@ -82,6 +83,7 @@
         <guice.version>5.1.0</guice.version>
         <hamcrest-core.version>2.2</hamcrest-core.version>
         <h2.version>1.4.200</h2.version>
+        <hibernate-jpamodelgen.version>5.5.4.Final</hibernate-jpamodelgen.version>
         <hikaricp.version>4.0.3</hikaricp.version>
         <hk2-api.version>2.6.1</hk2-api.version>
         <httpcomponents-asyncclient.version>4.1.5</httpcomponents-asyncclient.version>
@@ -96,7 +98,6 @@
         <javax-json.version>1.0.4</javax-json.version>
         <javax-persistence.version>2.1.1</javax-persistence.version>
         <javax-servlet-api.version>3.1.0</javax-servlet-api.version>
-        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <javax-validation-api.version>2.0.1.Final</javax-validation-api.version>
         <jakarta-ws-rs-api.version>2.1.6</jakarta-ws-rs-api.version>
         <jakarta-xml-bind-api.version>2.3.3</jakarta-xml-bind-api.version>
@@ -115,6 +116,7 @@
         <log4j-api.version>2.17.1</log4j-api.version>
         <log4j2-mock.version>0.0.2</log4j2-mock.version>
         <logback.version>1.5.12</logback.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
         <mockito.version>1.10.19</mockito.version>
         <netty.version>4.1.114.Final</netty.version>
         <netty3.version>3.10.6.Final</netty3.version>
@@ -133,9 +135,6 @@
         <spotify.version>8.15.1</spotify.version>
         <swagger-ui.version>5.3.1</swagger-ui.version>
         <zxing.version>3.4.1</zxing.version>
-
-        <cucumber.version>6.11.0</cucumber.version>
-        <spotify.version>8.15.1</spotify.version>
 
         <!-- Plugins versions -->
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
@@ -169,15 +168,18 @@
         <karaf-maven-plugin.version>4.4.2</karaf-maven-plugin.version>
         <license-maven-plugin.version>1.9</license-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.5</nexus-staging-maven-plugin.version>
+        <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
         <sql-maven-plugin.version>1.5</sql-maven-plugin.version>
         <surefire.version>3.0.0-M7</surefire.version>
 
-        <org.hibernate.hibernate-jpamodelgen.version>5.5.4.Final</org.hibernate.hibernate-jpamodelgen.version>
         <!-- Docker configuration -->
         <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
 
+        <!-- Sonar Configuration-->
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>eclipse_kapua</sonar.projectKey>
+        <sonar.organization>eclipse-github</sonar.organization>
     </properties>
 
     <build>
@@ -500,6 +502,11 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -2084,7 +2091,7 @@
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
-                <version>${org.mapstruct.version}</version>
+                <version>${mapstruct.version}</version>
             </dependency>
 
             <dependency>
@@ -2647,7 +2654,7 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-jpamodelgen</artifactId>
-                <version>${org.hibernate.hibernate-jpamodelgen.version}</version>
+                <version>${hibernate-jpamodelgen.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -2837,6 +2844,27 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>sonarScan</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>sonar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
     <licenses>
