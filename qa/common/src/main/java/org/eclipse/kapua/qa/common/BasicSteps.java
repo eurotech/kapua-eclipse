@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2022 Red Hat Inc and others.
+ * Copyright (c) 2017, 2024 Red Hat Inc and others.
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -76,7 +76,6 @@ public class BasicSteps extends TestBase {
     public static final String LIFECYCLE_CONSUMER_CONTAINER_NAME = "lifecycle-consumer";
     public static final String AUTH_SERVICE_CONTAINER_NAME = "auth-service";
     public static final String API_CONTAINER_NAME = "rest-api";
-    public static final int JOB_ENGINE_CONTAINER_PORT = 8080;
 
     public static final String LAST_CREDENTIAL_ID = "LastCredentialId";
 
@@ -93,29 +92,113 @@ public class BasicSteps extends TestBase {
     private static final String ASSERT_ERROR_NAME = "AssertErrorName";
     private static final String ASSERT_ERROR_CAUGHT = "AssertErrorCaught";
 
-    private DBHelper database;
+    private final DBHelper database;
 
     @Inject
     public BasicSteps(StepData stepData, DBHelper database) {
         super(stepData);
+
         this.database = database;
     }
 
     @Before(value = "@setup and (@env_docker or @env_docker_base)", order = 0)
     public void initParametersDocker(Scenario scenario) {
         logger.info("=====> Init parameters for docker environment...");
-        setProperties(scenario, "kapuadb", "true", "localhost", "3306", "DEFAULT", "org.h2.Driver",
-            "jdbc:h2:tcp", "certificates/jwt/test.key", "certificates/jwt/test.cert", "localhost", "http://job-engine:8080/v1", "trusted", "MODE=MySQL");
+        setProperties(scenario,
+                "kapuadb",
+                "true",
+                "localhost",
+                "3306",
+                "DEFAULT",
+                "org.h2.Driver",
+                "jdbc:h2:tcp",
+                "certificates/jwt/test.key",
+                "certificates/jwt/test.cert",
+                "localhost",
+                "http://job-engine:8080/v1",
+                "trusted",
+                "MODE=MySQL");
         logger.info("=====> Init parameters for docker environment... DONE");
     }
 
     @Before(value = "@setup and @env_none", order = 0)
     public void initParametersEmbedded(Scenario scenario) {
         logger.info("=====> Init parameters for embedded environment...");
-        setProperties(scenario, "kapuadb", "true", "", "", "H2", "org.h2.Driver", "jdbc:h2:mem:",
-                "certificates/jwt/test.key", "certificates/jwt/test.cert", "localhost", "http://localhost:8080/v1", "trusted", null);
+        setProperties(scenario,
+                "kapuadb",
+                "true",
+                "",
+                "",
+                "H2",
+                "org.h2.Driver",
+                "jdbc:h2:mem:",
+                "certificates/jwt/test.key",
+                "certificates/jwt/test.cert",
+                "localhost",
+                "http://localhost:8080/v1",
+                "trusted",
+                null);
         logger.info("=====> Init parameters for embedded environment... DONE");
     }
+
+    @Before(value = "(@env_docker or @env_docker_base) and not (@setup or @teardown)", order = 0)
+    public void beforeScenarioDockerFull(Scenario scenario) {
+        beforeCommon(scenario);
+    }
+
+    @Before(value = "@env_none and not (@setup or @teardown)", order = 0)
+    public void beforeScenarioDockerBase(Scenario scenario) {
+        beforeCommon(scenario);
+
+        databaseInit();
+    }
+
+    @After(value = "@env_docker_base and @setup", order = 0)
+    public void afterScenarioDockerBaseSetup(Scenario scenario) {
+        databaseInit();
+    }
+
+    @After(value = "(@env_docker or @env_docker_base) and not (@setup or @teardown)", order = 0)
+    public void afterScenarioDockerFull(Scenario scenario) {
+        // afterScenarioDocker(scenario);
+        logger.info("Database cleanup...");
+        database.deleteAll();
+        logger.info("Database cleanup... DONE");
+        SecurityUtils.getSubject().logout();
+        KapuaSecurityUtils.clearSession();
+    }
+
+    @After(value = "@env_none and not (@setup or @teardown)", order = 0)
+    public void afterScenarioNone(Scenario scenario) {
+        logger.info("Database drop...");
+        try {
+            database.dropAll();
+            database.close();
+        } catch (Exception e) {
+            logger.error("Failed execute @After", e);
+        }
+        logger.info("Database drop... DONE");
+        KapuaSecurityUtils.clearSession();
+    }
+
+    protected void beforeCommon(Scenario scenario) {
+        this.scenario = scenario;
+        stepData.clear();
+    }
+
+    protected void databaseInit() {
+        database.init();
+        // Create KapuaSession using KapuaSecurityUtils and kapua-sys user as logged in user.
+        // All operations on database are performed using system user.
+        // Only for unit tests. Integration tests assume that a real login is performed.
+        KapuaSession kapuaSession = new KapuaSession(null, SYS_SCOPE_ID, SYS_USER_ID);
+        KapuaSecurityUtils.setSession(kapuaSession);
+    }
+
+
+    //
+    // Data Table Types
+    //
 
     @DataTableType
     public CucAccount cucAccount(Map<String, String> entry) {
@@ -330,6 +413,9 @@ public class BasicSteps extends TestBase {
                                   entry.get("email"));
     }
 
+    //
+    // Parameter Types
+    //
     @ParameterType(".*")
     public org.eclipse.kapua.transport.message.jms.JmsTopic topic(String topic) {
         return new JmsTopic(topic);
@@ -337,13 +423,26 @@ public class BasicSteps extends TestBase {
 
     @ParameterType(value = "true|True|TRUE|false|False|FALSE")
     public boolean booleanValue(String value) {
-        return Boolean.valueOf(value);
+        return Boolean.parseBoolean(value);
     }
 
-    private void setProperties(Scenario scenario, String schema, String updateSchema,
-            String dbHost, String dbPort, String dbConnResolver, String dbDriver, String jdbcConnection,
-            String jwtKey, String jwtCertificate, String brokerHost, String jobEngineUrl, String jobEngineAuthMode, String additionalOptions) {
+    private void setProperties(Scenario scenario,
+           String schema,
+           String updateSchema,
+           String dbHost,
+           String dbPort,
+           String dbConnResolver,
+           String dbDriver,
+           String jdbcConnection,
+           String jwtKey,
+           String jwtCertificate,
+           String brokerHost,
+           String jobEngineUrl,
+           String jobEngineAuthMode,
+           String additionalOptions) {
+
         SystemSetting.resetInstance();
+
         System.setProperty(SystemSettingKey.DB_SCHEMA.key(), schema);
         System.setProperty(SystemSettingKey.DB_SCHEMA_UPDATE.key(), updateSchema);
         System.setProperty(SystemSettingKey.DB_CONNECTION_HOST.key(), dbHost);
@@ -390,80 +489,6 @@ public class BasicSteps extends TestBase {
                 }
             }
         }
-    }
-
-    @Before
-    public void checkWaitMultipier() {
-        if (WAIT_MULTIPLIER != 1.0d) {
-            logger.info("Wait multiplier active: {}", WAIT_MULTIPLIER);
-        }
-    }
-
-    @Before(value = "(@env_docker or @env_docker_base) and not (@setup or @teardown)", order = 0)
-    public void beforeScenarioDockerFull(Scenario scenario) {
-        beforeCommon(scenario);
-    }
-
-    @Before(value = "@env_none and not (@setup or @teardown)", order = 0)
-    public void beforeScenarioDockerBase(Scenario scenario) {
-        beforeCommon(scenario);
-        databaseInit();
-    }
-
-    @After(value = "(@env_docker or @env_docker_base) and not (@setup or @teardown)", order = 0)
-    public void afterScenarioDockerFull(Scenario scenario) {
-        afterScenarioDocker(scenario);
-    }
-
-    @After(value = "@env_docker_base and @setup", order = 0)
-    public void afterScenarioDockerBaseSetup(Scenario scenario) {
-        databaseInit();
-    }
-
-    @After(value = "@env_none and not (@setup or @teardown)", order = 0)
-    public void afterScenarioNone(Scenario scenario) {
-        afterScenarioNoDocker(scenario);
-    }
-
-    protected void beforeCommon(Scenario scenario) {
-        this.scenario = scenario;
-        stepData.clear();
-    }
-
-    protected void databaseInit() {
-        database.init();
-        // Create KapuaSession using KapuaSecurtiyUtils and kapua-sys user as logged in user.
-        // All operations on database are performed using system user.
-        // Only for unit tests. Integration tests assume that a real login is performed.
-        KapuaSession kapuaSession = new KapuaSession(null, SYS_SCOPE_ID, SYS_USER_ID);
-        KapuaSecurityUtils.setSession(kapuaSession);
-    }
-
-    protected void afterScenarioDocker(Scenario scenario) {
-        logger.info("Database cleanup...");
-        database.deleteAll();
-        logger.info("Database cleanup... DONE");
-        SecurityUtils.getSubject().logout();
-        KapuaSecurityUtils.clearSession();
-    }
-
-    protected void afterScenarioNoDocker(Scenario scenario) {
-        logger.info("Database drop...");
-        try {
-            database.dropAll();
-            database.close();
-        } catch (Exception e) {
-            logger.error("Failed execute @After", e);
-        }
-        logger.info("Database drop... DONE");
-        KapuaSecurityUtils.clearSession();
-    }
-
-    @Given("A placeholder step")
-    public void doNothing() {
-        // An empty placeholder step. Just a breakpoint anchor point. Used to pause
-        // test execution by placing a breakpoint into.
-        Integer a = 10;
     }
 
     @Given("Scope with ID {int}")

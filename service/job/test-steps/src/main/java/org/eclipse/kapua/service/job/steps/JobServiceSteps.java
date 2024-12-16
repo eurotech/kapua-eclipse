@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2017, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -120,10 +120,10 @@ public class JobServiceSteps extends JobServiceTestBase {
         JobCreator jobCreator = (JobCreator) stepData.get(JOB_CREATOR);
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             stepData.remove(CURRENT_JOB_ID);
             Job job = jobService.create(jobCreator);
-            stepData.put("Job", job);
+            stepData.put(JOB, job);
             stepData.put(CURRENT_JOB_ID, job.getId());
         } catch (KapuaException ex) {
             verifyException(ex);
@@ -165,10 +165,10 @@ public class JobServiceSteps extends JobServiceTestBase {
         JobCreator jobCreator = (JobCreator) stepData.get(JOB_CREATOR);
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             stepData.remove(CURRENT_JOB_ID);
             Job job = jobService.create(jobCreator);
-            stepData.put("Job", job);
+            stepData.put(JOB, job);
             stepData.put(CURRENT_JOB_ID, job.getId());
         } catch (KapuaException ex) {
             verifyException(ex);
@@ -177,13 +177,13 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @When("I change the job name to {string}")
     public void updateExistingJobName(String newName) throws Exception {
-        Job oldJob = (Job) stepData.get("Job");
+        Job oldJob = (Job) stepData.get(JOB);
         oldJob.setName(newName);
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             Job newJob = jobService.update(oldJob);
-            stepData.put("Job", newJob);
+            stepData.put(JOB, newJob);
         } catch (KapuaException ex) {
             verifyException(ex);
         }
@@ -191,13 +191,13 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @When("I change the job description to {string}")
     public void updateExistingJobDescription(String newDescription) throws Exception {
-        Job oldJob = (Job) stepData.get("Job");
+        Job oldJob = (Job) stepData.get(JOB);
         oldJob.setDescription(newDescription);
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             Job newJob = jobService.update(oldJob);
-            stepData.put("Job", newJob);
+            stepData.put(JOB, newJob);
         } catch (KapuaException ex) {
             verifyException(ex);
         }
@@ -205,13 +205,13 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @When("I change the job XML definition to {string}")
     public void updateExistingJobXMLDefinition(String newDefinition) throws Exception {
-        Job oldJob = (Job) stepData.get("Job");
+        Job oldJob = (Job) stepData.get(JOB);
         oldJob.setJobXmlDefinition(newDefinition);
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             Job newJob = jobService.update(oldJob);
-            stepData.put("Job", newJob);
+            stepData.put(JOB, newJob);
         } catch (KapuaException ex) {
             verifyException(ex);
         }
@@ -219,16 +219,16 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @When("I add the current step to the last job")
     public void updateJobWithSteps() throws Exception {
-        Job oldJob = (Job) stepData.get("Job");
+        Job oldJob = (Job) stepData.get(JOB);
         List<JobStep> tmpStepList = oldJob.getJobSteps();
         JobStep step = (JobStep) stepData.get("Step");
         tmpStepList.add(step);
         oldJob.setJobSteps(tmpStepList);
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             Job newJob = jobService.update(oldJob);
-            stepData.put("Job", newJob);
+            stepData.put(JOB, newJob);
         } catch (KapuaException ex) {
             verifyException(ex);
         }
@@ -236,7 +236,7 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @When("I delete the job")
     public void deleteJobFromDatabase() throws Exception {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         primeException();
         try {
             jobService.delete(job.getScopeId(), job.getId());
@@ -250,9 +250,9 @@ public class JobServiceSteps extends JobServiceTestBase {
         KapuaId currentJobId = (KapuaId) stepData.get(CURRENT_JOB_ID);
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             Job job = jobService.find(getCurrentScopeId(), currentJobId);
-            stepData.put("Job", job);
+            stepData.put(JOB, job);
         } catch (KapuaException ex) {
             verifyException(ex);
         }
@@ -281,9 +281,9 @@ public class JobServiceSteps extends JobServiceTestBase {
         tmpQuery.setPredicate(tmpQuery.attributePredicate(JobAttributes.NAME, name));
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             Job job = jobService.query(tmpQuery).getFirstItem();
-            stepData.put("Job", job);
+            stepData.put(JOB, job);
             Assert.assertEquals(name, job.getName());
         } catch (KapuaException ex) {
             verifyException(ex);
@@ -292,7 +292,7 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @Then("The job entity matches the creator")
     public void checkJobAgainstCreator() {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         JobCreator jobCreator = (JobCreator) stepData.get(JOB_CREATOR);
         Assert.assertEquals("The job scope does not match the creator.", jobCreator.getScopeId(), job.getScopeId());
         Assert.assertEquals("The job name does not match the creator.", jobCreator.getName(), job.getName());
@@ -301,35 +301,35 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @Then("The job has int step(s)")
     public void checkNumberOfJobSteps(int num) {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         Assert.assertEquals("The job item has the wrong number of steps", num, job.getJobSteps().size());
     }
 
     @Then("I find a job item in the database")
     public void checkThatAJobWasFound() {
-        Assert.assertNotNull("Unexpected null value for the job.", stepData.get("Job"));
+        Assert.assertNotNull("Unexpected null value for the job.", stepData.get(JOB));
     }
 
     @Then("There is no such job item in the database")
     public void checkThatNoJobWasFound() {
-        Assert.assertNull("Unexpected job item was found!", stepData.get("Job"));
+        Assert.assertNull("Unexpected job item was found!", stepData.get(JOB));
     }
 
     @Then("The job name is {string}")
     public void checkJobItemName(String name) {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         Assert.assertEquals("The job name does not match!", name, job.getName());
     }
 
     @Then("The job description is {string}")
     public void checkJobItemDescription(String description) {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         Assert.assertEquals("The job description does not match!", description, job.getDescription());
     }
 
     @Then("The job XML definition is {string}")
     public void checkJobItemXMLDefinition(String definition) {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         Assert.assertEquals("The job XML definition does not match!", definition, job.getJobXmlDefinition());
     }
 
@@ -344,13 +344,13 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @Then("I find a job with name {string}")
     public void iFindAJobWithName(String jobName) {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         Assert.assertEquals(job.getName(), jobName);
     }
 
     @Then("I try to delete the job with name {string}")
     public void iDeleteTheJobWithName(String jobName) throws Exception {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         try {
             primeException();
             if (job.getName().equals(jobName)) {
@@ -363,12 +363,12 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @Then("I try to edit job to name {string}")
     public void iTryToEditJobToName(String jobName) throws Throwable {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         job.setName(jobName);
         try {
             primeException();
             Job newJob = jobService.update(job);
-            stepData.put("Job", newJob);
+            stepData.put(JOB, newJob);
         } catch (KapuaException ex) {
             verifyException(ex);
         }
@@ -381,9 +381,9 @@ public class JobServiceSteps extends JobServiceTestBase {
         tmpQuery.setPredicate(tmpQuery.attributePredicate(JobAttributes.NAME, jobName));
         primeException();
         try {
-            stepData.remove("Job");
+            stepData.remove(JOB);
             Job job = jobService.query(tmpQuery).getFirstItem();
-            stepData.put("Job", job);
+            stepData.put(JOB, job);
             Assert.assertEquals(jobName, job.getName());
         } catch (KapuaException ex) {
             verifyException(ex);
@@ -419,7 +419,7 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @Then("I find a job with description {string}")
     public void iFindAJobWithDescription(String jobDescription) throws Throwable {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         Assert.assertEquals(job.getDescription(), jobDescription);
     }
 
@@ -442,7 +442,7 @@ public class JobServiceSteps extends JobServiceTestBase {
             Job job = queryResult.getFirstItem();
             job.setName(newName);
             jobService.update(job);
-            stepData.put("Job", job);
+            stepData.put(JOB, job);
         } catch (Exception e) {
             verifyException(e);
         }
@@ -450,7 +450,7 @@ public class JobServiceSteps extends JobServiceTestBase {
 
     @And("There is no job with name {string} in database")
     public void thereIsNoJobWithNameInDatabase(String jobName) {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         Assert.assertNotEquals(job.getName(), jobName);
     }
 
@@ -463,7 +463,7 @@ public class JobServiceSteps extends JobServiceTestBase {
             Job job = queryResult.getFirstItem();
             job.setDescription(newDescription);
             jobService.update(job);
-            stepData.put("Job", job);
+            stepData.put(JOB, job);
         } catch (Exception e) {
             verifyException(e);
         }
@@ -478,7 +478,7 @@ public class JobServiceSteps extends JobServiceTestBase {
             try {
                 primeException();
                 Job job = jobService.create(jobCreator);
-                stepData.put("Job", job);
+                stepData.put(JOB, job);
                 stepData.put(CURRENT_JOB_ID, job.getId());
             } catch (KapuaException ex) {
                 verifyException(ex);
@@ -494,12 +494,12 @@ public class JobServiceSteps extends JobServiceTestBase {
             jobCreator.setName(JOB_NAME + i);
             try {
                 primeException();
-                stepData.remove("Job");
+                stepData.remove(JOB);
                 Job job = jobService.create(jobCreator);
                 job.setName(jobName);
                 jobService.update(job);
                 stepData.put(CURRENT_JOB_ID, job.getId());
-                stepData.put("Job", job);
+                stepData.put(JOB, job);
             } catch (KapuaException ex) {
                 verifyException(ex);
             }

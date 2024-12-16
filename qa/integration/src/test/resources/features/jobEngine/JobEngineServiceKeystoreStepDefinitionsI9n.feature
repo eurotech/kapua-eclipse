@@ -11,6 +11,7 @@
 #     Eurotech - initial API and implementation
 ###############################################################################
 @env_docker
+@it
 @jobEngine
 @jobEngineStepDefinitions
 @deviceManagementKeystore
@@ -150,6 +151,6 @@ Feature: Job Engine Service - Keystore Step Definitions
     And I logout
 
   @teardown
-  Scenario: Stop full docker environment
-    Given Stop full docker environment
+  Scenario: Tear down test resources
+    Given Stop Docker environment
     And Clean Locator Instance

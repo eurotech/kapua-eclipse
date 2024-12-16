@@ -11,7 +11,8 @@
 #     Eurotech - initial API and implementation
 ###############################################################################
 @env_docker_base
-@jobService
+@it # This is an IT because Job.*Service operations may require a Job Engine instance running
+@job
 @jobTargetService
 
 Feature: Job Target service CRUD tests
@@ -156,7 +157,7 @@ Feature: Job Target service CRUD tests
     When I test the sanity of the job target factory
 
   @teardown
-  Scenario: Stop test environment
-    Given Stop full docker environment
+  Scenario: Tear down test resources
+    Given Stop Docker environment
     And Clean Locator Instance
     And Reset Security Context

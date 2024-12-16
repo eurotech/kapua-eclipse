@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2021, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,8 +26,10 @@ import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.qa.common.StepData;
 import org.eclipse.kapua.service.job.Job;
+import org.junit.Assert;
 
 import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class JobEngineSteps extends JobServiceTestBase {
@@ -66,6 +68,126 @@ public class JobEngineSteps extends JobServiceTestBase {
         }
     }
 
+    // Wait Job Running
+
+    /**
+     * Waits the last {@link Job} in context to finish it execution up the given wait time
+     *
+     * @param waitSeconds The max time to wait
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I wait job to finish its execution up to {int}s")
+    public void waitJobInContextUpTo(int waitSeconds) throws Exception {
+        Job job = (Job) stepData.get(JOB);
+
+        waitJobUpTo(job, waitSeconds);
+    }
+
+    /**
+     * Looks for a {@link Job} by its {@link Job#getName()} and waits to finish it execution up the given wait time
+     *
+     * @param jobName The {@link Job#getName()} to look for
+     * @param waitSeconds The max time to wait
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I wait job {string} to finish its execution up to {int}s")
+    public void waitJobByNameUpTo(String jobName, int waitSeconds) throws Exception {
+        Job job = findJob(jobName);
+
+        waitJobUpTo(job, waitSeconds);
+    }
+
+    /**
+     * Wait the given {@link Job} to finish its execution up the given wait time
+     *
+     * @param job The {@link Job} to monitor
+     * @param waitSeconds The max time to wait
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitJobUpTo(Job job, int waitSeconds) throws Exception {
+        long now = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - now) < (waitSeconds * 1000L)) {
+            if (!jobEngineService.isRunning(job.getScopeId(), job.getId())) {
+                return;
+            }
+
+            TimeUnit.MILLISECONDS.sleep(100);
+        }
+
+        Assert.fail("Job " + job.getName() + "did not completed its execution within " + waitSeconds + "s");
+    }
+
+    // Check Job Running
+
+    /**
+     * Checks that the last {@link Job} in context is running
+     *
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I confirm job is running")
+    public void checkJobInContextIsRunning() throws Exception {
+        Job job = (Job) stepData.get(JOB);
+
+        checkJobIsRunning(job, true);
+    }
+
+    /**
+     * Looks for a {@link Job} by its {@link Job#getName()} and checks that is running
+     *
+     * @param jobName The {@link Job#getName()} to look for
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I confirm job {string} is running")
+    public void checkJobByNameIsRunning(String jobName) throws Exception {
+        Job job = findJob(jobName);
+
+        checkJobIsRunning(job, true);
+    }
+
+    /**
+     * Checks that the last {@link Job} in context is not running
+     *
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I confirm job is not running")
+    public void checkJobInContextIsNotRunning() throws Exception {
+        Job job = (Job) stepData.get(JOB);
+
+        checkJobIsRunning(job, false);
+    }
+
+    /**
+     * Looks for a {@link Job} by its {@link Job#getName()} and checks that is not running
+     *
+     * @param jobName The {@link Job#getName()} to look for
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I confirm job {string} is not running")
+    public void checkJobByNameIsNotRunning(String jobName) throws Exception {
+        Job job = findJob(jobName);
+
+        checkJobIsRunning(job, false);
+    }
+
+    /**
+     * Checks the running status of the given {@link Job}
+     *
+     * @param job The {@link Job} to check
+     * @param expectedRunning Whether expecting running or not
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void checkJobIsRunning(Job job, boolean expectedRunning) throws Exception {
+        Assert.assertEquals(expectedRunning, jobEngineService.isRunning(job.getScopeId(), job.getId()));
+    }
+
     @When("I restart a job")
     public void restartJob() throws Exception {
         primeException();
@@ -83,7 +205,7 @@ public class JobEngineSteps extends JobServiceTestBase {
 
     @And("I stop the job")
     public void iStopTheJob() throws Exception {
-        Job job = (Job) stepData.get("Job");
+        Job job = (Job) stepData.get(JOB);
         try {
             primeException();
             jobEngineService.stopJob(getCurrentScopeId(), job.getId());

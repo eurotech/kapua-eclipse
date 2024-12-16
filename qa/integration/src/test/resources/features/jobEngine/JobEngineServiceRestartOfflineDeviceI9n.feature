@@ -11,6 +11,7 @@
 #     Eurotech - initial API and implementation
 ###############################################################################
 @env_docker
+@it
 @jobEngine
 @jobEngineRestartOfflineDevice
 
@@ -1019,6 +1020,6 @@ Feature: JobEngineService tests for restarting job with offline device
     And I logout
 
   @teardown
-  Scenario: Stop full docker environment
-    Given Stop full docker environment
+  Scenario: Tear down test resources
+    Given Stop Docker environment
     And Clean Locator Instance
