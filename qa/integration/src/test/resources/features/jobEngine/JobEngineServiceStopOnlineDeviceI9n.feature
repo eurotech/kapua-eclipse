@@ -11,6 +11,7 @@
 #     Eurotech - initial API and implementation
 ###############################################################################
 @env_docker
+@it
 @jobEngine
 @jobEngineServiceStop
 
@@ -514,6 +515,6 @@ Feature: JobEngineService stop job tests with online device
 #    And I logout
 
   @teardown
-  Scenario: Stop full docker environment
-    Given Stop full docker environment
+  Scenario: Tear down test resources
+    Given Stop Docker environment
     And Clean Locator Instance

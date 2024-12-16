@@ -10,8 +10,8 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobsIntegration
 @env_docker
+@jobsIntegration
 
 Feature: JobEngineService execute job on device connect
 

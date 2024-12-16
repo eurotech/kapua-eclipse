@@ -10,8 +10,8 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobService
 @env_docker_base
+@job
 
 Feature: Trigger service tests
 

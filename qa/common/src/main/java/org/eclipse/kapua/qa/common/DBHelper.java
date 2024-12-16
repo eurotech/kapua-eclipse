@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2017, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -100,7 +100,7 @@ public class DBHelper {
      */
     public void deleteAll() {
         KapuaConfigurableServiceSchemaUtilsWithResources.scriptSession(FULL_SCHEMA_PATH, DELETE_SCRIPT);
-        Optional.ofNullable(cacheManager).ifPresent(cm -> cm.invalidateAll());
+        Optional.ofNullable(cacheManager).ifPresent(KapuaCacheManager::invalidateAll);
     }
 
     public void dropAll() throws SQLException {
@@ -118,7 +118,7 @@ public class DBHelper {
         } else {
             logger.warn("================================> invoked drop all on closed connection!");
         }
-        Optional.ofNullable(cacheManager).ifPresent(cm -> cm.invalidateAll());
+        Optional.ofNullable(cacheManager).ifPresent(KapuaCacheManager::invalidateAll);
     }
 
 }

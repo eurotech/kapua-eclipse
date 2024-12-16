@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2021, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,6 +26,7 @@ import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.model.query.predicate.AttributePredicate;
 import org.eclipse.kapua.qa.common.StepData;
 import org.eclipse.kapua.qa.common.cucumber.CucJobStepProperty;
+import org.eclipse.kapua.service.job.Job;
 import org.eclipse.kapua.service.job.step.JobStep;
 import org.eclipse.kapua.service.job.step.JobStepAttributes;
 import org.eclipse.kapua.service.job.step.JobStepCreator;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Singleton
 public class JobStepServiceSteps extends JobServiceTestBase {
@@ -99,6 +101,39 @@ public class JobStepServiceSteps extends JobServiceTestBase {
         stepCreator.setJobStepProperties(tmpPropLst);
 
         stepData.put(JOB_STEP_CREATOR, stepCreator);
+    }
+
+    /**
+     * Adds a {@link JobStep} to the {@link Job} in context with the {@link JobStepDefinition} in context with the given {@link JobStepProperty}es
+     *
+     * @param jobStepName The {@link JobStepCreator#getName()}
+     * @param cucJobStepProperties The {@link JobStepCreator#getStepProperties()}
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I add job step to job with name {string} and with selected job step definition and properties")
+    public void iAddJobStepToJobWithSelectedJobStepDefinitionAndFollowingJobStepProperties(String jobStepName, List<CucJobStepProperty> cucJobStepProperties) throws Exception{
+        Job job = (Job) stepData.get(JOB);
+        JobStepDefinition jobStepDefinition = (JobStepDefinition) stepData.get(JOB_STEP_DEFINITION);
+
+        JobStepCreator jobStepCreator = jobStepFactory.newCreator(job.getScopeId());
+        jobStepCreator.setJobId(job.getId());
+        jobStepCreator.setName(jobStepName);
+        jobStepCreator.setJobStepDefinitionId(jobStepDefinition.getId());
+        jobStepCreator.setStepProperties(
+                cucJobStepProperties.stream()
+                        .map(
+                            (cucJobStepProperty) -> jobStepFactory.newStepProperty(
+                                cucJobStepProperty.getName(),
+                                cucJobStepProperty.getType(),
+                                cucJobStepProperty.getValue()
+                            )
+                        )
+                        .collect(Collectors.toList())
+        );
+
+        JobStep jobStep = jobStepService.create(jobStepCreator);
+        stepData.put(JOB_STEP, jobStep);
     }
 
     @And("I prepare a JobStepCreator with the name {string} and properties")
