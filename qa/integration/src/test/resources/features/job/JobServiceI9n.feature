@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, 2022 Eurotech and/or its affiliates and others
+# Copyright (c) 2017, 2024 Eurotech and/or its affiliates and others
 #
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,9 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobsIntegrationBase
-@jobService
 @env_docker_base
+@jobService
+@jobService
 
 Feature: Job service CRUD tests
   The Job service is responsible for executing scheduled actions on various targets.
