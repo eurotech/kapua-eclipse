@@ -10,8 +10,9 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobEngineServiceStop
 @env_docker
+@jobEngine
+@jobEngineServiceStop
 
 Feature: JobEngineService stop job tests with online device
   Job Engine Service test scenarios for stopping job. This feature file contains scenarios for stopping job with one target and one step,
