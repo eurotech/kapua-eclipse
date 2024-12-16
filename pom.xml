@@ -178,8 +178,8 @@
 
         <!-- Sonar Configuration-->
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>eclipse_kapua</sonar.projectKey>
-        <sonar.organization>eclipse-github</sonar.organization>
+        <sonar.projectKey>org.eclipse_kapua</sonar.projectKey>
+        <sonar.organization>eclipse</sonar.organization>
     </properties>
 
     <build>
