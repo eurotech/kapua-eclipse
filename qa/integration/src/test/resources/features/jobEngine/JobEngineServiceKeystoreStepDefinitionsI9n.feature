@@ -10,9 +10,10 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
+@env_docker
+@jobEngine
 @jobEngineStepDefinitions
 @deviceManagementKeystore
-@env_docker
 
 Feature: Job Engine Service - Keystore Step Definitions
 

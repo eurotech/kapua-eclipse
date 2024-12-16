@@ -10,8 +10,9 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobEngineRestartOnlineDevice
 @env_docker
+@jobEngine
+@jobEngineRestartOnlineDevice
 
 Feature: JobEngineService restart job tests with online device
 

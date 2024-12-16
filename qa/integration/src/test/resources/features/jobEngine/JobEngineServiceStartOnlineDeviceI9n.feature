@@ -10,8 +10,9 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobEngineStartOnlineDevice
 @env_docker
+@jobEngine
+@jobEngineStartOnlineDevice
 
 Feature: JobEngineService start job tests with online device
 
