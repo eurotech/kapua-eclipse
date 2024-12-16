@@ -12,8 +12,6 @@
  *******************************************************************************/
 package org.eclipse.kapua.qa.integration.steps;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
@@ -49,7 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -254,30 +251,54 @@ public class DockerSteps {
 
         for (String dockerContainer : dockerContainers) {
             switch (dockerContainer) {
-                case "db":
+                case "db": {
                     startDBContainer(BasicSteps.DB_CONTAINER_NAME);
                     synchronized (this) {
                         this.wait(WAIT_FOR_DB);
                     }
-                    break;
-                case "es":
+                } break;
+                case "es": {
                     startESContainer(BasicSteps.ES_CONTAINER_NAME);
                     synchronized (this) {
                         this.wait(WAIT_FOR_ES);
                     }
-                    break;
-                case "events-broker":
+                } break;
+                case "events-broker": {
                     startEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
                     synchronized (this) {
                         this.wait(WAIT_FOR_EVENTS_BROKER);
                     }
-                    break;
-                case "job-engine":
+                } break;
+                case "job-engine": {
                     startJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
                     synchronized (this) {
                         this.wait(WAIT_FOR_JOB_ENGINE);
                     }
-                    break;
+                } break;
+                case "message-broker": {
+                    startMessageBrokerContainer(BasicSteps.MESSAGE_BROKER_CONTAINER_NAME);
+                    synchronized (this) {
+                        this.wait(WAIT_FOR_BROKER);
+                    }
+                } break;
+                case "broker-auth-service": {
+                    startAuthServiceContainer(BasicSteps.AUTH_SERVICE_CONTAINER_NAME);
+
+                    long timeout = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - timeout < 30000) {
+                        isServiceReady(AUTH_SERVICE_CHECK_WEB_APP);
+                        Thread.sleep(500);
+                    }
+                } break;
+                case "consumer-lifecycle": {
+                    startLifecycleConsumerContainer(BasicSteps.LIFECYCLE_CONSUMER_CONTAINER_NAME);
+
+                    long timeout = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - timeout < 30000) {
+                        isServiceReady(LIFECYCLE_CHECK_WEB_APP);
+                        Thread.sleep(500);
+                    }
+                } break;
                 default:
                     throw new UnsupportedOperationException("Unknown container resource: " + dockerContainer);
             }
