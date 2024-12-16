@@ -16,9 +16,15 @@
 Feature: JobEngineService execute job on device connect
 
   @setup
-  Scenario: Start full docker environment
+  Scenario: Setup test resources
     Given Init Security Context
-    And Start full docker environment
+    And Start Docker environment with resources
+      | db                  |
+      | events-broker       |
+      | job-engine          |
+      | message-broker      |
+      | broker-auth-service |
+      | consumer-lifecycle  |
 
   Scenario: Executing Job When Device Connected After The Specified Start Date And Time
   Login as the kapua-sys user and create a new job with a Command Execution job step.
