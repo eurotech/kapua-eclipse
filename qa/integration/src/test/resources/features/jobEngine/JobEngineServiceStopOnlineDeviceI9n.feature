@@ -18,9 +18,15 @@ Feature: JobEngineService stop job tests with online device
   one target and multiple steps, multiple targets and one step and multiple targets and multiple steps.
 
   @setup
-  Scenario: Start full docker environment
+  Scenario: Setup test resources
     Given Init Security Context
-    And Start full docker environment
+    And Start Docker environment with resources
+      | db                  |
+      | events-broker       |
+      | job-engine          |
+      | message-broker      |
+      | broker-auth-service |
+      | consumer-lifecycle  |
 
     # *****************************************************
     # * Stopping a job with one Target and multiple Steps *
