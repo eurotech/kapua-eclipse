@@ -5,7 +5,7 @@
 #RUNS BOTH UNIT AND INTEGRATION TESTS AND FINALLY BUILDS THE PROJECT
 #FIRT, JUNIT TESTS ARE LAUNCHED, IF THEY PASS CUCUMBER TESTS ARE THEN EXECUTED
 
-cucumberTags=('@brokerAcl' '@tag' '@broker' '@device' '@deviceManagement' '@connection' '@datastore' '@user' '@userIntegrationBase' '@userIntegration' '@security' '@jobs' '@scheduler' '@jobsIntegrationBase' '@triggerService' '@account' '@translator' '@jobEngineStepDefinitions' '@jobEngineStartOfflineDevice' '@jobEngineRestartOnlineDevice' '@jobEngineStartOnlineDevice' '@jobEngineRestartOfflineDevice' '@jobEngineRestartOnlineDeviceSecondPart' '@jobsIntegration' '@jobEngineServiceStop' '@endpoint' '@deviceRegistry' '@role' '@group')
+cucumberTags=('@brokerAcl' '@tag' '@broker' '@device' '@deviceManagement' '@connection' '@datastore' '@user' '@userIntegrationBase' '@userIntegration' '@security' '@jobs' '@scheduler' '@jobService' '@triggerService' '@account' '@translator' '@jobEngineStepDefinitions' '@jobEngineStartOfflineDevice' '@jobEngineRestartOnlineDevice' '@jobEngineStartOnlineDevice' '@jobEngineRestartOfflineDevice' '@jobEngineRestartOnlineDeviceSecondPart' '@jobsIntegration' '@jobEngineServiceStop' '@endpoint' '@deviceRegistry' '@role' '@group')
 exitCodesTests=() #will contain exit code for each batch of tests
 
 #checks if the last build command exited normally and exits if necessary

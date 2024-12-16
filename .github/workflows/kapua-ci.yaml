@@ -162,7 +162,7 @@ jobs:
         with:
           tag: '@jobs or @scheduler'
           needs-docker-images: 'false'
-  test-jobsIntegrationBase:
+  test-jobService:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -171,7 +171,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/runTestsTaggedAs
         with:
-          tag: '@jobsIntegrationBase'
+          tag: '@jobService'
           needs-docker-images: 'true'
   test-jobsIntegration:
     needs: build
