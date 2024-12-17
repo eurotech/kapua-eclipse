@@ -12,13 +12,13 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.scheduler.trigger.definition.quartz;
 
-import com.beust.jcommander.internal.Lists;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.job.Job;
 import org.eclipse.kapua.service.scheduler.quartz.job.KapuaJobLauncher;
 import org.eclipse.kapua.service.scheduler.trigger.definition.TriggerDefinitionRecord;
 import org.eclipse.kapua.service.scheduler.trigger.definition.TriggerPropertyRecord;
 import org.eclipse.kapua.service.scheduler.trigger.definition.TriggerType;
+import com.beust.jcommander.internal.Lists;
 
 /**
  * Interval {@link Job} {@link TriggerDefinitionRecord}
@@ -36,12 +36,12 @@ public class CronJobTriggerDefinition extends TriggerDefinitionRecord {
                 Lists.newArrayList(
                         new TriggerPropertyRecord(
                                 CronJobTriggerDefinitionPropertyKeys.SCOPE_ID,
-                                "Identifier of the job this schedule will be applied to",
+                                "Identifier of the scope of the job this schedule will be applied to",
                                 KapuaId.class.getName(),
                                 null),
                         new TriggerPropertyRecord(
                                 CronJobTriggerDefinitionPropertyKeys.JOB_ID,
-                                "Identifier of the scope of the job this schedule will be applied to",
+                                "Identifier of the job this schedule will be applied to",
                                 KapuaId.class.getName(),
                                 null),
                         new TriggerPropertyRecord(
