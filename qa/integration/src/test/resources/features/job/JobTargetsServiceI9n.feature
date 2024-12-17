@@ -18,10 +18,13 @@ Feature: Job Target service CRUD tests
   The Job service is responsible for maintaining a list of job targets.
 
   @setup
-  Scenario: Init Security Context for all scenarios
-    Given Init Jaxb Context
-    And Init Security Context
-    And Start base docker environment
+  Scenario: Setup test resources
+    Given Init Security Context
+    And Init Jaxb Context
+    And Start Docker environment with resources
+      | db            |
+      | events-broker |
+      | job-engine    |
 
   Scenario: Regular target creation
 

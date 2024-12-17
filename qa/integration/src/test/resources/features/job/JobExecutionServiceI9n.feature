@@ -17,11 +17,14 @@
 Feature: Job Execution service CRUD tests
     The Job service is responsible for maintaining the status of the target step executions.
 
-@setup
-Scenario: Init Security Context for all scenarios
-  Given Init Jaxb Context
-  And Init Security Context
-  And Start base docker environment
+  @setup
+  Scenario: Setup test resources
+    Given Init Security Context
+    And Init Jaxb Context
+    And Start Docker environment with resources
+      | db            |
+      | events-broker |
+      | job-engine    |
 
 Scenario: Regular job execution creation
 

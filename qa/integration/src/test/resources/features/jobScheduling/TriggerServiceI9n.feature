@@ -16,10 +16,13 @@
 Feature: Trigger service tests
 
   @setup
-  Scenario: Init Security Context for all scenarios
-    Given Init Jaxb Context
-    And Init Security Context
-    And Start base docker environment
+  Scenario: Setup test resources
+    Given Init Security Context
+    And Init Jaxb Context
+    And Start Docker environment with resources
+      | db                  |
+      | events-broker       |
+      | job-engine          |
 
   Scenario: Adding "Device Connect" Schedule With All Valid Parameters
   Login as kapua-sys user and create a job with name job0.

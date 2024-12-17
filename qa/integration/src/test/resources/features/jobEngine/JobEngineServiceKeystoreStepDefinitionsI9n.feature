@@ -17,10 +17,16 @@
 Feature: Job Engine Service - Keystore Step Definitions
 
   @setup
-  Scenario: Start full docker environment
-    Given Init Jaxb Context
-    And Init Security Context
-    And Start full docker environment
+  Scenario: Setup test resources
+    Given Init Security Context
+    And Init Jaxb Context
+    And Start Docker environment with resources
+      | db                  |
+      | events-broker       |
+      | job-engine          |
+      | message-broker      |
+      | broker-auth-service |
+      | consumer-lifecycle  |
 
   #
   # Tests
