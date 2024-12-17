@@ -18,17 +18,6 @@ import java.util.Date;
 import java.util.Map;
 import javax.inject.Inject;
 
-import com.google.common.base.Strings;
-import com.google.inject.Singleton;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.DataTableType;
-import io.cucumber.java.ParameterType;
-import io.cucumber.java.Scenario;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import org.apache.shiro.SecurityUtils;
 import org.eclipse.kapua.commons.crypto.setting.CryptoSettingKeys;
 import org.eclipse.kapua.commons.security.KapuaSecurityUtils;
@@ -61,6 +50,17 @@ import org.eclipse.kapua.transport.message.jms.JmsTopic;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.common.base.Strings;
+import com.google.inject.Singleton;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.DataTableType;
+import io.cucumber.java.ParameterType;
+import io.cucumber.java.Scenario;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 @Singleton
 public class BasicSteps extends TestBase {
@@ -88,6 +88,7 @@ public class BasicSteps extends TestBase {
     private static final String LAST_ACCOUNT_ID = "LastAccountId";
     private static final String LAST_USER_ID = "LastUserId";
     private static final String EXCEPTION_NAME = "ExceptionName";
+    private static final String STATUS_CODE = "StatusCode";
     private static final String EXCEPTION_CAUGHT = "ExceptionCaught";
     private static final String ASSERT_ERROR_NAME = "AssertErrorName";
     private static final String ASSERT_ERROR_CAUGHT = "AssertErrorCaught";
@@ -532,6 +533,12 @@ public class BasicSteps extends TestBase {
         Assert.assertFalse("An unexpected exception was raised!", exCaught);
     }
 
+    @Then("Response status code match")
+    public void statusCodeMatch() {
+        final int statusCode = stepData.contains(STATUS_CODE) ? (int) stepData.get(STATUS_CODE) : -1;
+        Assert.assertEquals(statusCode, stepData.get("StatusCode"));
+    }
+
     @Then("I count {int}")
     public void checkCountResult(int num) {
         Assert.assertEquals(num, stepData.getCount());
@@ -586,6 +593,12 @@ public class BasicSteps extends TestBase {
     public void iExpectTheException(String name) {
         stepData.put("ExceptionExpected", true);
         stepData.put(EXCEPTION_NAME, name);
+    }
+
+    @And("I expect the response status code {int}")
+    public void iExpectTheStatusCode(int statusCode) {
+        stepData.put("StatusCodeExpected", true);
+        stepData.put(STATUS_CODE, statusCode);
     }
 
     @Then("An assertion error was thrown")
