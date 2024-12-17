@@ -17,9 +17,15 @@
 Feature: Job Engine Service - Keystore Step Definitions
 
   @setup
-  Scenario: Start full docker environment
+  Scenario: Setup test resources
     Given Init Security Context
-    And Start full docker environment
+    And Start Docker environment with resources
+      | db                  |
+      | events-broker       |
+      | job-engine          |
+      | message-broker      |
+      | broker-auth-service |
+      | consumer-lifecycle  |
 
   #
   # Tests

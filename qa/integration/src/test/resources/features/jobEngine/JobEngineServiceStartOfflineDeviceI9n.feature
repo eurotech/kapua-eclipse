@@ -16,9 +16,15 @@
 Feature: JobEngineService tests for starting job with offline device
 
   @setup
-  Scenario: Start full docker environment
+  Scenario: Setup test resources
     Given Init Security Context
-    And Start full docker environment
+    And Start Docker environment with resources
+      | db                  |
+      | events-broker       |
+      | job-engine          |
+      | message-broker      |
+      | broker-auth-service |
+      | consumer-lifecycle  |
 
     # ***********************************************
     # * Starting a job with one Target and one Step *
