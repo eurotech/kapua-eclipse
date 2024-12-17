@@ -54,8 +54,10 @@ Feature: Account Group Service Integration Tests
     And I create a group with name "Group2"
     And I create a group with name "Group3"
     Given I expect the exception "KapuaMaxNumberOfItemsReachedException" with the text "*"
+    And I expect the response status code 403
     And I create a group with name "Group4"
     Then An exception was thrown
+    And Response status code match
     And I logout
 
   Scenario: Creating Groups Under Account That Does Not Allow Groups

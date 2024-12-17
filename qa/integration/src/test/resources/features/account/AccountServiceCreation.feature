@@ -217,8 +217,10 @@ Feature: Account Service Tests
       | integer | maxNumberChildEntities | 0     |
     Then I select account "acc1"
     Given I expect the exception "KapuaMaxNumberOfItemsReachedException" with the text "*"
+    And I expect the response status code 403
     And I create an account with name "acc11", organization name "acc11" and email address "acc11@org.com"
     Then An exception was thrown
+    And Response status code match
     Then I logout
 
   Scenario: Creating Sub-accounts When InfiniteChildAccounts Is Set To True And maxNumberChildAccounts Is Set
