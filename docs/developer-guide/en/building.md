@@ -4,6 +4,18 @@ We use Apache Maven as the build tool of choice.
 
 We use `gitbook` to build the documentation.
 
+### Requirements
+
+Before starting, check that your environment has the following prerequisites:
+
+* 64 bit architecture
+* Java VM Version 8
+* Java VM Version 11
+* Docker Version 1.2+
+* Swagger CLI 4+ (Installed via NPM or separately)
+* Node 16+
+* Internet Access (needed to download the artifacts)
+
 ## Tests execution
 
 This section instructs how to execute locally project's tests, if you are not interested (for example, considering that these tests are part of the GitHub CI process) you can skip to the next section
@@ -39,7 +51,7 @@ Launch it in order to build Kapua executing all the tests. Integration tests are
 
 ## Docker images building
 
-Keep in mind that Kapua Docker images are hosted under [Kapua DockerHub account](https://hub.docker.com/r/kapua/). 
+Keep in mind that for release builds Kapua Docker images are hosted under [Kapua DockerHub account](https://hub.docker.com/r/kapua/). 
 If your interest is to build Kapua Docker images by yourself, and you didn't do it in the previous step, execute Maven build with `docker` profile enabled:
 
     mvn clean install -Pdocker -DskipTests
@@ -109,7 +121,6 @@ To build documentation, run `gitbook build` from either `docs/developer-guide/en
 Kapua is running CI builds in the following public environments:
 
 - GitHub Actions  ![GitHub Actions CI](https://img.shields.io/github/workflow/status/eclipse/kapua/kapua-continuous-integration?label=GitHub%20Action%20CI&logo=GitHub)
-- Eclipse Hudson  ![Hudson](https://img.shields.io/jenkins/build?jobUrl=https:%2F%2Fci.eclipse.org%2Fkapua%2Fjob%2Fdevelop-build&label=Jenkins%20Build)
 
 Please be sure that both environments are "green" (i.e. all tests pass) after you commit any changes into `develop` branch.
 

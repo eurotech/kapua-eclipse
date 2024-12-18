@@ -17,16 +17,18 @@ This is a short introduction to locally connect Kura and Kapua. Although some of
    - Keyboard*
    - Ethernet cable
  - PC (Windows/MAC/Linux)
- * External monitor and keyboard not mandatory, if you can determine Raspberry's IP without them and then establish ssh connection from local PC. 
-
- ## Software Requirements (for PC)
-  - 64 bit architecture 
-  - Java VM Version 8 
-  - Docker Version 1.2+
-  - Internet Access
-
+ * External monitor and keyboard not mandatory, if you can determine Raspberry's IP without them and then establish ssh connection from local PC.
 
 ## Downloading and configuring Kapua
+
+Keep in mind that if you want to deploy a released version, not building anything, you can follow the [Kapua quick start guide](https://github.com/eclipse/kapua/blob/develop/README.md).
+If, otherwise, you want to deploy your build, continue reading this section.
+
+### Software Requirements (for PC)
+- 64 bit architecture
+- Java VM Version 8
+- Docker Version 1.2+
+- Internet Access
 
 This part of the tutorial consists of several pieces. First you need to download Java VM, Docker and Kapua. You can get Java [here](https://java.com/en/download/) and Docker [here](https://docs.docker.com/engine/installation/#supported-platforms). After that follow steps bellow for downloading and building Kapua.
 
