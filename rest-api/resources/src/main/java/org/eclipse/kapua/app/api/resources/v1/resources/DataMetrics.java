@@ -64,8 +64,8 @@ public class DataMetrics extends AbstractKapuaResource {
      *
      * @param scopeId
      *         The {@link ScopeId} in which to search results.
-     * @param clientId
-     *         The client id to filter results.
+     * @param clientIds
+     *         The client id(s) to filter results.
      * @param channel
      *         The channel id to filter results. It allows '#' wildcard in last channel level
      * @param name
