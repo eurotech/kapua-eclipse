@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.kapua.app.api.web;
 
+import java.util.Map;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -21,6 +23,9 @@ import org.eclipse.kapua.app.api.core.model.device.management.JsonGenericRespons
 import org.eclipse.kapua.app.api.core.settings.KapuaApiCoreSetting;
 import org.eclipse.kapua.app.api.core.settings.KapuaApiCoreSettingKeys;
 import org.eclipse.kapua.app.api.resources.v1.resources.model.device.management.keystore.DeviceKeystoreCertificateInfo;
+import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
+import org.eclipse.kapua.commons.configuration.ServiceConfigurationsFacade;
+import org.eclipse.kapua.commons.configuration.ServiceConfigurationsFacadeImpl;
 import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.commons.core.JaxbClassProvider;
 import org.eclipse.kapua.commons.core.SimpleJaxbClassProvider;
@@ -29,6 +34,9 @@ import org.eclipse.kapua.commons.util.xml.JAXBContextProvider;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProviderImpl;
 import org.eclipse.kapua.commons.util.xml.XmlRootAnnotatedJaxbClassesScanner;
 import org.eclipse.kapua.locator.LocatorConfig;
+import org.eclipse.kapua.service.account.AccountService;
+import org.eclipse.kapua.service.authorization.AuthorizationService;
+import org.eclipse.kapua.service.authorization.permission.PermissionFactory;
 
 import com.google.inject.Provides;
 import com.google.inject.multibindings.ProvidesIntoSet;
@@ -46,6 +54,14 @@ public class AppModule extends AbstractKapuaModule {
         // Switching manually-configured JAXBContextProvider to autodiscovery one below
         // bind(JAXBContextProvider.class).to(RestApiJAXBContextProvider.class).in(Singleton.class);
         bind(JAXBContextProvider.class).to(JAXBContextProviderImpl.class).in(Singleton.class);
+    }
+
+    @Provides
+    @Singleton
+    ServiceConfigurationsFacade serviceConfigurationsFacade(
+            Map<Class<?>, ServiceConfigurationManager> serviceConfigurationManagersByServiceClass, AuthorizationService authorizationService,
+            PermissionFactory permissionFactory, AccountService accountService) {
+        return new ServiceConfigurationsFacadeImpl(serviceConfigurationManagersByServiceClass, authorizationService, permissionFactory, accountService);
     }
 
     @ProvidesIntoSet

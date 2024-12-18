@@ -12,17 +12,12 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.authorization.shiro;
 
+import java.util.Map;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.eclipse.kapua.commons.configuration.AccountRelativeFinder;
-import org.eclipse.kapua.commons.configuration.CachingServiceConfigRepository;
-import org.eclipse.kapua.commons.configuration.ResourceLimitedServiceConfigurationManagerImpl;
-import org.eclipse.kapua.commons.configuration.RootUserTester;
-import org.eclipse.kapua.commons.configuration.ServiceConfigImplJpaRepository;
 import org.eclipse.kapua.commons.configuration.ServiceConfigurationManager;
-import org.eclipse.kapua.commons.configuration.ServiceConfigurationManagerCachingWrapper;
-import org.eclipse.kapua.commons.configuration.UsedEntitiesCounterImpl;
 import org.eclipse.kapua.commons.core.AbstractKapuaModule;
 import org.eclipse.kapua.commons.core.ServiceModule;
 import org.eclipse.kapua.commons.event.ServiceEventHouseKeeperFactoryImpl;
@@ -36,7 +31,6 @@ import org.eclipse.kapua.commons.service.event.store.api.EventStoreFactory;
 import org.eclipse.kapua.commons.service.event.store.api.EventStoreRecordRepository;
 import org.eclipse.kapua.commons.service.event.store.internal.EventStoreServiceImpl;
 import org.eclipse.kapua.commons.service.internal.cache.KapuaCacheManager;
-import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.event.ServiceEventBus;
 import org.eclipse.kapua.event.ServiceEventBusException;
 import org.eclipse.kapua.model.domain.Actions;
@@ -239,7 +233,7 @@ public class AuthorizationModule extends AbstractKapuaModule {
             AccessInfoFactory accessInfoFactory,
             AccessRoleService accessRoleService,
             AccessInfoService accessInfoService,
-            @Named("RoleServiceConfigurationManager") ServiceConfigurationManager serviceConfigurationManager,
+            Map<Class<?>, ServiceConfigurationManager> serviceConfigurationManagersByServiceClass,
             RoleRepository roleRepository,
             RolePermissionRepository rolePermissionRepository,
             KapuaJpaTxManagerFactory jpaTxManagerFactory,
@@ -253,40 +247,12 @@ public class AuthorizationModule extends AbstractKapuaModule {
                 accessInfoFactory,
                 accessRoleService,
                 accessInfoService,
-                serviceConfigurationManager,
+                serviceConfigurationManagersByServiceClass.get(RoleService.class),
                 jpaTxManagerFactory.create("kapua-authorization"),
                 roleRepository,
                 rolePermissionRepository,
                 permissionValidator
         );
-    }
-
-    @Provides
-    @Singleton
-    @Named("RoleServiceConfigurationManager")
-    public ServiceConfigurationManager roleServiceConfigurationManager(
-            RoleFactory roleFactory,
-            RootUserTester rootUserTester,
-            AccountRelativeFinder accountRelativeFinder,
-            RoleRepository roleRepository,
-            KapuaJpaRepositoryConfiguration jpaRepoConfig,
-            EntityCacheFactory entityCacheFactory,
-            XmlUtil xmlUtil
-    ) {
-        return new ServiceConfigurationManagerCachingWrapper(
-                new ResourceLimitedServiceConfigurationManagerImpl(
-                        RoleService.class.getName(),
-                        new CachingServiceConfigRepository(
-                                new ServiceConfigImplJpaRepository(jpaRepoConfig),
-                                entityCacheFactory.createCache("AbstractKapuaConfigurableServiceCacheId")
-                        ),
-                        rootUserTester,
-                        accountRelativeFinder,
-                        new UsedEntitiesCounterImpl(
-                                roleFactory,
-                                roleRepository
-                        ),
-                        xmlUtil));
     }
 
     @Provides
@@ -308,39 +274,12 @@ public class AuthorizationModule extends AbstractKapuaModule {
     @Singleton
     GroupService groupService(PermissionFactory permissionFactory,
             AuthorizationService authorizationService,
-            @Named("GroupServiceConfigurationManager") ServiceConfigurationManager serviceConfigurationManager,
+            Map<Class<?>, ServiceConfigurationManager> serviceConfigurationManagersByServiceClass,
             GroupRepository groupRepository,
             KapuaJpaTxManagerFactory jpaTxManagerFactory) {
-        return new GroupServiceImpl(permissionFactory, authorizationService, serviceConfigurationManager,
+        return new GroupServiceImpl(permissionFactory, authorizationService, serviceConfigurationManagersByServiceClass.get(GroupService.class),
                 jpaTxManagerFactory.create("kapua-authorization"),
                 groupRepository);
-    }
-
-    @Provides
-    @Singleton
-    @Named("GroupServiceConfigurationManager")
-    public ServiceConfigurationManager groupServiceConfigurationManager(
-            GroupFactory factory,
-            RootUserTester rootUserTester,
-            AccountRelativeFinder accountRelativeFinder,
-            GroupRepository groupRepository,
-            KapuaJpaRepositoryConfiguration jpaRepoConfig,
-            EntityCacheFactory entityCacheFactory,
-            XmlUtil xmlUtil
-    ) {
-        return new ServiceConfigurationManagerCachingWrapper(
-                new ResourceLimitedServiceConfigurationManagerImpl(
-                        GroupService.class.getName(),
-                        new CachingServiceConfigRepository(
-                                new ServiceConfigImplJpaRepository(jpaRepoConfig),
-                                entityCacheFactory.createCache("AbstractKapuaConfigurableServiceCacheId")
-                        ),
-                        rootUserTester,
-                        accountRelativeFinder,
-                        new UsedEntitiesCounterImpl(
-                                factory,
-                                groupRepository
-                        ), xmlUtil));
     }
 
     @Provides
