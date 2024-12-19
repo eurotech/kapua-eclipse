@@ -16,6 +16,20 @@ Before starting, check that your environment has the following prerequisites:
 * Node 16+
 * Internet Access (needed to download the artifacts)
 
+#### JDK configuration
+The project has some modules that builds with JDK 8 and some with JDK11. To enable this, you first must configure the toolchain, as explained [in this document](../../../build-tools/src/main/toolchains/README.md).
+Make sure that the maven runtime is JDK8, follow this https://stackoverflow.com/questions/2503658/specify-jdk-for-maven-to-use if needed.
+
+#### Node and Swagger CLI installation
+We propose a command for the installation of these dependencies on Ubuntu, to be run with root privileges:
+
+     apt install nodejs npm
+     npm install -g @apidevtools/swagger-cli
+
+#### Docker execution without root privileges
+In the phase of docker images building, a maven plugin invokes the docker daemon to do so. If, in your environment, you are not able to run docker without root privileges, you will need to build the project with these privileges.
+To manage docker as a non-root user, we propose this guide for linux: https://docs.docker.com/engine/install/linux-postinstall/
+
 ## Tests execution
 
 This section instructs how to execute locally project's tests, if you are not interested (for example, considering that these tests are part of the GitHub CI process) you can skip to the next section
@@ -68,6 +82,8 @@ force it to use only locally present artifacts with the `dev` profile.
 Again, don't forget the `console` profile if the Web Console image is needed:
 
     mvn clean install -Pdocker,dev,console -DskipTests
+
+Having built your images, you can now run them following the [running section](running.md).
 
 ## Security Scan
 
@@ -146,5 +162,4 @@ Don't forget to add the `console` Maven profile to the console above if you're i
 
 By default Kapua applies the following tags to the published images:
 - `latest`
-- daily timestamp in format `YYYY-MM-DD`
 - current project version (for example `0.0.1` or `0.1.2-SNAPSHOT`)
