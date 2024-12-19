@@ -14,13 +14,23 @@ those directly or create a new toolchain file which works for you.
 This file is for Fedora/RHEL/CentOS based distributions. In order to install required JDKs issue
 the following commands with root privileges:
 
-    yum install java-1.6.0-openjdk-devel java-1.7.0-openjdk-devel java-1.8.0-openjdk-devel
+    yum install java-1.8.0-openjdk-devel java-11-openjdk-devel
 
 Or (when using `dnf` instead of `yum`):
 
-    dnf install java-1.6.0-openjdk-devel java-1.7.0-openjdk-devel java-1.8.0-openjdk-devel
+    dnf install java-1.8.0-openjdk-devel java-11-openjdk-devel
 
 Open the file, modify the jdk path in order to match your machine configuration, and then copy this file to `~/.m2/toolchains.xml` to use it.
+
+## Ubuntu
+
+- `ubuntu.xml`
+
+This file is for Ubuntu based distributions. In order to install required JDKs issue
+the following commands with root privileges:
+
+    apt install openjdk-11-jdk
+    apt install openjdk-8-jdk
 
 ## MacOS
 
