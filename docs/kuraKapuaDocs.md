@@ -22,28 +22,9 @@ This is a short introduction to locally connect Kura and Kapua. Although some of
 ## Downloading and configuring Kapua
 
 Keep in mind that if you want to deploy a released version, not building anything, you can follow the [Kapua quick start guide](https://github.com/eclipse/kapua/blob/develop/README.md).
-If, otherwise, you want to deploy your build, continue reading this section.
+If, otherwise, you want to deploy your build, we recommend [this reading](developer-guide/en/building.md) and then [this reading](developer-guide/en/running.md).
 
-### Software Requirements (for PC)
-- 64 bit architecture
-- Java VM Version 8
-- Docker Version 1.2+
-- Internet Access
-
-This part of the tutorial consists of several pieces. First you need to download Java VM, Docker and Kapua. You can get Java [here](https://java.com/en/download/) and Docker [here](https://docs.docker.com/engine/installation/#supported-platforms). After that follow steps bellow for downloading and building Kapua.
-
-1. Open OS Shell (Terminal) and go to home directory.
-2. Download Kapua project from [Github repository](https://github.com/eclipse/kapua.git) with command `git clone https://github.com/eclipse/kapua.git`
-3. Go to Kapua folder and run command `mvn clean install -DskipTests -Pconsole,docker` which will build the project with the Web Admin console.
-4. After build finishes run Docker deploy script in `deployment/docker`:
- 
-```
-./docker-deploy.sh
-```
-
-The docker images needed will be downloaded from Docker Hub and all the containers will be started.
-
-You can check if every container is running properly by typing the following command:
+After having launched the deployment script, you can check if every container is running properly by typing the following command:
 
   docker ps -as
 
