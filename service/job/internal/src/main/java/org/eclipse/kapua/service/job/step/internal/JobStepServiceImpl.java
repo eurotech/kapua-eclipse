@@ -129,6 +129,7 @@ public class JobStepServiceImpl implements JobStepService {
         return txManager.execute(tx -> {
             // Check job step definition
             validateJobStepProperties(tx, jobStepCreator);
+
             // Check duplicate name
             if (jobStepRepository.countEntitiesWithNameInScope(
                     tx,
@@ -420,9 +421,17 @@ public class JobStepServiceImpl implements JobStepService {
                     }
 
                     if (jobStepProperty.getPropertyValue() != null) {
-                        ArgumentValidator.areEqual(jobStepProperty.getPropertyType(), jobStepDefinitionProperty.getPropertyType(), "stepProperties[]." + jobStepProperty.getName());
-                        ArgumentValidator.lengthRange(jobStepProperty.getPropertyValue(), jobStepDefinitionProperty.getMinLength(), jobStepDefinitionProperty.getMaxLength(),
-                                                      "stepProperties[]." + jobStepProperty.getName());
+                        ArgumentValidator.areEqual(
+                                jobStepProperty.getPropertyType(),
+                                jobStepDefinitionProperty.getPropertyType(),
+                                "stepProperties[]." + jobStepProperty.getName()
+                        );
+                        ArgumentValidator.lengthRange(
+                                jobStepProperty.getPropertyValue(),
+                                jobStepDefinitionProperty.getMinLength(),
+                                jobStepDefinitionProperty.getMaxLength(),
+                                "stepProperties[]." + jobStepProperty.getName()
+                        );
 
                         validateJobStepPropertyValue(jobStepProperty, jobStepDefinitionProperty);
                     }
@@ -455,7 +464,12 @@ public class JobStepServiceImpl implements JobStepService {
                 Class<E> jobStepDefinitionPropertyClassEnum = (Class<E>) jobStepDefinitionPropertyClass;
                 Enum.valueOf(jobStepDefinitionPropertyClassEnum, jobStepProperty.getPropertyValue());
             } else {
-                xmlUtil.unmarshal(jobStepProperty.getPropertyValue(), jobStepDefinitionPropertyClass);
+                // Try both formats: XML - JSON
+                try {
+                    xmlUtil.unmarshal(jobStepProperty.getPropertyValue(), jobStepDefinitionPropertyClass);
+                } catch (Exception e) {
+                    xmlUtil.unmarshalJson(jobStepProperty.getPropertyValue(), jobStepDefinitionPropertyClass);
+                }
             }
 
         } catch (KapuaIllegalArgumentException kiae) {

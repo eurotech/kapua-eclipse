@@ -19,14 +19,12 @@ import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.Metric;
 import javax.batch.runtime.context.StepContext;
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBException;
 
 import org.eclipse.kapua.KapuaIllegalArgumentException;
 import org.eclipse.kapua.KapuaRuntimeException;
 import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.model.id.KapuaIdFactory;
-import org.xml.sax.SAXException;
 
 import com.google.common.base.Strings;
 
@@ -96,10 +94,15 @@ public class StepContextWrapper {
                     throw new KapuaIllegalArgumentException(stepPropertyName, stepPropertyString);
                 }
             } else {
+                // Try both formats: XML - JSON
                 try {
                     stepProperty = xmlUtil.unmarshal(stepPropertyString, type);
-                } catch (JAXBException | SAXException e) {
-                    throw new KapuaIllegalArgumentException(stepPropertyName, stepPropertyString);
+                } catch (Exception eXml) {
+                    try {
+                        stepProperty = xmlUtil.unmarshalJson(stepPropertyString, type);
+                    } catch (Exception eJson) {
+                        throw new KapuaIllegalArgumentException(stepPropertyName, stepPropertyString);
+                    }
                 }
             }
         } else {
