@@ -185,7 +185,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: ./.github/actions/runTestsTaggedAs
         with:
-          tag: '@jobEngineOperations'
+          tag: '@jobEngine'
           needs-docker-images: 'true'
   test-jobsIntegration:
     needs: build
