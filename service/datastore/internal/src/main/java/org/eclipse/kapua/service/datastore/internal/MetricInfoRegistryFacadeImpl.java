@@ -12,6 +12,12 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.datastore.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import org.eclipse.kapua.KapuaIllegalArgumentException;
 import org.eclipse.kapua.commons.util.ArgumentValidator;
 import org.eclipse.kapua.model.id.KapuaId;
@@ -30,11 +36,6 @@ import org.eclipse.kapua.service.storable.model.query.predicate.IdsPredicate;
 import org.eclipse.kapua.service.storable.model.query.predicate.StorablePredicateFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Metric information registry facade
@@ -63,10 +64,10 @@ public class MetricInfoRegistryFacadeImpl extends AbstractDatastoreFacade implem
      */
     @Inject
     public MetricInfoRegistryFacadeImpl(ConfigurationProvider configProvider,
-                                        StorableIdFactory storableIdFactory,
-                                        StorablePredicateFactory storablePredicateFactory,
-                                        MetricInfoRepository metricInfoRepository,
-                                        DatastoreCacheManager datastoreCacheManager) {
+            StorableIdFactory storableIdFactory,
+            StorablePredicateFactory storablePredicateFactory,
+            MetricInfoRepository metricInfoRepository,
+            DatastoreCacheManager datastoreCacheManager) {
         super(configProvider);
         this.storableIdFactory = storableIdFactory;
         this.storablePredicateFactory = storablePredicateFactory;
