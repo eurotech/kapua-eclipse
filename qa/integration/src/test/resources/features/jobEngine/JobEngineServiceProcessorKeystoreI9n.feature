@@ -50,7 +50,6 @@ Feature: Job Engine Service - Keystore Step Processors
     And I wait job to finish its execution up to 10s
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
-    # TODO: check that certificate has been installed when KuraMock gets refactored
 
   Scenario: Keystore Keypair Create Processor
 
@@ -76,7 +75,6 @@ Feature: Job Engine Service - Keystore Step Processors
     And I wait job to finish its execution up to 10s
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
-    # TODO: check that keypair has been created when KuraMock gets refactored
 
   Scenario: Keystore Item Delete Processor
 
@@ -98,7 +96,6 @@ Feature: Job Engine Service - Keystore Step Processors
     And I wait job to finish its execution up to 10s
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
-    # TODO: check that item has been deleted when KuraMock gets refactored
 
   @teardown
   Scenario: Tear down test resources
