@@ -16,7 +16,7 @@
 @jobEngineTargetProcessors
 
 Feature: Job Engine Service - Keystore Step Processors
-  Tests for Device Management Keystore  Processor
+  Tests for Device Management Keystore Processor
 
   @setup
   Scenario: Setup test resources
@@ -71,7 +71,7 @@ Feature: Job Engine Service - Keystore Step Processors
       | algorithm          | java.lang.String  | RSA                                                |
       | signatureAlgorithm | java.lang.String  | SHA256withRSA                                      |
       | attributes         | java.lang.String  | CN=Let's Encrypt Authority X3,O=Let's Encrypt,C=US |
-      | timeout            | java.lang.Long    | 10000                                              |
+      | timeout            | java.lang.Long    | 5000                                               |
     When I start a job
     And I wait job to finish its execution up to 10s
     Then I confirm that job has 1 job execution
@@ -93,7 +93,7 @@ Feature: Job Engine Service - Keystore Step Processors
       | name       | type             | value         |
       | keystoreId | java.lang.String | SSLKeystore   |
       | alias      | java.lang.String | qaCertificate |
-      | timeout    | java.lang.Long   | 10000         |
+      | timeout    | java.lang.Long   | 5000          |
     When I start a job
     And I wait job to finish its execution up to 10s
     Then I confirm that job has 1 job execution
