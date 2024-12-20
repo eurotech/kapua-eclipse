@@ -12,7 +12,6 @@
 ###############################################################################
 @env_docker
 @it
-@jobEngine
 @jobEngineServiceStop
 
 Feature: JobEngineService stop job tests with online device
