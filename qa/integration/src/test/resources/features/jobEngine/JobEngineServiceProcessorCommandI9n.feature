@@ -71,9 +71,9 @@ Feature: Job Engine Service - Command Step Processors
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
     # TODO: check that command has been executed when KuraMock gets refactored
 
-#  @teardown
-#  Scenario: Tear down test resources
-#    Given I logout
-#    And KuraMock is disconnected
-#    And Stop Docker environment
-#    And Clean Locator Instance
+  @teardown
+  Scenario: Tear down test resources
+    Given I logout
+    And KuraMock is disconnected
+    And Stop Docker environment
+    And Clean Locator Instance
