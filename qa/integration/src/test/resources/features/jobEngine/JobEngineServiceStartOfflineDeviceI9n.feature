@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2019, 2022 Eurotech and/or its affiliates and others
+# Copyright (c) 2019, 2024 Eurotech and/or its affiliates and others
 #
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,10 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobEngineStartOfflineDevice
 @env_docker
+@it
+@jobEngine
+@jobEngineStartOfflineDevice
 
 Feature: JobEngineService tests for starting job with offline device
 
@@ -1132,6 +1134,6 @@ Feature: JobEngineService tests for starting job with offline device
     And I logout
 
   @teardown
-  Scenario: Stop full docker environment
-    Given Stop full docker environment
+  Scenario: Tear down test resources
+    Given Stop Docker environment
     And Clean Locator Instance

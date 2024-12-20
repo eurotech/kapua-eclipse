@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2019, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -305,9 +305,20 @@ public class DockerSteps {
         }
     }
 
-    private void cleanDockerEnvironmentInternal() throws DockerException, InterruptedException {
+    /**
+     * Stops all running Docker containers and removes the Docker network
+     *
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @Given("Stop Docker environment")
+    public void cleanDockerEnvironmentInternal() throws Exception {
         removeContainers(
                 Arrays.asList(
+                        BasicSteps.TELEMETRY_CONSUMER_CONTAINER_NAME,
+                        BasicSteps.LIFECYCLE_CONSUMER_CONTAINER_NAME,
+                        BasicSteps.AUTH_SERVICE_CONTAINER_NAME,
+                        BasicSteps.MESSAGE_BROKER_CONTAINER_NAME,
                         BasicSteps.JOB_ENGINE_CONTAINER_NAME,
                         BasicSteps.EVENTS_BROKER_CONTAINER_NAME,
                         BasicSteps.ES_CONTAINER_NAME,

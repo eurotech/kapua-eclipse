@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, 2022 Eurotech and/or its affiliates and others
+# Copyright (c) 2017, 2024 Eurotech and/or its affiliates and others
 #
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,10 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobsIntegrationBase
-@jobService
 @env_docker_base
+@it # This is an IT because Job.*Service operations may require a Job Engine instance running
+@job
+@jobService
 
 Feature: Job service CRUD tests
   The Job service is responsible for executing scheduled actions on various targets.
@@ -255,7 +256,7 @@ Feature: Job service CRUD tests
     Then No exception was thrown
 
   @teardown
-  Scenario: Stop test environment
-    Given Stop full docker environment
+  Scenario: Tear down test resources
+    Given Stop Docker environment
     And Clean Locator Instance
     And Reset Security Context

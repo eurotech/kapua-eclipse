@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2021, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,12 +20,19 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.eclipse.kapua.KapuaEntityNotFoundException;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.locator.KapuaLocator;
+import org.eclipse.kapua.model.KapuaEntity;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.model.query.predicate.AttributePredicate;
 import org.eclipse.kapua.qa.common.StepData;
 import org.eclipse.kapua.service.device.registry.Device;
+import org.eclipse.kapua.service.device.registry.DeviceAttributes;
+import org.eclipse.kapua.service.device.registry.DeviceFactory;
+import org.eclipse.kapua.service.device.registry.DeviceListResult;
+import org.eclipse.kapua.service.device.registry.DeviceQuery;
+import org.eclipse.kapua.service.device.registry.DeviceRegistryService;
 import org.eclipse.kapua.service.job.Job;
 import org.eclipse.kapua.service.job.targets.JobTarget;
 import org.eclipse.kapua.service.job.targets.JobTargetAttributes;
@@ -41,11 +48,16 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Singleton
 public class JobTargetServiceSteps extends JobServiceTestBase {
 
     private static final String DEVICE = "Device";
+
+    private DeviceFactory deviceFactory;
+    private DeviceRegistryService deviceRegistryService;
 
     private JobTargetService jobTargetService;
     private JobTargetFactory jobTargetFactory;
@@ -64,6 +76,9 @@ public class JobTargetServiceSteps extends JobServiceTestBase {
     @After(value = "@setup")
     public void setServices() {
         KapuaLocator locator = KapuaLocator.getInstance();
+
+        deviceFactory= locator.getFactory(DeviceFactory.class);
+        deviceRegistryService = locator.getService(DeviceRegistryService.class);
 
         jobTargetService = locator.getService(JobTargetService.class);
         jobTargetFactory = locator.getFactory(JobTargetFactory.class);
@@ -126,6 +141,40 @@ public class JobTargetServiceSteps extends JobServiceTestBase {
         stepData.updateCount(jobTargets.size());
     }
 
+    /**
+     * Adds {@link Device}s with the given {@link Device#getClientId()}s as a {@link JobTarget} of the {@link Job} in context.
+     *
+     * @param clientIds The {@link Device#getClientId()}s to add
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I add device target(s) to job")
+    public void addDeviceTargetsToJob(List<String> clientIds) throws Exception {
+        DeviceQuery deviceQuery = deviceFactory.newQuery(getCurrentScopeId());
+        deviceQuery.setPredicate(
+                deviceQuery.attributePredicate(DeviceAttributes.CLIENT_ID, clientIds)
+        );
+
+        DeviceListResult devices = deviceRegistryService.query(deviceQuery);
+
+        List<KapuaId> deviceIds = devices.getItems()
+                .stream()
+                .map(KapuaEntity::getId)
+                .collect(Collectors.toList());
+
+        Job job = (Job) stepData.get("Job");
+
+        JobTargetCreator jobTargetCreator = jobTargetFactory.newCreator(getCurrentScopeId());
+        jobTargetCreator.setJobId(job.getId());
+
+        List<JobTarget> jobTargets = new ArrayList<>();
+        for (KapuaId deviceId : deviceIds) {
+            jobTargetCreator.setJobTargetId(deviceId);
+            JobTarget jobTarget = jobTargetService.create(jobTargetCreator);
+            stepData.put(JOB_TARGET, jobTarget);
+        }
+        stepData.put(JOB_TARGET_LIST, jobTargets);
+    }
 
     @And("I add target(s) to job")
     public void addTargetsToJob() throws Exception {
@@ -327,7 +376,81 @@ public class JobTargetServiceSteps extends JobServiceTestBase {
         Assert.assertNotNull(jobTargetFactory.newQuery(SYS_SCOPE_ID));
     }
 
+
+    // Check Job Targets
+
+    /**
+     * Checks that the {@link JobTarget} in context for the {@link Job} in context has the expected {@link JobTarget#getStepIndex()} and {@link JobTarget#getStatus()}
+     *
+     * @param expectedStepIndex The expected {@link JobTarget#getStepIndex()}
+     * @param expectedJobTargetStatus The expected {@link JobTarget#getStatus()}
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @When("I confirm that job target in job has step index {int} and status {string}")
+    public void checkJobTargetForJobInContextHas(int expectedStepIndex, String expectedJobTargetStatus) throws Exception {
+
+        JobTarget jobTarget = (JobTarget) stepData.get(JOB_TARGET);
+
+        checkJobTargetForJobHas(jobTarget, expectedStepIndex, expectedJobTargetStatus);
+    }
+
+    /**
+     * Checks that the {@link JobTarget} that matches the {@link Device} with the given {@link Device#getClientId()} for the {@link Job} in context has the expected {@link JobTarget#getStepIndex()} and {@link JobTarget#getStatus()}
+     *
+     * @param clientId The {@link Device#getClientId()} to look for
+     * @param expectedStepIndex The expected {@link JobTarget#getStepIndex()}
+     * @param expectedJobTargetStatus The expected {@link JobTarget#getStatus()}
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I confirm that device job target {string} in job has step index {int} and status {string}")
+    public void checkJobTargetByNameForJobHas(String clientId, int expectedStepIndex, String expectedJobTargetStatus) throws Exception {
+        Device device = deviceRegistryService.findByClientId(getCurrentScopeId(), clientId);
+
+        if (device == null) {
+            throw new KapuaEntityNotFoundException(Device.TYPE, clientId);
+        }
+
+        Job job = (Job) stepData.get(JOB);
+
+        JobTargetQuery jobTargetQuery = jobTargetFactory.newQuery(job.getScopeId());
+        jobTargetQuery.setPredicate(
+            jobTargetQuery.andPredicate(
+                jobTargetQuery.attributePredicate(JobTargetAttributes.JOB_ID, job.getId()),
+                jobTargetQuery.attributePredicate(JobTargetAttributes.JOB_TARGET_ID, device.getId())
+            )
+        );
+
+        JobTarget jobTarget = jobTargetService.query(jobTargetQuery).getFirstItem();
+
+        if (jobTarget == null) {
+            throw new KapuaEntityNotFoundException(JobTarget.TYPE, device.getId());
+        }
+
+        checkJobTargetForJobHas(jobTarget, expectedStepIndex, expectedJobTargetStatus);
+    }
+
+    /**
+     * Checks that given {@link JobTarget} has the expected {@link JobTarget#getStepIndex()} and {@link JobTarget#getStatus()}
+     *
+     * @param expectedStepIndex The expected {@link JobTarget#getStepIndex()}
+     * @param expectedJobTargetStatus The expected {@link JobTarget#getStatus()}
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void checkJobTargetForJobHas(JobTarget jobTarget, int expectedStepIndex, String expectedJobTargetStatus) throws Exception {
+        JobTarget updatedJobTarget = jobTargetService.find(jobTarget.getScopeId(), jobTarget.getId());
+
+        Assert.assertEquals(expectedStepIndex, updatedJobTarget.getStepIndex());
+        Assert.assertEquals(JobTargetStatus.valueOf(expectedJobTargetStatus), updatedJobTarget.getStatus());
+
+        stepData.put(JOB_TARGET, updatedJobTarget);
+    }
+
+    //
     // Private methods
+    //
     private JobTargetCreator prepareJobTargetCreator() {
         KapuaId currentJobId = (KapuaId) stepData.get(CURRENT_JOB_ID);
         Device device = (Device) stepData.get(DEVICE);
