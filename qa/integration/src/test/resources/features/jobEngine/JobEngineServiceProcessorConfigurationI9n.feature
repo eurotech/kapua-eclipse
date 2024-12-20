@@ -48,7 +48,6 @@ Feature: Job Engine Service - Configuration Step Processors
     And I wait job to finish its execution up to 10s
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
-    # TODO: check that configuration has been applied when KuraMock gets refactored
 
   Scenario: Configuration Put - JSON
 
@@ -69,7 +68,6 @@ Feature: Job Engine Service - Configuration Step Processors
     And I wait job to finish its execution up to 10s
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
-    # TODO: check that configuration has been applied when KuraMock gets refactored
 
   @teardown
   Scenario: Tear down test resources
