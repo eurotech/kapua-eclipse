@@ -20,7 +20,8 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = {
 //                "classpath:features/jobEngine/JobEngineServiceOperations.feature",
-                "classpath:features/jobEngine/JobEngineServiceProcessorKeystoreI9n.feature",
+//                "classpath:features/jobEngine/JobEngineServiceProcessorKeystoreI9n.feature",
+                "classpath:features/jobEngine/JobEngineServiceProcessorAssetI9n.feature",
         },
         glue = {
                 "org.eclipse.kapua.service.job.steps",
