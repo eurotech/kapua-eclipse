@@ -48,7 +48,6 @@ Feature: Job Engine Service - Asset Step Processors
     And I wait job to finish its execution up to 10s
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
-    # TODO: check that asset has been written when KuraMock gets refactored
 
   @teardown
   Scenario: Tear down test resources
