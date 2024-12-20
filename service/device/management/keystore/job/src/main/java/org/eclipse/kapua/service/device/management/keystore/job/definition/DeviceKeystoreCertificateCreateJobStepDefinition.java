@@ -12,7 +12,6 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.device.management.keystore.job.definition;
 
-import com.beust.jcommander.internal.Lists;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.device.management.keystore.DeviceKeystoreManagementService;
 import org.eclipse.kapua.service.device.management.keystore.job.DeviceKeystoreCertificateCreateTargetProcessor;
@@ -22,6 +21,7 @@ import org.eclipse.kapua.service.job.step.definition.JobStepDefinitionRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepPropertyRecord;
 import org.eclipse.kapua.service.job.step.definition.JobStepType;
 import org.eclipse.kapua.service.job.step.definition.device.management.TimeoutJobStepPropertyRecord;
+import com.beust.jcommander.internal.Lists;
 
 /**
  * {@link JobStepDefinition} to perform {@link DeviceKeystoreManagementService#createKeystoreCertificate(KapuaId, KapuaId, DeviceKeystoreCertificate, Long)}.
@@ -43,7 +43,7 @@ public class DeviceKeystoreCertificateCreateJobStepDefinition extends JobStepDef
                 Lists.newArrayList(
                         new JobStepPropertyRecord(
                                 DeviceKeystoreCertificateCreatePropertyKeys.KEYSTORE_ID,
-                                "Identifier of the device keystore where the certificate will be added",
+                                "Identifier of the device keystore where the certificate will be added. The identifier can be found in the Key Stores view within the Device Overview page or can be retrieved via the REST API",
                                 String.class.getName(),
                                 null,
                                 "SSLKeystore",
