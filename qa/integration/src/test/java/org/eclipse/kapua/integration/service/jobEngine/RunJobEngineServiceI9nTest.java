@@ -22,7 +22,8 @@ import org.junit.runner.RunWith;
 //                "classpath:features/jobEngine/JobEngineServiceOperations.feature",
 //                "classpath:features/jobEngine/JobEngineServiceProcessorKeystoreI9n.feature",
 //                "classpath:features/jobEngine/JobEngineServiceProcessorAssetI9n.feature",
-                "classpath:features/jobEngine/JobEngineServiceProcessorBundleI9n.feature",
+//                "classpath:features/jobEngine/JobEngineServiceProcessorBundleI9n.feature",
+                "classpath:features/jobEngine/JobEngineServiceProcessorCommandI9n.feature",
         },
         glue = {
                 "org.eclipse.kapua.service.job.steps",
