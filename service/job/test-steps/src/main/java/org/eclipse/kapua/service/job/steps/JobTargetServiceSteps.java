@@ -27,6 +27,7 @@ import org.eclipse.kapua.model.KapuaEntity;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.model.query.predicate.AttributePredicate;
 import org.eclipse.kapua.qa.common.StepData;
+import org.eclipse.kapua.service.device.management.registry.operation.notification.ManagementOperationNotification;
 import org.eclipse.kapua.service.device.registry.Device;
 import org.eclipse.kapua.service.device.registry.DeviceAttributes;
 import org.eclipse.kapua.service.device.registry.DeviceFactory;
@@ -49,10 +50,13 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Singleton
 public class JobTargetServiceSteps extends JobServiceTestBase {
+
+    private final static Logger LOG = LoggerFactory.getLogger(JobTargetServiceSteps.class);
 
     private static final String DEVICE = "Device";
 
@@ -61,7 +65,6 @@ public class JobTargetServiceSteps extends JobServiceTestBase {
 
     private JobTargetService jobTargetService;
     private JobTargetFactory jobTargetFactory;
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Inject
     public JobTargetServiceSteps(StepData stepData) {
@@ -214,7 +217,7 @@ public class JobTargetServiceSteps extends JobServiceTestBase {
     public void checkStepIndexAndStatus(int stepIndex, String status) throws KapuaException {
         JobTarget jobTarget = (JobTarget) stepData.get(JOB_TARGET);
         JobTarget target = jobTargetService.find(jobTarget.getScopeId(), jobTarget.getId());
-        logger.error("step: {}, status: {}", target.getStepIndex(), target.getStatus().name());
+        LOG.error("step: {}, status: {}", target.getStepIndex(), target.getStatus().name());
         Assert.assertEquals(stepIndex, target.getStepIndex());
         Assert.assertEquals(status, target.getStatus().toString());
     }
@@ -446,6 +449,35 @@ public class JobTargetServiceSteps extends JobServiceTestBase {
         Assert.assertEquals(JobTargetStatus.valueOf(expectedJobTargetStatus), updatedJobTarget.getStatus());
 
         stepData.put(JOB_TARGET, updatedJobTarget);
+    }
+
+    /**
+     * Waits the {@link JobTarget} in context to finish its processing and to have {@link JobTarget#getStatus()} set to {@link JobTargetStatus#NOTIFIED_COMPLETION}
+     * <p>
+     * It also takes as a valid {@link JobTarget#getStatus()} {@link JobTargetStatus#PROCESS_OK} because the {@link ManagementOperationNotification} can be processed fast and
+     * {@link JobTarget} can switch from {@link JobTargetStatus#NOTIFIED_COMPLETION} to {@link JobTargetStatus#PROCESS_OK} while waiting for the next check.
+     *
+     * @param waitSeconds The max time to wait
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @Then("I wait job target to finish processing and notify completion up to {int}s")
+    public void waitJobTargetInContextToNotifyCompletion(int waitSeconds) throws Exception {
+        JobTarget jobTarget = (JobTarget) stepData.get(JOB_TARGET);
+
+        long now = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - now) < (waitSeconds * 1000L)) {
+            JobTarget updatedJobTarget = jobTargetService.find(jobTarget.getScopeId(), jobTarget.getId());
+            if (JobTargetStatus.NOTIFIED_COMPLETION.equals(updatedJobTarget.getStatus()) ||
+                    // Processing of notification is fast so we accept also PROCESS_OK as a valid status
+                    JobTargetStatus.PROCESS_OK.equals(updatedJobTarget.getStatus())) {
+                return;
+            }
+
+            TimeUnit.MILLISECONDS.sleep(100);
+        }
+
+        Assert.fail("Job Target" + jobTarget.getId() + " did not notified completion of processing within " + waitSeconds + "s");
     }
 
     //
