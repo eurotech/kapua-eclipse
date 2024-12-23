@@ -11,7 +11,7 @@
 #     Eurotech - initial API and implementation
 ###############################################################################
 @env_docker_base
-@job
+@jobsIntegration
 
 Feature: Trigger service tests
 
