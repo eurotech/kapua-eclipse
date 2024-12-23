@@ -71,6 +71,32 @@ public class JobEngineSteps extends JobServiceTestBase {
     // Wait Job Running
 
     /**
+     * Waits the {@link Job} in context to start.
+     *
+     * @param waitSeconds The max time to wait
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @And("I wait for another job start up to {int}s")
+    public void waitJobInContextToStart(int waitSeconds) throws Exception {
+        Job job = (Job) stepData.get(JOB);
+
+        long now = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - now) < (waitSeconds * 1000L)) {
+            if (jobEngineService.isRunning(job.getScopeId(), job.getId())) {
+                return;
+            }
+
+            // Check frequently!
+            TimeUnit.MILLISECONDS.sleep(25);
+        }
+
+        Assert.fail("Job " + job.getName() + " did not start an execution within " + waitSeconds + "s");
+    }
+
+    // Wait Job Finish Run
+
+    /**
      * Waits the last {@link Job} in context to finish it execution up the given wait time
      *
      * @param waitSeconds The max time to wait
@@ -117,7 +143,7 @@ public class JobEngineSteps extends JobServiceTestBase {
             TimeUnit.MILLISECONDS.sleep(100);
         }
 
-        Assert.fail("Job " + job.getName() + "did not completed its execution within " + waitSeconds + "s");
+        Assert.fail("Job " + job.getName() + " did not completed its execution within " + waitSeconds + "s");
     }
 
     // Check Job Running
