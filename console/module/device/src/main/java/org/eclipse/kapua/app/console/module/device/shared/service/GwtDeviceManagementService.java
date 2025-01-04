@@ -17,6 +17,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import org.eclipse.kapua.app.console.module.api.client.GwtKapuaException;
 import org.eclipse.kapua.app.console.module.api.shared.model.GwtConfigComponent;
+import org.eclipse.kapua.app.console.module.api.shared.model.GwtConfigComponentCreator;
 import org.eclipse.kapua.app.console.module.api.shared.model.GwtXSRFToken;
 import org.eclipse.kapua.app.console.module.device.shared.model.GwtDevice;
 import org.eclipse.kapua.app.console.module.device.shared.model.management.bundles.GwtBundle;
@@ -90,6 +91,8 @@ public interface GwtDeviceManagementService extends RemoteService {
 
     void updateComponentConfiguration(GwtXSRFToken xsrfToken, GwtDevice device, GwtConfigComponent configComponent)
             throws GwtKapuaException;
+
+    void createComponentConfiguration(GwtXSRFToken xsrfToken, GwtDevice device, GwtConfigComponentCreator creator) throws GwtKapuaException;
 
     boolean isStoreServiceEnabled(String scopeIdString, String deviceIdString) throws GwtKapuaException;
 

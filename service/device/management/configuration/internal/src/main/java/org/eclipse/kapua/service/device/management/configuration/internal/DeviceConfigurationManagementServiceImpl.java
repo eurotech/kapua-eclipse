@@ -12,11 +12,10 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.device.management.configuration.internal;
 
+import com.google.common.base.Strings;
 import java.util.Date;
-
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBException;
-
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.KapuaIllegalArgumentException;
 import org.eclipse.kapua.commons.model.domains.Domains;
@@ -32,6 +31,9 @@ import org.eclipse.kapua.service.device.management.configuration.DeviceComponent
 import org.eclipse.kapua.service.device.management.configuration.DeviceConfiguration;
 import org.eclipse.kapua.service.device.management.configuration.DeviceConfigurationFactory;
 import org.eclipse.kapua.service.device.management.configuration.DeviceConfigurationManagementService;
+import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationCreationRequestMessage;
+import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationCreationRequestPayload;
+import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationCreationResponseMessage;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationRequestChannel;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationRequestMessage;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationRequestPayload;
@@ -47,8 +49,6 @@ import org.eclipse.kapua.storage.TxManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import com.google.common.base.Strings;
 
 /**
  * {@link DeviceConfigurationManagementService} implementation.
@@ -164,6 +164,54 @@ public class DeviceConfigurationManagementServiceImpl extends AbstractDeviceMana
                 throw new DeviceNeverConnectedException(deviceId);
             }
         }
+    }
+
+    @Override
+    public void create(KapuaId scopeId, KapuaId deviceId, String componentFactoryId, String componentId, Long timeout) throws KapuaException {
+        // Argument Validation
+        ArgumentValidator.notNull(scopeId, SCOPE_ID);
+        ArgumentValidator.notNull(deviceId, DEVICE_ID);
+        ArgumentValidator.notEmptyOrNull(componentFactoryId, "componentFactoryId");
+        ArgumentValidator.notEmptyOrNull(componentId, "componentId");
+        // Check Access
+        authorizationService.checkPermission(permissionFactory.newPermission(Domains.DEVICE_MANAGEMENT, Actions.write, scopeId));
+        // Prepare the request
+        ConfigurationRequestChannel configurationRequestChannel = new ConfigurationRequestChannel();
+        configurationRequestChannel.setAppName(DeviceConfigurationAppProperties.APP_NAME);
+        configurationRequestChannel.setVersion(DeviceConfigurationAppProperties.APP_VERSION);
+        configurationRequestChannel.setMethod(KapuaMethod.CREATE);
+
+        ConfigurationCreationRequestPayload requestPayload = new ConfigurationCreationRequestPayload();
+        requestPayload.setComponentFactoryId(componentFactoryId);
+        requestPayload.setComponentId(componentId);
+
+        ConfigurationCreationRequestMessage requestMessage = new ConfigurationCreationRequestMessage();
+        requestMessage.setScopeId(scopeId);
+        requestMessage.setDeviceId(deviceId);
+        requestMessage.setCapturedOn(new Date());
+        requestMessage.setPayload(requestPayload);
+        requestMessage.setChannel(configurationRequestChannel);
+
+        // Build request
+        DeviceCallBuilder<ConfigurationRequestChannel, ConfigurationRequestPayload, ConfigurationRequestMessage, ConfigurationCreationResponseMessage> configurationDeviceCallBuilder =
+                DeviceCallBuilder
+                        .newBuilder()
+                        .withRequestMessage(requestMessage)
+                        .withTimeoutOrDefault(timeout);
+
+        // Do create
+        ConfigurationCreationResponseMessage responseMessage;
+        try {
+            responseMessage = configurationDeviceCallBuilder.send();
+        } catch (Exception e) {
+            LOG.error("Error while creating configuration using component factory {} and component id {} for Device {}. Error: {}", componentFactoryId, componentId, deviceId, e.getMessage(), e);
+            throw e;
+        }
+
+        // Create event
+        createDeviceEvent(scopeId, deviceId, requestMessage, responseMessage);
+        // Check response
+        checkResponseAcceptedOrThrowError(responseMessage);
     }
 
     @Override

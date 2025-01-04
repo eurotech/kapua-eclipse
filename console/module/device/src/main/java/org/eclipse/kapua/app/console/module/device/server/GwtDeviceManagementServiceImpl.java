@@ -25,6 +25,7 @@ import org.eclipse.kapua.app.console.module.api.server.util.KapuaExceptionHandle
 import org.eclipse.kapua.app.console.module.api.setting.ConsoleSetting;
 import org.eclipse.kapua.app.console.module.api.setting.ConsoleSettingKeys;
 import org.eclipse.kapua.app.console.module.api.shared.model.GwtConfigComponent;
+import org.eclipse.kapua.app.console.module.api.shared.model.GwtConfigComponentCreator;
 import org.eclipse.kapua.app.console.module.api.shared.model.GwtConfigParameter;
 import org.eclipse.kapua.app.console.module.api.shared.model.GwtConfigParameter.GwtConfigParameterType;
 import org.eclipse.kapua.app.console.module.api.shared.model.GwtXSRFToken;
@@ -437,6 +438,27 @@ public class GwtDeviceManagementServiceImpl extends KapuaRemoteServiceServlet im
             throw KapuaExceptionHandler.buildExceptionFromError(t);
         }
     }
+
+    @Override
+    public void createComponentConfiguration(GwtXSRFToken xsrfToken, GwtDevice gwtDevice, GwtConfigComponentCreator command) throws GwtKapuaException {
+        // Checking validity of the given XSRF Token
+        checkXSRFToken(xsrfToken);
+
+        // execute the update
+        try {
+            KapuaId scopeId = KapuaEid.parseCompactId(gwtDevice.getScopeId());
+            KapuaId deviceId = KapuaEid.parseCompactId(gwtDevice.getId());
+
+            CONFIGURATION_MANAGEMENT_SERVICE.create(scopeId, deviceId, command.getUnescapedComponentFactoryId(), command.getUnescapedComponentId(), null);
+            // Add an additional delay after the configuration update
+            // to give the time to the device to apply the received
+            // configuration
+            Thread.sleep(1000);
+        } catch (Throwable t) {
+            throw KapuaExceptionHandler.buildExceptionFromError(t);
+        }
+    }
+
     // Configuration Store Settings
     // 
 

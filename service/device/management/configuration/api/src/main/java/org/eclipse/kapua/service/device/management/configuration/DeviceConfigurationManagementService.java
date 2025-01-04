@@ -40,6 +40,8 @@ public interface DeviceConfigurationManagementService extends DeviceManagementSe
                             Long timeout)
             throws KapuaException;
 
+    void create(KapuaId scopeId, KapuaId deviceId, String componentFactoryId, String componentId, Long timeout) throws KapuaException;
+
     /**
      * Put the provided configuration to the device identified by the provided device identifier
      *
