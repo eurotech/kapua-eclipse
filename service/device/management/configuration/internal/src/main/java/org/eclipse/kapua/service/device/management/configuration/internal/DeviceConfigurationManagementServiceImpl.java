@@ -28,12 +28,16 @@ import org.eclipse.kapua.service.authorization.permission.PermissionFactory;
 import org.eclipse.kapua.service.device.management.commons.AbstractDeviceManagementTransactionalServiceImpl;
 import org.eclipse.kapua.service.device.management.commons.call.DeviceCallBuilder;
 import org.eclipse.kapua.service.device.management.configuration.DeviceComponentConfiguration;
+import org.eclipse.kapua.service.device.management.configuration.DeviceComponentConfigurationFactories;
 import org.eclipse.kapua.service.device.management.configuration.DeviceConfiguration;
 import org.eclipse.kapua.service.device.management.configuration.DeviceConfigurationFactory;
 import org.eclipse.kapua.service.device.management.configuration.DeviceConfigurationManagementService;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationCreationRequestMessage;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationCreationRequestPayload;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationCreationResponseMessage;
+import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationFactoriesRequestMessage;
+import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationFactoriesRequestPayload;
+import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationFactoriesResponseMessage;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationRequestChannel;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationRequestMessage;
 import org.eclipse.kapua.service.device.management.configuration.message.internal.ConfigurationRequestPayload;
@@ -164,6 +168,48 @@ public class DeviceConfigurationManagementServiceImpl extends AbstractDeviceMana
                 throw new DeviceNeverConnectedException(deviceId);
             }
         }
+    }
+
+    @Override
+    public DeviceComponentConfigurationFactories getFactories(KapuaId scopeId, KapuaId deviceId, Long timeout) throws KapuaException {
+        // Argument Validation
+        ArgumentValidator.notNull(scopeId, SCOPE_ID);
+        ArgumentValidator.notNull(deviceId, DEVICE_ID);
+        // Check Access
+        authorizationService.checkPermission(permissionFactory.newPermission(Domains.DEVICE_MANAGEMENT, Actions.read, scopeId));
+        // Prepare the request
+        ConfigurationRequestChannel channel = new ConfigurationRequestChannel();
+        channel.setAppName(DeviceConfigurationAppProperties.APP_NAME);
+        channel.setVersion(DeviceConfigurationAppProperties.APP_VERSION);
+        channel.setMethod(KapuaMethod.READ);
+
+        ConfigurationFactoriesRequestMessage requestMessage = new ConfigurationFactoriesRequestMessage();
+        requestMessage.setScopeId(scopeId);
+        requestMessage.setDeviceId(deviceId);
+        requestMessage.setCapturedOn(new Date());
+        requestMessage.setPayload(new ConfigurationFactoriesRequestPayload());
+        requestMessage.setChannel(channel);
+
+        // Build request
+        DeviceCallBuilder<ConfigurationRequestChannel, ConfigurationFactoriesRequestPayload, ConfigurationFactoriesRequestMessage, ConfigurationFactoriesResponseMessage> callBuilder =
+                DeviceCallBuilder
+                        .newBuilder()
+                        .withRequestMessage(requestMessage)
+                        .withTimeoutOrDefault(timeout);
+
+        // Do get
+        ConfigurationFactoriesResponseMessage responseMessage;
+        try {
+            responseMessage = callBuilder.send();
+        } catch (Exception e) {
+            LOG.error("Error while getting component configuration factories for Device {}. Error: {}", deviceId, e.getMessage(), e);
+            throw e;
+        }
+
+        // Create event
+        createDeviceEvent(scopeId, deviceId, requestMessage, responseMessage);
+
+        return checkResponseAcceptedOrThrowError(responseMessage, () -> responseMessage.getPayload().get());
     }
 
     @Override
