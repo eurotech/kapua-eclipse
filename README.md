@@ -40,7 +40,10 @@ Before starting, check that your environment has the following prerequisites:
 
 * 64 bit architecture
 * Java VM Version 8
+* Java VM Version 11
 * Docker Version 1.2+
+* Swagger CLI 4+ (Installed via NPM or separately)
+* Node 16+ 
 * Internet Access (needed to download the artifacts)
 
 ### Demo Setup
