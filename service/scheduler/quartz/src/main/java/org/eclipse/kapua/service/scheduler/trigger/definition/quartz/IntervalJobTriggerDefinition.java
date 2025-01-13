@@ -47,7 +47,7 @@ public class IntervalJobTriggerDefinition extends TriggerDefinitionRecord {
                         new TriggerPropertyRecord(
                                 IntervalJobTriggerDefinitionPropertyKeys.INTERVAL,
                                 "Fixed time between job executions in seconds",
-                                KapuaId.class.getName(),
+                                Integer.class.getName(),
                                 null)
                 )
         );
