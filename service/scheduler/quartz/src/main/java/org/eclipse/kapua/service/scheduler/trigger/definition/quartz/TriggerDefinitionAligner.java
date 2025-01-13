@@ -169,7 +169,7 @@ public class TriggerDefinitionAligner {
             if (dbTriggerDefinitionProperty == null) {
                 LOG.warn("Wired TriggerProperty '{}' of TriggerDefinition '{}' is not aligned with the database one",
                         wiredTriggerDefinitionProperty.getName(),
-                        wiredTriggerDefinitionProperty.getName());
+                        wiredTriggerDefinition.getName());
 
                 return false;
             }

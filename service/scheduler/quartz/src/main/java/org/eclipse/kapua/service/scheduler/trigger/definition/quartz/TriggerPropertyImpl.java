@@ -36,11 +36,11 @@ public class TriggerPropertyImpl implements TriggerProperty {
     private String description;
 
     @Basic
-    @Column(name = "property_type", nullable = false, updatable = false)
+    @Column(name = "property_type", nullable = false, updatable = true)
     private String propertyType;
 
     @Basic
-    @Column(name = "property_value", nullable = false, updatable = false)
+    @Column(name = "property_value", nullable = false, updatable = true)
     private String propertyValue;
 
     /**
