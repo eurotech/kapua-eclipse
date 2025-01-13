@@ -13,6 +13,7 @@
 package org.eclipse.kapua.commons.util;
 
 import java.lang.reflect.Constructor;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
@@ -22,6 +23,7 @@ import org.eclipse.kapua.KapuaDuplicateNameException;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.KapuaIllegalNullArgumentException;
 import org.eclipse.kapua.KapuaOptimisticLockingException;
+import org.eclipse.kapua.KapuaSQLIntegrityConstraintViolationException;
 import org.eclipse.kapua.qa.markers.junit.JUnitTests;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -111,9 +113,21 @@ public class KapuaExceptionUtilsTest {
         Mockito.when(mockedDatabaseException.getInternalException()).thenReturn(mockedDatabaseException);
         Assert.assertEquals("ComparisonFailure not expected for: " + exception,kapuaException.toString(), KapuaExceptionUtils.convertPersistenceException(exception).toString());
 
-        Mockito.verify(mockedDatabaseException, Mockito.times(13)).getInternalException();
-        Mockito.verify(mockedDatabaseException, Mockito.times(12)).getMessage();
-        Mockito.verify(mockedDatabaseException, Mockito.times(13)).getErrorCode();
+        //SQL foreign key constraint violation
+        SQLIntegrityConstraintViolationException mockedDatabaseException2 = Mockito.mock(SQLIntegrityConstraintViolationException.class);
+        Mockito.when(mockedDatabaseException.getInternalException()).thenReturn(mockedDatabaseException2);
+        Mockito.when(mockedDatabaseException.getMessage()).thenReturn("FOREIGN KEY");
+        KapuaSQLIntegrityConstraintViolationException ke = new KapuaSQLIntegrityConstraintViolationException("Check if some foreign key relation exists between this entity and another one in the platform");
+        Assert.assertEquals("ComparisonFailure not expected for: " + exception,ke.toString(), KapuaExceptionUtils.convertPersistenceException(exception).toString());
+
+        //generic SQL constraint violation
+        Mockito.when(mockedDatabaseException.getMessage()).thenReturn("another message different from for3ign key but always SQL integrity constraint violation stuff");
+        KapuaSQLIntegrityConstraintViolationException ke2 = new KapuaSQLIntegrityConstraintViolationException("");
+        Assert.assertEquals("ComparisonFailure not expected for: " + exception,ke2.toString(), KapuaExceptionUtils.convertPersistenceException(exception).toString());
+
+        Mockito.verify(mockedDatabaseException, Mockito.times(15)).getInternalException();
+        Mockito.verify(mockedDatabaseException, Mockito.times(14)).getMessage();
+        Mockito.verify(mockedDatabaseException, Mockito.times(15)).getErrorCode();
     }
 
     @Test
