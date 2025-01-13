@@ -1,27 +1,26 @@
 # Running
 
 Kapua can be run in a few different ways. See the following chapters for more information about how to start and run
-Kapua.
+Kapua. Keep in mind that if you want to deploy a released version, not building anything, you can follow the [Kapua quick start guide](https://github.com/eclipse/kapua/blob/develop/README.md).
+This section is focused on running your custom build.
 
 {% hint style='info' %} Most of the following descriptions focus on a developer centric setup and not on a full blown
 production setup. {% endhint %}
 
 ## Docker containers
 
-Before running Kapua on Docker, you need to
+Before running Kapua on Docker, Make sure that you have built Kapua docker images locally, following the provided [building section](building.md).
 
-1. Install `docker` and `docker-compose`
-2. Make sure that you have built Kapua docker images locally, following the provided building section of this documentation. Alternatively, you can utilize images hosted under
-   the [Kapua DockerHub account](https://hub.docker.com/r/kapua/), for this case we recommend you to follow the "Quick Start Guide" section that can be found in the readme.md file under the root
-   folder.
+### Requirements
+Same as the ones showed in the [building section](building.md) plus
+
+* Docker compose V2, starting from Kapua releases >= 1.6.12 (present in latest docker desktop versions)
+
+If you previously set the IMAGE_VERSION environment variable to a released version, please now unset it. In this way, latest built Kapua docker images will be deployed.
 
 Now, you can start Kapua by using Docker Compose. To do so, run
 
     kapua/deployment/docker/docker-deploy.sh
-
-Note in case of a deployment of and old version: Assuming that you have built images for a release previous to 2.0.0, and consequently you have done a checkout to the proper tagged commit, keep in
-mind that the building procedure created a set of docker images tagged as "latest". The "docker-deploy" script pulls images tagged in this way. This implies that the newly built images will be
-launched.
 
 After Kapua has been started, you can navigate your browser to http://localhost:8080 and log in using the following
 credentials:
@@ -38,9 +37,7 @@ To stop Kapua, run
 
 #### Advanced options
 
-It's possible to deploy kapua with some advanced options that are exposed in this document:
-
-kapua/deployment/docker/README.md
+It's possible to deploy kapua with some advanced options that are exposed [in this document](deployment/docker/README.md)
 
 If you are interested in having debugging/logging capabilities we recommend you to consult it.
 
