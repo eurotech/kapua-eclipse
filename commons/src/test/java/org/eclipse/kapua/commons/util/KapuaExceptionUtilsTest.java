@@ -111,7 +111,7 @@ public class KapuaExceptionUtilsTest {
         Mockito.when(mockedDatabaseException.getInternalException()).thenReturn(mockedDatabaseException);
         Assert.assertEquals("ComparisonFailure not expected for: " + exception,kapuaException.toString(), KapuaExceptionUtils.convertPersistenceException(exception).toString());
 
-        Mockito.verify(mockedDatabaseException, Mockito.times(12)).getInternalException();
+        Mockito.verify(mockedDatabaseException, Mockito.times(13)).getInternalException();
         Mockito.verify(mockedDatabaseException, Mockito.times(12)).getMessage();
         Mockito.verify(mockedDatabaseException, Mockito.times(13)).getErrorCode();
     }
