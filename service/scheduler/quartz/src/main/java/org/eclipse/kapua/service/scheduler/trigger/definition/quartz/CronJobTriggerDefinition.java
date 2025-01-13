@@ -47,7 +47,7 @@ public class CronJobTriggerDefinition extends TriggerDefinitionRecord {
                         new TriggerPropertyRecord(
                                 CronJobTriggerDefinitionPropertyKeys.CRON_EXPRESSION,
                                 "The cron expression that defines the schedule of executions. Check documentation for CRON syntax",
-                                KapuaId.class.getName(),
+                                String.class.getName(),
                                 null)
                 )
         );
