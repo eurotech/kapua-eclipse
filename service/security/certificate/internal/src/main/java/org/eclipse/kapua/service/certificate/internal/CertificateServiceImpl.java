@@ -12,8 +12,14 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.certificate.internal;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.configuration.metatype.EmptyTocd;
 import org.eclipse.kapua.commons.model.domains.Domains;
@@ -43,12 +49,8 @@ import org.eclipse.kapua.service.certificate.util.CertificateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 @Singleton
 public class CertificateServiceImpl implements CertificateService {
@@ -65,7 +67,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Inject
     public CertificateServiceImpl(AuthorizationService authorizationService, PermissionFactory permissionFactory, CertificateFactory certificateFactory,
-                                  KapuaCertificateSetting kapuaCertificateSetting) throws KapuaException {
+            KapuaCertificateSetting kapuaCertificateSetting) throws KapuaException {
         this.authorizationService = authorizationService;
         this.permissionFactory = permissionFactory;
         this.certificateFactory = certificateFactory;
@@ -119,7 +121,7 @@ public class CertificateServiceImpl implements CertificateService {
         kapuaCertificate.setCertificateUsages(certificateUsages);
         kapuaCertificate.setPassword(kapuaCertificateSetting.getString(KapuaCertificateSettingKeys.CERTIFICATE_JWT_PRIVATE_KEY_PASSWORD));
 
-        CertificateListResult result = certificateFactory.newListResult();
+        CertificateListResult result = new CertificateListResult();
         result.addItem(kapuaCertificate);
 
         return result;
