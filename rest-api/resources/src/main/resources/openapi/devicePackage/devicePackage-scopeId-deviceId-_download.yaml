@@ -64,11 +64,6 @@ paths:
             application/json:
               schema:
                 $ref: '../deviceOperation/deviceOperation.yaml#/components/schemas/deviceOperation'
-        204:
-          description: |
-            The Package Install request has been successfully received. However, this does NOT mean that the package has been successfully installed, since the Package Install
-            is an asynchronous operation and may still be in progress. APIs are available at `device/{deviceId}/operations` and `device/{deviceId}/operations/{operationId}/notifications`
-            to track asynchronous operations.
         400:
           $ref: '../openapi.yaml#/components/responses/illegalArgument'
         401:
