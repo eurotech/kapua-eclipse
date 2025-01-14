@@ -13,6 +13,7 @@
 package org.eclipse.kapua.service.scheduler.quartz.driver;
 
 import com.google.common.base.Strings;
+import org.eclipse.kapua.KapuaIllegalArgumentException;
 import org.eclipse.kapua.KapuaIllegalNullArgumentException;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.model.id.KapuaId;
@@ -28,6 +29,7 @@ import org.eclipse.kapua.service.scheduler.quartz.driver.exception.TriggerNeverF
 import org.eclipse.kapua.service.scheduler.quartz.job.KapuaJobLauncher;
 import org.eclipse.kapua.service.scheduler.trigger.Trigger;
 import org.eclipse.kapua.service.scheduler.trigger.definition.TriggerProperty;
+import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -45,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -114,7 +117,7 @@ public class QuartzTriggerDriver {
     }
 
 
-    public static void createCronJobTrigger(@NotNull Trigger trigger) throws KapuaIllegalNullArgumentException, QuartzTriggerDriverException {
+    public static void createCronJobTrigger(@NotNull Trigger trigger) throws KapuaIllegalArgumentException, QuartzTriggerDriverException {
         String cron = null;
 
         for (TriggerProperty tp : trigger.getTriggerProperties()) {
@@ -128,12 +131,22 @@ public class QuartzTriggerDriver {
             throw new KapuaIllegalNullArgumentException("cronExpression");
         }
 
-        createQuartzTriggerWithSchedule(
-                trigger,
-                CronScheduleBuilder.cronSchedule(cron)
-                        .withMisfireHandlingInstructionFireAndProceed() // This option force a misfired trigger to be always fired
-                        .inTimeZone(TimeZone.getTimeZone("UTC"))
-        );
+        CronExpression cronExpression;
+        try {
+            cronExpression = new CronExpression(cron);
+        }
+        catch (ParseException pe) {
+            LOG.warn("Error while parsing cron {} expression for Trigger {} in scope {}", cron, trigger.getId(), trigger.getScopeId(), pe);
+            throw new KapuaIllegalArgumentException("cronExpression", cron);
+        }
+
+        CronScheduleBuilder cronScheduleBuilder =
+            CronScheduleBuilder
+                .cronSchedule(cronExpression)
+                .withMisfireHandlingInstructionFireAndProceed() // This option force a misfired trigger to be always fired
+                .inTimeZone(TimeZone.getTimeZone("UTC"));
+
+        createQuartzTriggerWithSchedule(trigger, cronScheduleBuilder);
     }
 
     public static void deleteTrigger(@NotNull Trigger trigger) throws CannotUnscheduleJobException {
