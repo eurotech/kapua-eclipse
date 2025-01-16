@@ -46,7 +46,7 @@ public class CronJobTriggerDefinition extends TriggerDefinitionRecord {
                                 null),
                         new TriggerPropertyRecord(
                                 CronJobTriggerDefinitionPropertyKeys.CRON_EXPRESSION,
-                                "The cron expression that defines the schedule of executions. Check documentation for CRON syntax",
+                                "The Cron expression that defines the schedule of executions in UTC time zone. The expression consists of 6 or 7 space-separated fields: [seconds] [minutes] [hours] [day of month] [month] [day of week] [year] ([year] is optional). For example, the expression \"0 0/5 13,17 * * ?\" triggers a job execution every 5 minutes starting at 1pm until 1:55pm and starting at 5pm until 5:55pm every day. Check Everyware Cloud documentation for more details on Cron expressions",
                                 String.class.getName(),
                                 null)
                 )
