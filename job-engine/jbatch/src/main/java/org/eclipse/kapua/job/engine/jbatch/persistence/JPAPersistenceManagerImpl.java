@@ -355,6 +355,8 @@ public class JPAPersistenceManagerImpl implements IPersistenceManagerService {
             }
 
             return txManager.execute(tx -> executionInstanceDataRepository.getJobExecutionField(tx, jobExecutionId, selectField));
+        } catch (NoSuchJobExecutionException nsjee) {
+            throw nsjee;
         } catch (Exception e) {
             throw new PersistenceException(e);
         }
@@ -364,6 +366,8 @@ public class JPAPersistenceManagerImpl implements IPersistenceManagerService {
     public String jobOperatorQueryJobExecutionBatchStatus(long jobExecutionId) {
         try {
             return txManager.execute(tx -> executionInstanceDataRepository.<BatchStatus>getJobExecutionField(tx, jobExecutionId, JpaExecutionInstanceDataFields.BATCH_STATUS)).name();
+        } catch (NoSuchJobExecutionException nsjee) {
+            throw nsjee;
         } catch (Exception e) {
             throw new PersistenceException(e);
         }
@@ -373,6 +377,8 @@ public class JPAPersistenceManagerImpl implements IPersistenceManagerService {
     public String jobOperatorQueryJobExecutionExitStatus(long key) {
         try {
             return txManager.execute(tx -> executionInstanceDataRepository.getJobExecutionField(tx, key, JpaExecutionInstanceDataFields.EXIT_STATUS));
+        } catch (NoSuchJobExecutionException nsjee) {
+            throw nsjee;
         } catch (Exception e) {
             throw new PersistenceException(e);
         }
