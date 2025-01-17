@@ -212,7 +212,9 @@ public abstract class AbstractKapuaUpdatableEntity extends AbstractKapuaEntity i
      */
     @PreUpdate
     protected void preUpdateAction() {
-        setModifiedBy(KapuaSecurityUtils.getSession().getUserId());
+        if (KapuaSecurityUtils.getSession() != null) {
+            setModifiedBy(KapuaSecurityUtils.getSession().getUserId());
+        }
         setModifiedOn(new Date());
     }
 }
