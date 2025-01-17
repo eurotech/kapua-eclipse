@@ -17,6 +17,7 @@ import com.ibm.jbatch.container.exception.PersistenceException;
 import org.eclipse.kapua.commons.jpa.JpaAwareTxContext;
 import org.eclipse.kapua.storage.TxContext;
 
+import javax.batch.operations.NoSuchJobExecutionException;
 import javax.batch.runtime.BatchStatus;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -154,6 +155,10 @@ public class JpaExecutionInstanceDataRepositoryImpl implements JpaExecutionInsta
     public <T> T getJobExecutionField(TxContext tx, long jobExecutionId, JpaExecutionInstanceDataFields field) {
         final EntityManager em = JpaAwareTxContext.extractEntityManager(tx);
         JpaExecutionInstanceData jpaExecutionInstanceData = em.find(JpaExecutionInstanceData.class, jobExecutionId);
+
+        if (jpaExecutionInstanceData == null) {
+            throw new NoSuchJobExecutionException("No ExecutionInstanceData found for id: " + jobExecutionId);
+        }
 
         switch (field) {
             case JOB_EXEC_ID:
