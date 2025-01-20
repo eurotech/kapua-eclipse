@@ -88,9 +88,9 @@ public class DockerSteps {
     private static final long WAIT_FOR_REST_API = 30000;
     private static final int HTTP_COMMUNICATION_TIMEOUT = 3000;
 
-    private static final int JOB_ENGINE_PORT_INTERNAL = 8080;
-    private static final int JOB_ENGINE_PORT_EXTERNAL = 8080;
-    private static final String JOB_ENGINE_ADDRESS_EXTERNAL = "http://localhost:" + JOB_ENGINE_PORT_EXTERNAL;
+    private static final int JOB_ENGINE_PORT_CONTAINER = 8080;
+    private static final int JOB_ENGINE_PORT_HOST = 8080;
+    private static final String JOB_ENGINE_ADDRESS_EXTERNAL = "http://localhost:" + JOB_ENGINE_PORT_HOST;
     private static final long JOB_ENGINE_READY_CHECK_INTERVAL = 1000;
     private static final long JOB_ENGINE_READY_MAX_WAIT = 60000;
 
@@ -1263,12 +1263,12 @@ public class DockerSteps {
      */
     private ContainerConfig getJobEngineContainerConfig() {
         Map<String, List<PortBinding>> portBindings = new HashMap<>();
-        addHostPort(ALL_IP, portBindings, JOB_ENGINE_PORT_INTERNAL, JOB_ENGINE_PORT_EXTERNAL);
+        addHostPort(ALL_IP, portBindings, JOB_ENGINE_PORT_CONTAINER, JOB_ENGINE_PORT_HOST);
         HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
 
         return ContainerConfig.builder()
                 .hostConfig(hostConfig)
-                .exposedPorts(String.valueOf(JOB_ENGINE_PORT_INTERNAL))
+                .exposedPorts(String.valueOf(JOB_ENGINE_PORT_CONTAINER))
                 .env(
                         "CRYPTO_SECRET_KEY=kapuaTestsKey!!!"
                 )
