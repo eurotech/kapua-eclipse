@@ -77,9 +77,9 @@ public class DockerSteps {
     private static final List<String> DEFAULT_BASE_DEPLOYMENT_CONTAINERS_NAME;
     private static final int WAIT_COUNT = 120; //total wait time = 240 secs (120 * 2000ms)
     private static final long WAIT_STEP = 2000;
-    private static final long WAIT_FOR_DB = 10000;
-    private static final long WAIT_FOR_ES = 10000;
-    private static final long WAIT_FOR_EVENTS_BROKER = 10000;
+    private static final long WAIT_FOR_DB = 5000;
+    private static final long WAIT_FOR_ES = 5000;
+    private static final long WAIT_FOR_EVENTS_BROKER = 5000;
     private static final long WAIT_FOR_JOB_ENGINE = 20000;
     private static final long WAIT_FOR_REST_API = 30000;
     private static final long WAIT_FOR_BROKER = 30000;
@@ -210,9 +210,7 @@ public class DockerSteps {
         startBaseDockerEnvironmentInternal();
         try {
             startMessageBrokerContainer(BasicSteps.MESSAGE_BROKER_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_BROKER);
-            }
+            waitMessageBrokerContainer(BasicSteps.MESSAGE_BROKER_CONTAINER_NAME);
 
             startAuthServiceContainer(BasicSteps.AUTH_SERVICE_CONTAINER_NAME);
             startLifecycleConsumerContainer(BasicSteps.LIFECYCLE_CONSUMER_CONTAINER_NAME);
@@ -360,24 +358,16 @@ public class DockerSteps {
             createNetwork();
 
             startDBContainer(BasicSteps.DB_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_DB);
-            }
+            waitDBContainer(BasicSteps.DB_CONTAINER_NAME);
 
             startESContainer(BasicSteps.ES_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_ES);
-            }
+            waitEsContainer(BasicSteps.ES_CONTAINER_NAME);
 
             startEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_EVENTS_BROKER);
-            }
+            waitEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
 
             startJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_JOB_ENGINE);
-            }
+            waitJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
 
         } catch (Exception e) {
             logger.error("Error while starting base docker environment: {}", e.getMessage(), e);
@@ -394,24 +384,16 @@ public class DockerSteps {
             createNetwork();
 
             startDBContainer(BasicSteps.DB_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_DB);
-            }
+            waitDBContainer(BasicSteps.DB_CONTAINER_NAME);
 
             startEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_EVENTS_BROKER);
-            }
+            waitEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
 
             startJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_JOB_ENGINE);
-            }
+            waitJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
 
             startAPIContainer(BasicSteps.API_CONTAINER_NAME, tokenTTL, refreshTokenTTL, corsEndpointRefreshInterval);
-            synchronized (this) {
-                this.wait(WAIT_FOR_JOB_ENGINE);
-            }
+            waitRestApiContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
 
         } catch (Exception e) {
             logger.error("Error while starting base docker environment: {}", e.getMessage(), e);
