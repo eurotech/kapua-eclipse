@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2024 Eurotech and/or its affiliates and others
+ * Copyright (c) 2021, 2025 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,12 +27,16 @@ import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.qa.common.StepData;
 import org.eclipse.kapua.service.job.Job;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class JobEngineSteps extends JobServiceTestBase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JobEngineSteps.class);
 
     private JobEngineService jobEngineService;
     private JobEngineFactory jobEngineFactory;
@@ -83,8 +87,13 @@ public class JobEngineSteps extends JobServiceTestBase {
 
         long now = System.currentTimeMillis();
         while ((System.currentTimeMillis() - now) < (waitSeconds * 1000L)) {
-            if (jobEngineService.isRunning(job.getScopeId(), job.getId())) {
-                return;
+            try {
+                if (jobEngineService.isRunning(job.getScopeId(), job.getId())) {
+                    return;
+                }
+            }
+            catch (Exception e){
+                LOG.warn("Error while checking running status for Job {}. Ignoring... Error: {}", job.getName(), e.getMessage());
             }
 
             // Check frequently!
@@ -136,8 +145,13 @@ public class JobEngineSteps extends JobServiceTestBase {
     private void waitJobUpTo(Job job, int waitSeconds) throws Exception {
         long now = System.currentTimeMillis();
         while ((System.currentTimeMillis() - now) < (waitSeconds * 1000L)) {
-            if (!jobEngineService.isRunning(job.getScopeId(), job.getId())) {
-                return;
+            try {
+                    if (!jobEngineService.isRunning(job.getScopeId(), job.getId())) {
+                    return;
+                }
+            }
+            catch (Exception e){
+                LOG.warn("Error while checking running status for Job {}. Ignoring... Error: {}", job.getName(), e.getMessage());
             }
 
             TimeUnit.MILLISECONDS.sleep(100);
