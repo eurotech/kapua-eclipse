@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2024 Eurotech and/or its affiliates and others
+ * Copyright (c) 2019, 2025 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -40,6 +40,7 @@ import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.qa.common.BasicSteps;
 import org.eclipse.kapua.qa.common.DBHelper;
 import org.eclipse.kapua.qa.common.StepData;
+import org.eclipse.kapua.qa.integration.steps.utils.TestReadinessConnection;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -79,11 +80,17 @@ public class DockerSteps {
     private static final long WAIT_STEP = 2000;
     private static final long WAIT_FOR_DB = 5000;
     private static final long WAIT_FOR_ES = 5000;
-    private static final long WAIT_FOR_EVENTS_BROKER = 5000;
-    private static final long WAIT_FOR_JOB_ENGINE = 20000;
+    private static final long WAIT_FOR_EVENTS_BROKER = 10000;
     private static final long WAIT_FOR_REST_API = 30000;
     private static final long WAIT_FOR_BROKER = 30000;
     private static final int HTTP_COMMUNICATION_TIMEOUT = 3000;
+
+    private static final int JOB_ENGINE_PORT_INTERNAL = 8080;
+    private static final int JOB_ENGINE_PORT_EXTERNAL = 8080;
+    // private static final String JOB_ENGINE_ADDRESS_INTERNAL = "http://job-engine:" + JOB_ENGINE_PORT_INTERNAL; Not used?
+    private static final String JOB_ENGINE_ADDRESS_EXTERNAL = "http://localhost:" + JOB_ENGINE_PORT_EXTERNAL;
+    private static final long JOB_ENGINE_READY_CHECK_INTERVAL = 1000;
+    private static final long JOB_ENGINE_READY_MAX_WAIT = 60000;
 
     private static final int LIFECYCLE_HEALTH_CHECK_PORT = 8090;
     private static final int TElEMETRY_HEALTH_CHECK_PORT = 8091;
@@ -669,9 +676,38 @@ public class DockerSteps {
      * @since 2.1.0
      */
     private void waitJobEngineContainer(String name) throws Exception{
-        synchronized (this) {
-            this.wait(WAIT_FOR_JOB_ENGINE);
+
+        long now = System.currentTimeMillis();
+        while (now + JOB_ENGINE_READY_MAX_WAIT > System.currentTimeMillis()) {
+            if (isJobEngineContainerReady(name)) {
+                logger.info("Job Engine ready in: ~{}ms", System.currentTimeMillis() - now);
+                return;
+            }
+
+            logger.info("Job Engine not ready yet... Retrying in {}ms", JOB_ENGINE_READY_CHECK_INTERVAL);
+            TimeUnit.MILLISECONDS.sleep(JOB_ENGINE_READY_CHECK_INTERVAL);
         }
+
+        Assert.fail("Job Engine not ready within: " + JOB_ENGINE_READY_MAX_WAIT + "ms");
+    }
+
+    /**
+     * Checks if the Job Engine Docker container is ready
+     *
+     * @param name The Job Engine Docker container name
+     * @return {@code true} if is ready, {@code false} otherwise
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private boolean isJobEngineContainerReady(String name) throws Exception {
+        try (TestReadinessConnection testReadinessConnection = new TestReadinessConnection(JOB_ENGINE_ADDRESS_EXTERNAL)){
+            return testReadinessConnection.isReady();
+        }
+        catch (Exception e) {
+            // Ignoring...
+        }
+
+        return false;
     }
 
     @And("Start API container with name {string}")
@@ -1151,14 +1187,13 @@ public class DockerSteps {
      * @return Container configuration for job engine instance.
      */
     private ContainerConfig getJobEngineContainerConfig() {
-        final int jobEnginePort = 8080;
-        final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-        addHostPort(ALL_IP, portBindings, jobEnginePort, jobEnginePort);
-        final HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
+        Map<String, List<PortBinding>> portBindings = new HashMap<>();
+        addHostPort(ALL_IP, portBindings, JOB_ENGINE_PORT_INTERNAL, JOB_ENGINE_PORT_EXTERNAL);
+        HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
 
         return ContainerConfig.builder()
                 .hostConfig(hostConfig)
-                .exposedPorts(String.valueOf(jobEnginePort))
+                .exposedPorts(String.valueOf(JOB_ENGINE_PORT_INTERNAL))
                 .env(
                         "CRYPTO_SECRET_KEY=kapuaTestsKey!!!"
                 )
@@ -1167,16 +1202,19 @@ public class DockerSteps {
     }
 
     /**
-     * Add docker port to host port mapping.
+     * Add Docker port to host port mappings.
      *
-     * @param host         ip address of host
-     * @param portBindings list ob bindings that gets updated
-     * @param port         docker port
-     * @param hostPort     port on host
+     * @param host         IP address of host
+     * @param portBindings {@link List} ob bindings that gets updated
+     * @param port         Docker container port
+     * @param hostPort     Port exposed on host
+     *
+     * @since 2.0.0
      */
-    private void addHostPort(String host, Map<String, List<PortBinding>> portBindings,
-                             int port, int hostPort) {
-
+    private void addHostPort(String host,
+                             Map<String, List<PortBinding>> portBindings,
+                             int port,
+                             int hostPort) {
         List<PortBinding> hostPorts = new ArrayList<>();
         hostPorts.add(PortBinding.of(host, hostPort));
         portBindings.put(String.valueOf(port), hostPorts);
