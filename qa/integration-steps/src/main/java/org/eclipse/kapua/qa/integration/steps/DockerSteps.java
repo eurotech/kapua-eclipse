@@ -257,6 +257,9 @@ public class DockerSteps {
     /**
      * Starts Docker container requested.
      *
+     * TODO: Add missing Telemetry mapping
+     * TODO: Move to start multiple resources and check readiness of components in parallel
+     *
      * @param dockerContainers The Docker containers to start
      * @throws Exception
      * @since 2.1.0
@@ -313,7 +316,7 @@ public class DockerSteps {
                 case "events-broker":
                 case "job-engine":
                 case "message-broker": {
-                    // Nothing to do. Those containers are delay-based.
+                    // Nothing to do.
                     // Waiting to refactor them
                 } break;
                 case "broker-auth-service": {

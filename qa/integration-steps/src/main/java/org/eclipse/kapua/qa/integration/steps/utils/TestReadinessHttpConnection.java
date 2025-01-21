@@ -17,7 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Wrapper for {@link HttpURLConnection} that implements {@link AutoCloseable}
+ * Test readiness for HTTP-based components utility.
  *
  * @since 2.1.0
  */
