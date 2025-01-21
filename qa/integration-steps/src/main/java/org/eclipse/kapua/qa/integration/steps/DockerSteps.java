@@ -40,12 +40,9 @@ import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.qa.common.BasicSteps;
 import org.eclipse.kapua.qa.common.DBHelper;
 import org.eclipse.kapua.qa.common.StepData;
-import org.eclipse.kapua.qa.integration.steps.utils.TestReadinessConnection;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.kapua.qa.integration.steps.utils.TestReadinessHttpConnection;
+import org.eclipse.kapua.qa.integration.steps.utils.TestReadinessMqttBrokerConnection;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttSecurityException;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -715,8 +712,8 @@ public class DockerSteps {
      * @since 2.1.0
      */
     private boolean isJobEngineContainerReady(String name) throws Exception {
-        try (TestReadinessConnection testReadinessConnection = new TestReadinessConnection(JOB_ENGINE_ADDRESS_EXTERNAL)){
-            return testReadinessConnection.isReady();
+        try (TestReadinessHttpConnection testReadinessHttpConnection = new TestReadinessHttpConnection(JOB_ENGINE_ADDRESS_EXTERNAL)){
+            return testReadinessHttpConnection.isReady();
         }
         catch (Exception e) {
             // Ignoring...
@@ -806,26 +803,8 @@ public class DockerSteps {
      * @since 2.1.0
      */
     private boolean isMessageBrokerContainerReady(String name) {
-        try (MqttClient testReadinessClient = new MqttClient(MESSAGE_BROKER_ADDRESS_EXTERNAL, "test-readiness", new MemoryPersistence())){
-
-            // These username and password do not match any entry.
-            // We need just to receive the "Not authorized to connect" from the broker on connection attempt
-            MqttConnectOptions clientOpts = new MqttConnectOptions();
-            clientOpts.setUserName("test-readiness-user"); // This user do
-            clientOpts.setPassword("test-readiness-password".toCharArray());
-            clientOpts.setConnectionTimeout(1);
-
-            try {
-                testReadinessClient.connect(clientOpts);
-            }
-            catch (MqttSecurityException mse) {
-                // When the Message Broker is ready will accept connection attempts.
-                // Since we are not providing valid username and password we are interested on
-                // receiving a MqttSecurityException with the following message.
-                if ("Not authorized to connect".equals(mse.getMessage())) {
-                    return true;
-                }
-            }
+        try (TestReadinessMqttBrokerConnection testReadinessConnection = new TestReadinessMqttBrokerConnection(MESSAGE_BROKER_ADDRESS_EXTERNAL)){
+            return testReadinessConnection.isReady();
         }
         catch (Exception e) {
             // Ignoring...
