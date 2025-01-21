@@ -249,10 +249,12 @@ public class KuraDevice implements MqttCallback {
         MqttConnectOptions clientOpts = new MqttConnectOptions();
         clientOpts.setUserName(CLIENT_USER);
         clientOpts.setPassword(CLIENT_PASSWORD.toCharArray());
+        clientOpts.setAutomaticReconnect(true);
 
         MqttConnectOptions serverOpts = new MqttConnectOptions();
         serverOpts.setUserName(SERVER_USER);
         serverOpts.setPassword(SERVER_PASSWORD.toCharArray());
+        serverOpts.setAutomaticReconnect(true);
 
         try {
             mqttClient.connect(clientOpts);
