@@ -18,10 +18,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import java.net.HttpURLConnection;
-
 /**
- * Wrapper for {@link HttpURLConnection} that implements {@link AutoCloseable}
+ * Test readiness for Message Broker utility.
  *
  * @since 2.1.0
  */
@@ -41,9 +39,9 @@ public class TestReadinessMqttBrokerConnection implements AutoCloseable {
     }
 
     /**
-     * Checks that the HTTP returns the expected HTTP response code.
+     * Checks that the MQTT returns an authentication error.
      *
-     * @return {@code true} if expected code is returned, {@code false} otherwise
+     * @return {@code true} if expected error is returned, {@code false} otherwise
      * @throws MqttException
      * @since 2.1.0
      */
@@ -73,7 +71,7 @@ public class TestReadinessMqttBrokerConnection implements AutoCloseable {
     }
 
     /**
-     * Invokes {@link HttpURLConnection#disconnect()} to clean up resources.
+     * Invokes {@link MqttClient#close()} to clean up resources.
      *
      * @since 2.1.0
      */
