@@ -21,9 +21,10 @@ import java.net.URL;
  *
  * @since 2.1.0
  */
-public class TestReadinessConnection implements AutoCloseable {
+public class TestReadinessHttpConnection implements AutoCloseable {
 
-    private final HttpURLConnection testReadinessConnection;
+    private final URL testReadinessURL;
+    private HttpURLConnection testReadinessConnection;
     private final int readyResponseCode;
 
     /**
@@ -33,7 +34,7 @@ public class TestReadinessConnection implements AutoCloseable {
      * @throws Exception
      * @since 2.1.0
      */
-    public TestReadinessConnection(String testUrl) throws Exception {
+    public TestReadinessHttpConnection(String testUrl) throws Exception {
         this(testUrl, 200);
     }
 
@@ -43,17 +44,11 @@ public class TestReadinessConnection implements AutoCloseable {
      *
      * @param testUrl The HTTP URL to check for readiness
      * @param readyResponseCode Which HTTP response code consider valid for readiness
-     * @throws Exception
+     * @throws IOException
      * @since 2.1.0
      */
-    public TestReadinessConnection(String testUrl, int readyResponseCode) throws IOException {
-        URL testReadinessURL = new URL(testUrl);
-
-        testReadinessConnection = (HttpURLConnection) testReadinessURL.openConnection();
-        testReadinessConnection.setConnectTimeout(5000);
-        testReadinessConnection.setReadTimeout(5000);
-        testReadinessConnection.setRequestMethod("GET");
-
+    public TestReadinessHttpConnection(String testUrl, int readyResponseCode) throws IOException {
+        this.testReadinessURL = new URL(testUrl);
         this.readyResponseCode = readyResponseCode;
     }
 
@@ -65,11 +60,16 @@ public class TestReadinessConnection implements AutoCloseable {
      * @since 2.1.0
      */
     public boolean isReady() throws IOException {
+        testReadinessConnection = (HttpURLConnection) testReadinessURL.openConnection();
+        testReadinessConnection.setConnectTimeout(5000);
+        testReadinessConnection.setReadTimeout(5000);
+        testReadinessConnection.setRequestMethod("GET");
+
         return testReadinessConnection.getResponseCode() == readyResponseCode;
     }
 
     /**
-     * Invokes {@link HttpURLConnection#disconnect()}
+     * Invokes {@link HttpURLConnection#disconnect()} to clean up resources.
      *
      * @since 2.1.0
      */
