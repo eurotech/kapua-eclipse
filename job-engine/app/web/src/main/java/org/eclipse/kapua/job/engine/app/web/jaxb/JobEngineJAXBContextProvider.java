@@ -13,6 +13,7 @@
 package org.eclipse.kapua.job.engine.app.web.jaxb;
 
 import org.eclipse.kapua.KapuaException;
+import org.eclipse.kapua.commons.rest.model.IsJobRunningResponse;
 import org.eclipse.kapua.commons.rest.model.errors.CleanJobDataExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.EntityNotFoundExceptionInfo;
 import org.eclipse.kapua.commons.rest.model.errors.ExceptionInfo;
@@ -33,6 +34,7 @@ import org.eclipse.kapua.commons.rest.model.errors.SubjectUnauthorizedExceptionI
 import org.eclipse.kapua.commons.rest.model.errors.ThrowableInfo;
 import org.eclipse.kapua.commons.util.xml.JAXBContextProvider;
 import org.eclipse.kapua.job.engine.JobStartOptions;
+import org.eclipse.kapua.job.engine.client.JobStartOptionsClient;
 import org.eclipse.kapua.job.engine.commons.model.JobStepPropertiesOverrides;
 import org.eclipse.kapua.job.engine.commons.model.JobTargetSublist;
 import org.eclipse.kapua.service.authentication.AuthenticationXmlRegistry;
@@ -107,21 +109,23 @@ public class JobEngineJAXBContextProvider implements JAXBContextProvider {
                     IllegalNullArgumentExceptionInfo.class,
 
                     // Job Engine
+                    JobStartOptionsClient.class,
                     JobStartOptions.class,
                     JobTargetSublist.class,
+                    IsJobRunningResponse.class,
                     JobStepPropertiesOverrides.class,
 
-                    // Jobs Exception Info
+                    // Job Engine Client
                     CleanJobDataExceptionInfo.class,
                     JobAlreadyRunningExceptionInfo.class,
                     JobEngineExceptionInfo.class,
-                    JobScopedEngineExceptionInfo.class,
                     JobInvalidTargetExceptionInfo.class,
                     JobMissingStepExceptionInfo.class,
                     JobMissingTargetExceptionInfo.class,
                     JobNotRunningExceptionInfo.class,
                     JobResumingExceptionInfo.class,
                     JobRunningExceptionInfo.class,
+                    JobScopedEngineExceptionInfo.class,
                     JobStartingExceptionInfo.class,
                     JobStoppingExceptionInfo.class,
 
