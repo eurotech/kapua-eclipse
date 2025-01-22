@@ -249,10 +249,12 @@ public class KuraDevice implements MqttCallback {
         MqttConnectOptions clientOpts = new MqttConnectOptions();
         clientOpts.setUserName(CLIENT_USER);
         clientOpts.setPassword(CLIENT_PASSWORD.toCharArray());
+        clientOpts.setAutomaticReconnect(true);
 
         MqttConnectOptions serverOpts = new MqttConnectOptions();
         serverOpts.setUserName(SERVER_USER);
         serverOpts.setPassword(SERVER_PASSWORD.toCharArray());
+        serverOpts.setAutomaticReconnect(true);
 
         try {
             mqttClient.connect(clientOpts);
@@ -453,79 +455,106 @@ public class KuraDevice implements MqttCallback {
                 mqttClient.publish(responseTopic, responsePayload, 0, false);
             } else if (topic.equals(deployExecDownload)) {
                 callbackParam = extractCallback(requestPayload);
-                KuraPayload kuraPayloadInitial = new KuraPayload();
-                kuraPayloadInitial.readFromByteArray(requestPayload);
 
+                KuraPayload kuraRequestPayload = new KuraPayload();
+                kuraRequestPayload.readFromByteArray(requestPayload);
+
+                // Reply
                 responseTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_REPLY + callbackParam.getRequestId();
-                KuraPayload customKuraPayload1 = new KuraPayload();
-                customKuraPayload1.setTimestamp(new Date());
-                customKuraPayload1.getMetrics().put("response.code", 200);
-                responsePayload = customKuraPayload1.toByteArray();
-                mqttClient.publish(responseTopic, responsePayload, 0, false);
-                Thread.sleep(100);
 
-                responseTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_NOTIFY + clientId + "/download";
-                KuraPayload customKuraPayload2 = new KuraPayload();
-                customKuraPayload2.setTimestamp(new Date());
-                customKuraPayload2.getMetrics().put(JOB_ID, kuraPayloadInitial.getMetrics().get(JOB_ID));
-                customKuraPayload2.getMetrics().put(CLIENT_ID, clientId);
-                customKuraPayload2.getMetrics().put("dp.download.progress", 50);
-                customKuraPayload2.getMetrics().put("dp.download.size", 20409);
-                customKuraPayload2.getMetrics().put("dp.download.status", "IN_PROGRESS");
-                customKuraPayload2.getMetrics().put("dp.download.index", 0);
-                responsePayload = customKuraPayload2.toByteArray();
-                mqttClient.publish(responseTopic, responsePayload, 0, false);
-                Thread.sleep(100);
+                KuraPayload replyKuraResponsePayload = new KuraPayload();
+                replyKuraResponsePayload.setTimestamp(new Date());
+                replyKuraResponsePayload.getMetrics().put("response.code", 200);
+                responsePayload = replyKuraResponsePayload.toByteArray();
 
-                responseTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_NOTIFY + clientId + "/download";
-                KuraPayload customKuraPayload3 = new KuraPayload();
-                customKuraPayload3.setTimestamp(new Date());
-                customKuraPayload3.getMetrics().put(JOB_ID, kuraPayloadInitial.getMetrics().get(JOB_ID));
-                customKuraPayload3.getMetrics().put(CLIENT_ID, clientId);
-                customKuraPayload3.getMetrics().put("dp.download.progress", 100);
-                customKuraPayload3.getMetrics().put("dp.download.size", 20409);
-                customKuraPayload3.getMetrics().put("dp.download.status", COMPLETED);
-                customKuraPayload3.getMetrics().put("dp.download.index", 0);
-                responsePayload = customKuraPayload3.toByteArray();
                 mqttClient.publish(responseTopic, responsePayload, 0, false);
-                Thread.sleep(100);
+                Thread.sleep(1000);
 
-                responseTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_NOTIFY + clientId + "/install";
-                KuraPayload customKuraPayload4 = new KuraPayload();
-                customKuraPayload4.setTimestamp(new Date());
-                customKuraPayload4.getMetrics().put("dp.name", "Example Publisher-1.0.300.dp");
-                customKuraPayload4.getMetrics().put(JOB_ID, kuraPayloadInitial.getMetrics().get(JOB_ID));
-                customKuraPayload4.getMetrics().put("dp.install.progress", 100);
-                customKuraPayload4.getMetrics().put("dp.install.status", COMPLETED);
-                customKuraPayload4.getMetrics().put(CLIENT_ID, clientId);
-                responsePayload = customKuraPayload4.toByteArray();
-                mqttClient.publish(responseTopic, responsePayload, 0, false);
+                // Download Notification 25%
+                String downloadNotifyTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_NOTIFY + clientId + "/download";
+
+                KuraPayload downloadNotifyPayload = new KuraPayload();
+                downloadNotifyPayload.setTimestamp(new Date());
+                downloadNotifyPayload.getMetrics().put(CLIENT_ID, clientId);
+                downloadNotifyPayload.getMetrics().put(JOB_ID, kuraRequestPayload.getMetrics().get(JOB_ID));
+                downloadNotifyPayload.getMetrics().put("dp.download.progress", 25);
+                downloadNotifyPayload.getMetrics().put("dp.download.size", 20409);
+                downloadNotifyPayload.getMetrics().put("dp.download.status", "IN_PROGRESS");
+                downloadNotifyPayload.getMetrics().put("dp.download.index", 0);
+                responsePayload = downloadNotifyPayload.toByteArray();
+
+                mqttClient.publish(downloadNotifyTopic, responsePayload, 0, false);
+                Thread.sleep(1000);
+
+                // Download Notification 50%
+                downloadNotifyPayload.setTimestamp(new Date());
+                downloadNotifyPayload.getMetrics().put("dp.download.progress", 50);
+                responsePayload = downloadNotifyPayload.toByteArray();
+
+                mqttClient.publish(downloadNotifyTopic, responsePayload, 0, false);
+                Thread.sleep(1000);
+
+                // Download Notification 75%
+                downloadNotifyPayload.setTimestamp(new Date());
+                downloadNotifyPayload.getMetrics().put("dp.download.progress", 75);
+                responsePayload = downloadNotifyPayload.toByteArray();
+
+                mqttClient.publish(downloadNotifyTopic, responsePayload, 0, false);
+                Thread.sleep(1000);
+
+                // Download Notification 100%
+                downloadNotifyPayload.setTimestamp(new Date());
+                downloadNotifyPayload.getMetrics().put("dp.download.progress", 100);
+                downloadNotifyPayload.getMetrics().put("dp.download.status", COMPLETED);
+                responsePayload = downloadNotifyPayload.toByteArray();
+
+                mqttClient.publish(downloadNotifyTopic, responsePayload, 0, false);
+                Thread.sleep(1000);
+
+                // Install Notification 100%
+                String installNotifyTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_NOTIFY + clientId + "/install";
+
+                KuraPayload installNotifyPayload = new KuraPayload();
+                installNotifyPayload.setTimestamp(new Date());
+                installNotifyPayload.getMetrics().put(CLIENT_ID, clientId);
+                installNotifyPayload.getMetrics().put(JOB_ID, kuraRequestPayload.getMetrics().get(JOB_ID));
+                installNotifyPayload.getMetrics().put("dp.name", "heater-1.0.300.dp");
+                installNotifyPayload.getMetrics().put("dp.install.progress", 100);
+                installNotifyPayload.getMetrics().put("dp.install.status", COMPLETED);
+                responsePayload = installNotifyPayload.toByteArray();
+
+                mqttClient.publish(installNotifyTopic, responsePayload, 0, false);
 
                 packageListChanged = true;
             } else if (topic.equals(deployExecUninstall)) {
                 callbackParam = extractCallback(requestPayload);
-                KuraPayload kuraPayloadInitial = new KuraPayload();
-                kuraPayloadInitial.readFromByteArray(requestPayload);
 
+                KuraPayload kuraRequestPayload = new KuraPayload();
+                kuraRequestPayload.readFromByteArray(requestPayload);
+
+                // Reply topic
                 responseTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_REPLY + callbackParam.getRequestId();
-                KuraPayload customKuraPayload = new KuraPayload();
 
-                customKuraPayload.setTimestamp(new Date());
-                customKuraPayload.getMetrics().put("response.code", 200);
-                responsePayload = customKuraPayload.toByteArray();
+                KuraPayload replyResponsePayload = new KuraPayload();
+                replyResponsePayload.setTimestamp(new Date());
+                replyResponsePayload.getMetrics().put("response.code", 200);
+                responsePayload = replyResponsePayload.toByteArray();
+
                 mqttClient.publish(responseTopic, responsePayload, 0, false);
-                Thread.sleep(5000);
+                Thread.sleep(3000);
 
+                // Uninstall notification 100%
                 responseTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_NOTIFY + clientId + "/uninstall";
-                KuraPayload customKuraPayload2 = new KuraPayload();
 
-                customKuraPayload2.setTimestamp(new Date());
-                customKuraPayload2.getMetrics().put(JOB_ID, kuraPayloadInitial.getMetrics().get(JOB_ID));
-                customKuraPayload2.getMetrics().put("dp.name", "org.eclipse.kura.example.beacon");
-                customKuraPayload2.getMetrics().put("dp.uninstall.progress", 100);
-                customKuraPayload2.getMetrics().put("dp.uninstall.status", COMPLETED);
-                customKuraPayload2.getMetrics().put(CLIENT_ID, clientId);
-                responsePayload = customKuraPayload2.toByteArray();
+                KuraPayload uninstallNotifyPayload = new KuraPayload();
+                uninstallNotifyPayload.setTimestamp(new Date());
+                uninstallNotifyPayload.getMetrics().put(CLIENT_ID, clientId);
+                uninstallNotifyPayload.getMetrics().put(JOB_ID, kuraRequestPayload.getMetrics().get(JOB_ID));
+                uninstallNotifyPayload.getMetrics().put("dp.name", "org.eclipse.kura.demo.heater");
+                uninstallNotifyPayload.getMetrics().put("dp.uninstall.progress", 100);
+                uninstallNotifyPayload.getMetrics().put("dp.uninstall.status", COMPLETED);
+                responsePayload = uninstallNotifyPayload.toByteArray();
+
                 mqttClient.publish(responseTopic, responsePayload, 0, false);
 
                 packageListChangedAfterUninstall = true;

@@ -20,6 +20,12 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = {
                 "classpath:features/jobEngine/JobEngineServiceOperations.feature",
+                "classpath:features/jobEngine/JobEngineServiceProcessorAssetI9n.feature",
+                "classpath:features/jobEngine/JobEngineServiceProcessorBundleI9n.feature",
+                "classpath:features/jobEngine/JobEngineServiceProcessorCommandI9n.feature",
+                "classpath:features/jobEngine/JobEngineServiceProcessorConfigurationI9n.feature",
+                "classpath:features/jobEngine/JobEngineServiceProcessorKeystoreI9n.feature",
+                "classpath:features/jobEngine/JobEngineServiceProcessorPackagesI9n.feature",
         },
         glue = {
                 "org.eclipse.kapua.service.job.steps",
@@ -31,9 +37,9 @@ import org.junit.runner.RunWith;
         },
         plugin = {
                 "pretty",
-                "html:target/cucumber/JobEngineServiceOfflineDeviceI9n",
-                "json:target/JobEngineServiceOfflineDeviceI9n_cucumber.json"
+                "html:target/cucumber/RunJobEngineServiceI9n",
+                "json:target/RunJobEngineServiceI9n_cucumber.json"
         },
         monochrome = true)
-public class RunJobEngineService9nTest {
+public class RunJobEngineServiceI9nTest {
 }

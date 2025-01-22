@@ -10,7 +10,7 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobs
+@job
 @jobService
 @env_none
 

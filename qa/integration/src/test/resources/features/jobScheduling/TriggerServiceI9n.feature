@@ -11,7 +11,7 @@
 #     Eurotech - initial API and implementation
 ###############################################################################
 @env_docker_base
-@job
+@jobsIntegration
 
 Feature: Trigger service tests
 
@@ -566,7 +566,7 @@ Feature: Trigger service tests
     And A regular trigger creator with the name "schedule0" is created
     And The trigger is set to start today at "10:00"
     Then I set cron expression to "1"
-    And I expect the exception "KapuaException" with the text "An internal error occurred: Error during Persistence Operation"
+    And I expect the exception "KapuaIllegalArgumentException" with the text "An illegal value was provided for the argument cronExpression"
     And I create a new trigger from the existing creator with previously defined date properties
     And An exception was thrown
     And I logout

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2024 Eurotech and/or its affiliates and others
+ * Copyright (c) 2019, 2025 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -40,6 +40,8 @@ import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.qa.common.BasicSteps;
 import org.eclipse.kapua.qa.common.DBHelper;
 import org.eclipse.kapua.qa.common.StepData;
+import org.eclipse.kapua.qa.integration.steps.utils.TestReadinessHttpConnection;
+import org.eclipse.kapua.qa.integration.steps.utils.TestReadinessMqttBrokerConnection;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -58,6 +60,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class DockerSteps {
@@ -76,12 +79,31 @@ public class DockerSteps {
     private static final List<String> DEFAULT_BASE_DEPLOYMENT_CONTAINERS_NAME;
     private static final int WAIT_COUNT = 120; //total wait time = 240 secs (120 * 2000ms)
     private static final long WAIT_STEP = 2000;
-    private static final long WAIT_FOR_DB = 10000;
-    private static final long WAIT_FOR_ES = 10000;
+    private static final long WAIT_FOR_DB = 5000;
+    private static final long WAIT_FOR_ES = 5000;
     private static final long WAIT_FOR_EVENTS_BROKER = 10000;
-    private static final long WAIT_FOR_JOB_ENGINE = 30000;
-    private static final long WAIT_FOR_BROKER = 60000;
+    private static final long WAIT_FOR_REST_API = 30000;
     private static final int HTTP_COMMUNICATION_TIMEOUT = 3000;
+
+    private static final int JOB_ENGINE_PORT_CONTAINER = 8080;
+    private static final int JOB_ENGINE_PORT_HOST = 8080;
+    private static final String JOB_ENGINE_ADDRESS_EXTERNAL = "http://localhost:" + JOB_ENGINE_PORT_HOST;
+    private static final long JOB_ENGINE_READY_CHECK_INTERVAL = 1000;
+    private static final long JOB_ENGINE_READY_MAX_WAIT = 60000;
+
+    private static final int MESSAGE_BROKER_PORT_MQTT_CONTAINER = 1883;
+    private static final int MESSAGE_BROKER_PORT_MQTT_HOST = 1883;
+    private static final int MESSAGE_BROKER_PORT_INTERNAL_CONTAINER = 1893;
+    private static final int MESSAGE_BROKER_PORT_INTERNAL_HOST = 1893;
+    private static final int MESSAGE_BROKER_PORT_MQTTS_CONTAINER = 8883;
+    private static final int MESSAGE_BROKER_PORT_MQTTS_HOST = 8883;
+    private static final int MESSAGE_BROKER_PORT_WS_CONTAINER = 8161;
+    private static final int MESSAGE_BROKER_PORT_WS_HOST = 8161;
+    private static final int MESSAGE_BROKER_PORT_DEBUG_CONTAINER = 5005;
+    private static final int MESSAGE_BROKER_PORT_DEBUG_HOST = 5005;
+    private static final String MESSAGE_BROKER_ADDRESS_EXTERNAL = "tcp://localhost:" + MESSAGE_BROKER_PORT_MQTT_HOST;
+    private static final long MESSAGE_BROKER_READY_CHECK_INTERVAL = 1000;
+    private static final long MESSAGE_BROKER_READY_MAX_WAIT = 60000;
 
     private static final int LIFECYCLE_HEALTH_CHECK_PORT = 8090;
     private static final int TElEMETRY_HEALTH_CHECK_PORT = 8091;
@@ -208,9 +230,7 @@ public class DockerSteps {
         startBaseDockerEnvironmentInternal();
         try {
             startMessageBrokerContainer(BasicSteps.MESSAGE_BROKER_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_BROKER);
-            }
+            waitMessageBrokerContainer(BasicSteps.MESSAGE_BROKER_CONTAINER_NAME);
 
             startAuthServiceContainer(BasicSteps.AUTH_SERVICE_CONTAINER_NAME);
             startLifecycleConsumerContainer(BasicSteps.LIFECYCLE_CONSUMER_CONTAINER_NAME);
@@ -237,6 +257,9 @@ public class DockerSteps {
     /**
      * Starts Docker container requested.
      *
+     * TODO: Add missing Telemetry mapping
+     * TODO: Move to start multiple resources and check readiness of components in parallel
+     *
      * @param dockerContainers The Docker containers to start
      * @throws Exception
      * @since 2.1.0
@@ -249,55 +272,58 @@ public class DockerSteps {
 
         createNetwork();
 
+        // Start them
         for (String dockerContainer : dockerContainers) {
             switch (dockerContainer) {
                 case "db": {
                     startDBContainer(BasicSteps.DB_CONTAINER_NAME);
-                    synchronized (this) {
-                        this.wait(WAIT_FOR_DB);
-                    }
+
+                    // This is the only container that we need to wait to start before starting others
+                    waitDBContainer(BasicSteps.DB_CONTAINER_NAME);
                 } break;
                 case "es": {
                     startESContainer(BasicSteps.ES_CONTAINER_NAME);
-                    synchronized (this) {
-                        this.wait(WAIT_FOR_ES);
-                    }
+                    waitEsContainer(BasicSteps.ES_CONTAINER_NAME);
                 } break;
                 case "events-broker": {
                     startEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
-                    synchronized (this) {
-                        this.wait(WAIT_FOR_EVENTS_BROKER);
-                    }
+                    waitEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
                 } break;
                 case "job-engine": {
                     startJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
-                    synchronized (this) {
-                        this.wait(WAIT_FOR_JOB_ENGINE);
-                    }
+                    waitJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
                 } break;
                 case "message-broker": {
                     startMessageBrokerContainer(BasicSteps.MESSAGE_BROKER_CONTAINER_NAME);
-                    synchronized (this) {
-                        this.wait(WAIT_FOR_BROKER);
-                    }
+                    waitMessageBrokerContainer(BasicSteps.MESSAGE_BROKER_CONTAINER_NAME);
                 } break;
                 case "broker-auth-service": {
                     startAuthServiceContainer(BasicSteps.AUTH_SERVICE_CONTAINER_NAME);
-
-                    long timeout = System.currentTimeMillis();
-                    while (System.currentTimeMillis() - timeout < 30000) {
-                        isServiceReady(AUTH_SERVICE_CHECK_WEB_APP);
-                        Thread.sleep(500);
-                    }
                 } break;
                 case "consumer-lifecycle": {
                     startLifecycleConsumerContainer(BasicSteps.LIFECYCLE_CONSUMER_CONTAINER_NAME);
+                } break;
+                default:
+                    throw new UnsupportedOperationException("Unknown container resource: " + dockerContainer);
+            }
+        }
 
-                    long timeout = System.currentTimeMillis();
-                    while (System.currentTimeMillis() - timeout < 30000) {
-                        isServiceReady(LIFECYCLE_CHECK_WEB_APP);
-                        Thread.sleep(500);
-                    }
+        // Wait for them to be ready
+        for (String dockerContainer : dockerContainers) {
+            switch (dockerContainer) {
+                case "db":
+                case "es":
+                case "events-broker":
+                case "job-engine":
+                case "message-broker": {
+                    // Nothing to do.
+                    // Waiting to refactor them
+                } break;
+                case "broker-auth-service": {
+                    waitAuthServiceContainer(BasicSteps.AUTH_SERVICE_CONTAINER_NAME);
+                } break;
+                case "consumer-lifecycle": {
+                    waitLifecycleConsumerContainer(BasicSteps.LIFECYCLE_CONSUMER_CONTAINER_NAME);
                 } break;
                 default:
                     throw new UnsupportedOperationException("Unknown container resource: " + dockerContainer);
@@ -355,24 +381,16 @@ public class DockerSteps {
             createNetwork();
 
             startDBContainer(BasicSteps.DB_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_DB);
-            }
+            waitDBContainer(BasicSteps.DB_CONTAINER_NAME);
 
             startESContainer(BasicSteps.ES_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_ES);
-            }
+            waitEsContainer(BasicSteps.ES_CONTAINER_NAME);
 
             startEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_EVENTS_BROKER);
-            }
+            waitEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
 
             startJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_JOB_ENGINE);
-            }
+            waitJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
 
         } catch (Exception e) {
             logger.error("Error while starting base docker environment: {}", e.getMessage(), e);
@@ -389,24 +407,16 @@ public class DockerSteps {
             createNetwork();
 
             startDBContainer(BasicSteps.DB_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_DB);
-            }
+            waitDBContainer(BasicSteps.DB_CONTAINER_NAME);
 
             startEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_EVENTS_BROKER);
-            }
+            waitEventBrokerContainer(BasicSteps.EVENTS_BROKER_CONTAINER_NAME);
 
             startJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
-            synchronized (this) {
-                this.wait(WAIT_FOR_JOB_ENGINE);
-            }
+            waitJobEngineContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
 
             startAPIContainer(BasicSteps.API_CONTAINER_NAME, tokenTTL, refreshTokenTTL, corsEndpointRefreshInterval);
-            synchronized (this) {
-                this.wait(WAIT_FOR_JOB_ENGINE);
-            }
+            waitRestApiContainer(BasicSteps.JOB_ENGINE_CONTAINER_NAME);
 
         } catch (Exception e) {
             logger.error("Error while starting base docker environment: {}", e.getMessage(), e);
@@ -597,17 +607,16 @@ public class DockerSteps {
         logger.info("DB container started: {}", containerId);
     }
 
-    @And("Start API container with name {string}")
-    public void startAPIContainer(String name, String tokenTTL, String refreshTokenTTL, int corsEndpointRefreshInterval) throws DockerException, InterruptedException {
-        logger.info("Starting API container...");
-        ContainerConfig dbConfig = getApiContainerConfig(tokenTTL, refreshTokenTTL, corsEndpointRefreshInterval);
-        ContainerCreation dbContainerCreation = DockerUtil.getDockerClient().createContainer(dbConfig, name);
-        String containerId = dbContainerCreation.id();
-
-        DockerUtil.getDockerClient().startContainer(containerId);
-        DockerUtil.getDockerClient().connectToNetwork(containerId, networkId);
-        containerMap.put("api", containerId);
-        logger.info("API container started: {}", containerId);
+    /**
+     * Waits for the DB Docker container to be ready
+     * @param name The DB Docker container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitDBContainer(String name) throws Exception{
+        synchronized (this) {
+            this.wait(WAIT_FOR_DB);
+        }
     }
 
     @And("Start ES container with name {string}")
@@ -623,7 +632,20 @@ public class DockerSteps {
         logger.info("ES container started: {}", containerId);
     }
 
-    @And("Start EventBroker container with name {string}")
+    /**
+     * Waits for the Elasticsearch Docker container to be ready
+     *
+     * @param name The Elasticsearch Docker container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitEsContainer(String name) throws Exception{
+        synchronized (this) {
+            this.wait(WAIT_FOR_ES);
+        }
+    }
+
+    @And("Start Event Broker container with name {string}")
     public void startEventBrokerContainer(String name) throws DockerException, InterruptedException {
         logger.info("Starting EventBroker container...");
         ContainerConfig ebConfig = getEventBrokerContainerConfig();
@@ -636,7 +658,20 @@ public class DockerSteps {
         logger.info("EventBroker container started: {}", containerId);
     }
 
-    @And("Start JobEngine container with name {string}")
+    /**
+     * Waits for the Event Broker Docker container to be ready
+     *
+     * @param name The Event Broker Docker container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitEventBrokerContainer(String name) throws Exception{
+        synchronized (this) {
+            this.wait(WAIT_FOR_EVENTS_BROKER);
+        }
+    }
+
+    @And("Start Job Engine container with name {string}")
     public void startJobEngineContainer(String name) throws DockerException, InterruptedException {
         logger.info("Starting Job Engine container {}...", name);
         ContainerConfig mbConfig = getJobEngineContainerConfig();
@@ -649,10 +684,89 @@ public class DockerSteps {
         logger.info("Job Engine {} container started: {}", name, containerId);
     }
 
-    @And("Start MessageBroker container with name {string}")
+    /**
+     * Waits for the Job Engine Docker container to be ready
+     *
+     * @param name The Job Engine Docker container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitJobEngineContainer(String name) throws Exception{
+        long now = System.currentTimeMillis();
+        while (now + JOB_ENGINE_READY_MAX_WAIT > System.currentTimeMillis()) {
+            if (isJobEngineContainerReady(name)) {
+                logger.info("Job Engine ready in: ~{}ms", System.currentTimeMillis() - now);
+                return;
+            }
+
+            logger.info("Job Engine not ready yet... Retrying in {}ms", JOB_ENGINE_READY_CHECK_INTERVAL);
+            TimeUnit.MILLISECONDS.sleep(JOB_ENGINE_READY_CHECK_INTERVAL);
+        }
+
+        Assert.fail("Job Engine not ready within: " + JOB_ENGINE_READY_MAX_WAIT + "ms");
+    }
+
+    /**
+     * Checks if the Job Engine Docker container is ready
+     *
+     * @param name The Job Engine Docker container name
+     * @return {@code true} if is ready, {@code false} otherwise
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private boolean isJobEngineContainerReady(String name) throws Exception {
+        try (TestReadinessHttpConnection testReadinessHttpConnection = new TestReadinessHttpConnection(JOB_ENGINE_ADDRESS_EXTERNAL)){
+            return testReadinessHttpConnection.isReady();
+        }
+        catch (Exception e) {
+            // Ignoring...
+        }
+
+        return false;
+    }
+
+    @And("Start API container with name {string}")
+    public void startAPIContainer(String name, String tokenTTL, String refreshTokenTTL, int corsEndpointRefreshInterval) throws DockerException, InterruptedException {
+        logger.info("Starting API container...");
+        ContainerConfig dbConfig = getApiContainerConfig(tokenTTL, refreshTokenTTL, corsEndpointRefreshInterval);
+        ContainerCreation dbContainerCreation = DockerUtil.getDockerClient().createContainer(dbConfig, name);
+        String containerId = dbContainerCreation.id();
+
+        DockerUtil.getDockerClient().startContainer(containerId);
+        DockerUtil.getDockerClient().connectToNetwork(containerId, networkId);
+        containerMap.put("api", containerId);
+        logger.info("API container started: {}", containerId);
+    }
+
+    /**
+     * Waits for the REST API Docker container to be ready
+     *
+     * @param name The REST API Docker container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitRestApiContainer(String name) throws Exception{
+        synchronized (this) {
+            this.wait(WAIT_FOR_REST_API);
+        }
+    }
+
+    @And("Start Message Broker container with name {string}")
     public void startMessageBrokerContainer(String name) throws DockerException, InterruptedException {
         logger.info("Starting Message Broker container {}...", name);
-        ContainerConfig mbConfig = getBrokerContainerConfig("message-broker", 1883, 1883, 1893, 1893, 8883, 8883, 8161, 8161, 5005, 5005, "kapua/" + BROKER_IMAGE + ":" + KAPUA_VERSION);
+        ContainerConfig mbConfig = getBrokerContainerConfig(
+                name,
+                MESSAGE_BROKER_PORT_MQTT_CONTAINER,
+                MESSAGE_BROKER_PORT_MQTT_HOST,
+                MESSAGE_BROKER_PORT_INTERNAL_CONTAINER,
+                MESSAGE_BROKER_PORT_INTERNAL_HOST,
+                MESSAGE_BROKER_PORT_MQTTS_CONTAINER,
+                MESSAGE_BROKER_PORT_MQTTS_HOST,
+                MESSAGE_BROKER_PORT_WS_CONTAINER,
+                MESSAGE_BROKER_PORT_WS_HOST,
+                MESSAGE_BROKER_PORT_DEBUG_CONTAINER,
+                MESSAGE_BROKER_PORT_DEBUG_HOST,
+                "kapua/" + BROKER_IMAGE + ":" + KAPUA_VERSION);
         ContainerCreation mbContainerCreation = DockerUtil.getDockerClient().createContainer(mbConfig, name);
         String containerId = mbContainerCreation.id();
 
@@ -662,16 +776,73 @@ public class DockerSteps {
         logger.info("Message Broker {} container started: {}", name, containerId);
     }
 
-    @And("Start TelemetryConsumer container with name {string}")
-    public void startTelemetryConsumerContainer(String name) throws DockerException, InterruptedException {
-        logger.info("Starting Telemetry Consumer container {}...", name);
-        ContainerCreation mbContainerCreation = DockerUtil.getDockerClient().createContainer(getTelemetryConsumerConfig(8080, 8091, 8001, 8002), name);
+    /**
+     * Waits for the Message Broker Docker container to be ready
+     *
+     * @param name The Message Broker Docker container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitMessageBrokerContainer(String name) throws Exception{
+        long now = System.currentTimeMillis();
+        while (now + MESSAGE_BROKER_READY_MAX_WAIT > System.currentTimeMillis()) {
+            if (isMessageBrokerContainerReady(name)) {
+                logger.info("Message Broker ready in: ~{}ms", System.currentTimeMillis() - now);
+                return;
+            }
+
+            logger.info("Message Broker not ready yet... Retrying in {}ms", MESSAGE_BROKER_READY_CHECK_INTERVAL);
+            TimeUnit.MILLISECONDS.sleep(MESSAGE_BROKER_READY_CHECK_INTERVAL);
+        }
+
+        Assert.fail("Message Broker not ready within: " + MESSAGE_BROKER_READY_MAX_WAIT + "ms");
+    }
+
+    /**
+     * Checks if the Message Broker Docker container is ready
+     *
+     * @param name The Message Broker Docker container name
+     * @return {@code true} if is ready, {@code false} otherwise
+     * @since 2.1.0
+     */
+    private boolean isMessageBrokerContainerReady(String name) {
+        try (TestReadinessMqttBrokerConnection testReadinessConnection = new TestReadinessMqttBrokerConnection(MESSAGE_BROKER_ADDRESS_EXTERNAL)){
+            return testReadinessConnection.isReady();
+        }
+        catch (Exception e) {
+            // Ignoring...
+        }
+
+        return false;
+    }
+
+    @And("Start Auth service container with name {string}")
+    public void startAuthServiceContainer(String name) throws DockerException, InterruptedException {
+        logger.info("Starting Auth service container {}...", name);
+        ContainerCreation mbContainerCreation = DockerUtil.getDockerClient().createContainer(getAuthServiceConfig(8080, 8092, 8001, 8003), name);
         String containerId = mbContainerCreation.id();
 
         DockerUtil.getDockerClient().startContainer(containerId);
         DockerUtil.getDockerClient().connectToNetwork(containerId, networkId);
         containerMap.put(name, containerId);
-        logger.info("Telemetry Consumer {} container started: {}", name, containerId);
+        logger.info("Lifecycle Consumer {} container started: {}", name, containerId);
+    }
+
+    /**
+     * Waits for the Auth Service Docker container to be ready
+     *
+     * @param name The Auth Service container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitAuthServiceContainer(String name) throws Exception{
+        long timeout = System.currentTimeMillis();
+        while (System.currentTimeMillis() - timeout < 30000) {
+            if (isServiceReady(AUTH_SERVICE_CHECK_WEB_APP)) {
+                break;
+            }
+            TimeUnit.MILLISECONDS.sleep(500);
+        }
     }
 
     @And("Start LifecycleConsumer container with name {string}")
@@ -686,16 +857,50 @@ public class DockerSteps {
         logger.info("Lifecycle Consumer {} container started: {}", name, containerId);
     }
 
-    @And("Start Auth service container with name {string}")
-    public void startAuthServiceContainer(String name) throws DockerException, InterruptedException {
-        logger.info("Starting Auth service container {}...", name);
-        ContainerCreation mbContainerCreation = DockerUtil.getDockerClient().createContainer(getAuthServiceConfig(8080, 8092, 8001, 8003), name);
+    /**
+     * Waits for the Lifecycle Consumer Docker container to be ready
+     *
+     * @param name The Lifecycle Consumer container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitLifecycleConsumerContainer(String name) throws Exception{
+        long timeout = System.currentTimeMillis();
+        while (System.currentTimeMillis() - timeout < 30000) {
+            if (isServiceReady(LIFECYCLE_CHECK_WEB_APP)){
+                break;
+            }
+            TimeUnit.MILLISECONDS.sleep(500);
+        }
+    }
+
+    @And("Start TelemetryConsumer container with name {string}")
+    public void startTelemetryConsumerContainer(String name) throws DockerException, InterruptedException {
+        logger.info("Starting Telemetry Consumer container {}...", name);
+        ContainerCreation mbContainerCreation = DockerUtil.getDockerClient().createContainer(getTelemetryConsumerConfig(8080, 8091, 8001, 8002), name);
         String containerId = mbContainerCreation.id();
 
         DockerUtil.getDockerClient().startContainer(containerId);
         DockerUtil.getDockerClient().connectToNetwork(containerId, networkId);
         containerMap.put(name, containerId);
-        logger.info("Lifecycle Consumer {} container started: {}", name, containerId);
+        logger.info("Telemetry Consumer {} container started: {}", name, containerId);
+    }
+
+    /**
+     * Waits for the Telemetry Consumer Docker container to be ready
+     *
+     * @param name The Telemetry Consumer container name
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void waitTelemetryConsumerContainer(String name) throws Exception{
+        long timeout = System.currentTimeMillis();
+        while (System.currentTimeMillis() - timeout < 30000) {
+            if (isServiceReady(TELEMETRY_CHECK_WEB_APP)) {
+                break;
+            }
+            TimeUnit.MILLISECONDS.sleep(500);
+        }
     }
 
     @Then("Stop container with name {string}")
@@ -800,9 +1005,7 @@ public class DockerSteps {
     /**
      * Creation of docker container configuration for broker.
      *
-     * @param brokerAddr
      * @param brokerIp
-     * @param clusterName
      * @param mqttPort      mqtt port on docker
      * @param mqttHostPort  mqtt port on docker host
      * @param mqttsPort     mqtts port on docker
@@ -816,11 +1019,16 @@ public class DockerSteps {
      * @return Container configuration for specific boroker instance
      */
     private ContainerConfig getBrokerContainerConfig(String brokerIp,
-                                                     int mqttPort, int mqttHostPort,
-                                                     int mqttInternalPort, int mqttInternalHostPort,
-                                                     int mqttsPort, int mqttsHostPort,
-                                                     int webPort, int webHostPort,
-                                                     int debugPort, int debugHostPort,
+                                                     int mqttPort,
+                                                     int mqttHostPort,
+                                                     int mqttInternalPort,
+                                                     int mqttInternalHostPort,
+                                                     int mqttsPort,
+                                                     int mqttsHostPort,
+                                                     int webPort,
+                                                     int webHostPort,
+                                                     int debugPort,
+                                                     int debugHostPort,
                                                      String dockerImage) {
 
         final Map<String, List<PortBinding>> portBindings = new HashMap<>();
@@ -1036,14 +1244,13 @@ public class DockerSteps {
      * @return Container configuration for job engine instance.
      */
     private ContainerConfig getJobEngineContainerConfig() {
-        final int jobEnginePort = 8080;
-        final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-        addHostPort(ALL_IP, portBindings, jobEnginePort, jobEnginePort);
-        final HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
+        Map<String, List<PortBinding>> portBindings = new HashMap<>();
+        addHostPort(ALL_IP, portBindings, JOB_ENGINE_PORT_CONTAINER, JOB_ENGINE_PORT_HOST);
+        HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
 
         return ContainerConfig.builder()
                 .hostConfig(hostConfig)
-                .exposedPorts(String.valueOf(jobEnginePort))
+                .exposedPorts(String.valueOf(JOB_ENGINE_PORT_CONTAINER))
                 .env(
                         "CRYPTO_SECRET_KEY=kapuaTestsKey!!!"
                 )
@@ -1052,16 +1259,19 @@ public class DockerSteps {
     }
 
     /**
-     * Add docker port to host port mapping.
+     * Add Docker port to host port mappings.
      *
-     * @param host         ip address of host
-     * @param portBindings list ob bindings that gets updated
-     * @param port         docker port
-     * @param hostPort     port on host
+     * @param host         IP address of host
+     * @param portBindings {@link List} ob bindings that gets updated
+     * @param port         Docker container port
+     * @param hostPort     Port exposed on host
+     *
+     * @since 2.0.0
      */
-    private void addHostPort(String host, Map<String, List<PortBinding>> portBindings,
-                             int port, int hostPort) {
-
+    private void addHostPort(String host,
+                             Map<String, List<PortBinding>> portBindings,
+                             int port,
+                             int hostPort) {
         List<PortBinding> hostPorts = new ArrayList<>();
         hostPorts.add(PortBinding.of(host, hostPort));
         portBindings.put(String.valueOf(port), hostPorts);
