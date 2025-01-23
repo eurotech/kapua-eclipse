@@ -15,9 +15,8 @@
 @jobEngine
 @jobEngineOperations
 
-Feature: JobEngineService stop job tests with online device
-  Job Engine Service test scenarios for stopping job. This feature file contains scenarios for stopping job with one target and one step,
-  one target and multiple steps, multiple targets and one step and multiple targets and multiple steps.
+Feature: Job Engine Service - Operations
+  Job Engine Service tests for basic operations
 
   @setup
   Scenario: Setup test resources
@@ -31,7 +30,7 @@ Feature: JobEngineService stop job tests with online device
       | broker-auth-service |
       | consumer-lifecycle  |
 
-  Scenario: Start a Job - Without JobTarget
+  Scenario: Start - Without JobTarget
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I create a job with the name "Test Job - Empty Targets"
@@ -39,7 +38,7 @@ Feature: JobEngineService stop job tests with online device
     And I start a job
     And An exception was thrown
 
-  Scenario: Start a Job - Without JobStep
+  Scenario: Start - Without JobStep
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I create a device with name "Test Target"
@@ -50,7 +49,7 @@ Feature: JobEngineService stop job tests with online device
     And I start a job
     And An exception was thrown
 
-  Scenario: Start a Job - JobTarget ok
+  Scenario: Start - JobTarget ok
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I start the Kura Mock
@@ -70,7 +69,7 @@ Feature: JobEngineService stop job tests with online device
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
 
-  Scenario: Start a Job - JobTarget failed
+  Scenario: Start - JobTarget failed
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I create a device with name "Test Target"
@@ -88,7 +87,7 @@ Feature: JobEngineService stop job tests with online device
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_FAILED"
 
-  Scenario: Start a Job - JobTarget ok then ok
+  Scenario: Start - JobTarget ok then ok
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I start the Kura Mock
@@ -112,7 +111,7 @@ Feature: JobEngineService stop job tests with online device
     Then I confirm that job has 2 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
 
-  Scenario: Start a Job - JobTarget failed then ok
+  Scenario: Start - JobTarget failed then ok
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I create a device with name "rpione3"
@@ -137,7 +136,7 @@ Feature: JobEngineService stop job tests with online device
     Then I confirm that job has 2 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
 
-  Scenario: Start a Job - Two JobSteps
+  Scenario: Start - Two JobSteps
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I start the Kura Mock
@@ -163,7 +162,7 @@ Feature: JobEngineService stop job tests with online device
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 1 and status "PROCESS_OK"
 
-  Scenario: Check a Job - Running status
+  Scenario: Is Running - Check running status
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I start the Kura Mock
@@ -187,7 +186,7 @@ Feature: JobEngineService stop job tests with online device
     Then I confirm that job has 1 job execution
     And I confirm that job target in job has step index 0 and status "PROCESS_OK"
 
-  Scenario: Stop a Job - Not running, never run
+  Scenario: Stop - Not running, never run
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I create a device with name "Test Target"
     And I create a job with the name "TestJob"
@@ -203,7 +202,7 @@ Feature: JobEngineService stop job tests with online device
     And I stop the job
     And An exception was thrown
 
-  Scenario: Stop a Job - Not running, but was
+  Scenario: Stop - Not running, but was
 
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I start the Kura Mock
@@ -224,7 +223,7 @@ Feature: JobEngineService stop job tests with online device
     And I stop the job
     And An exception was thrown
 
-  Scenario: Stop a Job - Running
+  Scenario: Stop - Running
     Given I login as user with name "kapua-sys" and password "kapua-password"
     And I start the Kura Mock
     And Device birth message is sent
