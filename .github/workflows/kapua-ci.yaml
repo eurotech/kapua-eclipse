@@ -31,14 +31,43 @@ jobs:
       - name: Build Kapua project
         run: mvn -B -DskipTests clean install -T 1C
 
-      - name: Download all dependencies of the project # Downloading all referenced dependencies to build a complete cache if not present
-        if: steps.cache-maven-external-deps.outputs.cache-hit != 'true'
-        run: mvn dependency:go-offline
+      - name: Prepare Maven repo for caching
+        uses: ./.github/actions/prepareMavenRepoForCache
 
-      - name: Extract built Kapua artifacts # This splits the built Kapua artifact of this run from the cached repository of external dependencies for caching
-        run: |
-          mkdir --parents ~/.m2/kapua-repository/org/eclipse/
-          mv ~/.m2/repository/org/eclipse/kapua ~/.m2/kapua-repository/org/eclipse/kapua
+  build-javadoc:
+    needs: build
+    name: Build Javadoc
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository # Checks out a copy of the repository on the runner
+        uses: actions/checkout@v4
+
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
+
+      - name: Set up Maven caches
+        uses: ./.github/actions/setUpMavenCaches
+        with:
+          kapua-artifact-cache-enabled: 'false'
+
+      - name: Build Kapua Javadoc
+        run: mvn -B -DskipTests install javadoc:jar
+
+  junit-tests:
+    needs: build
+    name: Run jUnit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository # Checks out a copy of the repository on the runner
+        uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
+      - uses: ./.github/actions/runTestsTaggedAs
+        with:
+          needs-docker-images: 'false'
+          run-junit: 'true'
 
   test-brokerAcl:
     needs: build
@@ -329,34 +358,3 @@ jobs:
           tag: '@rest_parsing'
           needs-docker-images: 'true'
           needs-api-docker-image: 'true'
-  junit-tests:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - name: Checkout repository # Checks out a copy of the repository on the runner
-        uses: actions/checkout@v4
-      - name: Set up runner
-        uses: ./.github/actions/setUpRunner
-      - uses: ./.github/actions/runTestsTaggedAs
-        with:
-          needs-docker-images: 'false'
-          run-junit: 'true'
-  build-javadoc:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - name: Checkout repository # Checks out a copy of the repository on the runner
-        uses: actions/checkout@v4
-
-      - name: Set up runner
-        uses: ./.github/actions/setUpRunner
-
-      - name: Set up Maven caches
-        uses: ./.github/actions/setUpMavenCaches
-        with:
-          kapua-artifact-cache-enabled: 'false'
-
-      - name: Build Kapua Javadoc
-        run: mvn -B -DskipTests install javadoc:jar

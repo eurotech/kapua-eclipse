@@ -1,0 +1,11 @@
+name: 'Prepare Maven Repo'
+description: |
+  Prepares ~/.m2/repository/ for caching
+runs:
+  using: "composite"
+  steps:
+    - name: Extract built Kapua artifacts # This splits the built Kapua artifact of this run from the cached repository of external dependencies for caching
+      run: |
+        mkdir --parents ~/.m2/kapua-repository/org/eclipse/
+        mv ~/.m2/repository/org/eclipse/kapua ~/.m2/kapua-repository/org/eclipse/kapua
+      shell: bash
