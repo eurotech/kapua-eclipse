@@ -1,12 +1,16 @@
-name: 'Prepare Maven Repo'
+name: 'Save built Kapua Artifacts'
 description: |
-  Prepares ~/.m2/repository/ for caching
+  Saves the built Kapua artifacts for later usage
 runs:
   using: "composite"
   steps:
     - name: Extract built Kapua artifacts # This splits the built Kapua artifact of this run from the cached repository of external dependencies for caching
-      if: ${{ steps.cache-maven-kapua-artifacts.outputs.cache-hit != 'true' }}
       run: |
         mkdir --parents ~/.m2/kapua-repository/org/eclipse/
         mv ~/.m2/repository/org/eclipse/kapua ~/.m2/kapua-repository/org/eclipse/kapua
       shell: bash
+    - name: Save built Kapua artifacts
+      uses: actions/cache/save@v4
+      with:
+        path: ~/.m2/kapua-repository/org/eclipse/kapua
+        key: ${{ runner.os }}-maven-${{ github.run_number }}-kapua-artifacts
