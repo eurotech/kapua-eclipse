@@ -23,22 +23,8 @@ runs:
     - name: Set up runner
       uses: ./.github/actions/setUpRunner
 
-    - name: Cache Maven repository - External dependencies # Cache of external Maven dependencies built from 'build' job
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2/repository/
-        key: ${{ runner.os }}-maven-develop-dependencies
-
-    - name: Cache Maven repository - Kapua artifacts # Cache of Kapua artifacts built from 'build' job
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2/kapua-repository/org/eclipse/kapua
-        key: ${{ runner.os }}-maven-${{ github.run_number }}-kapua-artifacts
-        fail-on-cache-miss: true
-
-    - name: Build full cached Maven repository # This adds the built Kapua artifact of this run to the cached repository of external dependencies
-      run: mv ~/.m2/kapua-repository/org/eclipse/kapua ~/.m2/repository/org/eclipse/kapua
-      shell: bash
+    - name: Set up Maven caches
+      uses: ./.github/actions/setUpMavenCaches
 
     - name: Docker images creation
       if: ${{ inputs.needs-docker-images == 'true' }}

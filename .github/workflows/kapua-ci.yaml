@@ -22,23 +22,8 @@ jobs:
       - name: Set up runner
         uses: ./.github/actions/setUpRunner
 
-      - name: Cache Maven repository - External dependencies # Cache of external Maven dependencies to speed up build time
-        id: cache-maven-external-deps
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository/
-          key: ${{ runner.os }}-maven-develop-dependencies
-
-      - name: Cache Maven repository - Kapua artifacts # Cache of Kapua artifacts be reused in following jobs
-        id: cache-maven-kapua-artifacts
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/kapua-repository/org/eclipse/kapua
-          key: ${{ runner.os }}-maven-${{ github.run_number }}-kapua-artifacts
-
-      - name: Build full cached Maven repository # This adds the built Kapua artifact of this run to the cached repository of external dependencies. Used when re-running a job
-        if: steps.cache-maven-kapua-artifacts.outputs.cache-hit == 'true'
-        run: mv ~/.m2/kapua-repository/org/eclipse/kapua ~/.m2/repository/org/eclipse/kapua
+      - name: Set up Maven caches
+        uses: ./.github/actions/setUpMavenCaches
 
       - name: Maven version
         run: mvn --version
@@ -364,15 +349,14 @@ jobs:
     steps:
       - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+
       - name: Set up runner
         uses: ./.github/actions/setUpRunner
 
-      - name: Cache Maven repository - External dependencies # Cache of external Maven dependencies to speed up build time
-        id: cache-maven-external-deps
-        uses: actions/cache@v4
+      - name: Set up Maven caches
+        uses: ./.github/actions/setUpMavenCaches
         with:
-          path: ~/.m2/repository/
-          key: ${{ runner.os }}-maven-develop-dependencies
+          kapua-artifact-cache-enabled: 'false'
 
       - name: Build Kapua Javadoc
         run: mvn -B -DskipTests install javadoc:jar
