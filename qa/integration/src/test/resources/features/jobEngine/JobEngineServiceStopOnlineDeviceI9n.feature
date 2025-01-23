@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2019, 2022 Eurotech and/or its affiliates and others
+# Copyright (c) 2019, 2024 Eurotech and/or its affiliates and others
 #
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,10 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
-@jobEngineServiceStop
 @env_docker
+@it
+@jobEngine
+@jobEngineServiceStop
 
 Feature: JobEngineService stop job tests with online device
   Job Engine Service test scenarios for stopping job. This feature file contains scenarios for stopping job with one target and one step,
@@ -513,6 +515,6 @@ Feature: JobEngineService stop job tests with online device
 #    And I logout
 
   @teardown
-  Scenario: Stop full docker environment
-    Given Stop full docker environment
+  Scenario: Tear down test resources
+    Given Stop Docker environment
     And Clean Locator Instance

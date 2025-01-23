@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2021, 2022 Eurotech and/or its affiliates and others
+# Copyright (c) 2021, 2024 Eurotech and/or its affiliates and others
 #
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,11 @@
 # Contributors:
 #     Eurotech - initial API and implementation
 ###############################################################################
+@env_docker
+@it
+@jobEngine
 @jobEngineStepDefinitions
 @deviceManagementKeystore
-@env_docker
 
 Feature: Job Engine Service - Keystore Step Definitions
 
@@ -150,6 +152,6 @@ Feature: Job Engine Service - Keystore Step Definitions
     And I logout
 
   @teardown
-  Scenario: Stop full docker environment
-    Given Stop full docker environment
+  Scenario: Tear down test resources
+    Given Stop Docker environment
     And Clean Locator Instance

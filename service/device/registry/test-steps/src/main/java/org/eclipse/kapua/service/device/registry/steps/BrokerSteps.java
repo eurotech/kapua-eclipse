@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2017, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -188,6 +189,10 @@ public class BrokerSteps extends TestBase {
     @When("I start the Kura Mock")
     public void startKuraMock() {
         if (!kuraDevices.isEmpty()) {
+            // Cleanup of any leftover KuraMock, if any
+            for (KuraDevice kuraDevice : kuraDevices) {
+                kuraDevice.mqttClientDisconnect();
+            }
             kuraDevices.clear();
         }
 
@@ -242,6 +247,33 @@ public class BrokerSteps extends TestBase {
             mqttBirth = "$EDC/kapua-sys/" + kuraDevice.getClientId() + "/MQTT/BIRTH";
             kuraDevice.sendMessageFromFile(mqttBirth, 0, false, "/mqtt/rpione3_MQTT_BIRTH.mqtt");
         }
+    }
+
+    /**
+     * Checks that the {@link Device} with the given {@link Device#getClientId()} has {@link DeviceConnection#getStatus()} {@link DeviceConnectionStatus#CONNECTED} within the given time.
+     *
+     * @param clientId The {@link Device#getClientId()} to check
+     * @param waitSeconds The max time of wait in seconds
+     * @throws Exception
+     * @since 1.2.0
+     */
+    @When("Device {string} is connected within {int}s")
+    public void deviceConnected(String clientId, int waitSeconds) throws Exception {
+
+        long now = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - now) < (waitSeconds * 1000L)){
+            Device kuraDevice = deviceRegistryService.findByClientId(getCurrentScopeId(), clientId);
+
+            if (kuraDevice != null &&
+                    kuraDevice.getConnection() != null &&
+                    DeviceConnectionStatus.CONNECTED.equals(kuraDevice.getConnection().getStatus())) {
+                return;
+            }
+
+            TimeUnit.MILLISECONDS.sleep(100);
+        }
+
+        Assert.fail("Device " + clientId + "not connected within " + waitSeconds + "s");
     }
 
     @When("Device(s) (is/are) connected within {int} second(s)")

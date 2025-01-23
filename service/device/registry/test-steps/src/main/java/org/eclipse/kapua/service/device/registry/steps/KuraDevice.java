@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2017, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -34,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class KuraDevice implements MqttCallback {
 
@@ -62,6 +63,7 @@ public class KuraDevice implements MqttCallback {
     private String deployGetBundles;
     private String deployExecStart34;
     private String deployExecStart95;
+    private String deployExecStop34;
     private String deployExecStop77;
 
     // INVENTORY-V1
@@ -175,6 +177,7 @@ public class KuraDevice implements MqttCallback {
         deployGetBundles = "$EDC/kapua-sys/rpione3/DEPLOY-V2/GET/bundles";
         deployExecStart34 = "$EDC/kapua-sys/rpione3/DEPLOY-V2/EXEC/start/34";
         deployExecStart95 = "$EDC/kapua-sys/rpione3/DEPLOY-V2/EXEC/start/95";
+        deployExecStop34 = "$EDC/kapua-sys/rpione3/DEPLOY-V2/EXEC/stop/34";
         deployExecStop77 = "$EDC/kapua-sys/rpione3/DEPLOY-V2/EXEC/stop/77";
 
         // INVENTORY-V1
@@ -292,6 +295,7 @@ public class KuraDevice implements MqttCallback {
             cmdExecCommand = $EDC_KAPUA_SYS + clientId + "/CMD-V1/EXEC/command";
             deployExecStart34 = $EDC_KAPUA_SYS + clientId + "/DEPLOY-V2/EXEC/start/34";
             deployExecStart95 = $EDC_KAPUA_SYS + clientId + "/DEPLOY-V2/EXEC/start/95";
+            deployExecStop34 = $EDC_KAPUA_SYS + clientId + "/DEPLOY-V2/EXEC/stop/34";
             deployExecStop77 = $EDC_KAPUA_SYS + clientId + "/DEPLOY-V2/EXEC/stop/77";
 
             assetExecRead = $EDC_KAPUA_SYS + clientId + "/ASSET-V1/EXEC/read";
@@ -405,6 +409,16 @@ public class KuraDevice implements MqttCallback {
             }
             // CMD-V1
             else if (topic.equals(cmdExecCommand)) {
+                KuraPayload kuraRequestPayload = new KuraPayload();
+                kuraRequestPayload.readFromByteArray(requestPayload);
+
+                String command = (String) kuraRequestPayload.getMetrics().get("command.command");
+
+                if ("ping".equals(command)) {
+                    // Mimic command request `ping -c 10 8.8.8.8
+                    TimeUnit.SECONDS.sleep(10);
+                }
+
                 callbackParam = extractCallback(requestPayload);
 
                 responseTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + "/CMD-V1/REPLY/" + callbackParam.getRequestId();
@@ -530,7 +544,7 @@ public class KuraDevice implements MqttCallback {
 
                 bundleStateChanged = true;
                 mqttClient.publish(responseTopic, responsePayload, 0, false);
-            } else if (topic.equals(deployExecStop77)) {
+            } else if (topic.equals(deployExecStop34) || topic.equals(deployExecStop77)) {
                 callbackParam = extractCallback(requestPayload);
 
                 responseTopic = $EDC + CLIENT_ACCOUNT + "/" + callbackParam.getClientId() + DEPLOY_V2_REPLY + callbackParam.getRequestId();

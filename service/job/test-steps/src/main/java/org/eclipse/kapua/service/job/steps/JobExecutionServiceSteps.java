@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2021, 2024 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -142,6 +142,51 @@ public class JobExecutionServiceSteps extends JobServiceTestBase {
         } catch (KapuaException ex) {
             verifyException(ex);
         }
+    }
+
+    // Check Job Execution
+
+    /**
+     * Checks that the last {@link Job} in context has the given number of {@link JobExecution}s
+     *
+     * @param expectedNumberOfExecution Expected number of {@link JobExecution}s
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @When("I confirm that job has {int} job execution")
+    public void checkJobInContextHasExecution(int expectedNumberOfExecution) throws Exception {
+        Job job = (Job) stepData.get(JOB);
+
+        checkJobHasExecution(job, expectedNumberOfExecution);
+    }
+
+    /**
+     * Looks for a {@link Job} by its {@link Job#getName()} and checks that has the given number of {@link JobExecution}s
+     *
+     * @param jobName The {@link Job#getName()} to look for
+     * @param expectedNumberOfExecution Expected number of {@link JobExecution}s
+     * @throws Exception
+     * @since 2.1.0
+     */
+    @When("I confirm that job {string} has {int} job execution")
+    public void checkJobByNameHasExecution(String jobName, int expectedNumberOfExecution) throws Exception {
+        Job job = findJob(jobName);
+
+        checkJobHasExecution(job, expectedNumberOfExecution);
+    }
+
+    /**
+     * Checks that the given {@link Job} has the given number of {@link JobExecution}s
+     *
+     * @param job The {@link Job} to check
+     * @param expectedNumberOfExecution Expected number of {@link JobExecution}s
+     * @throws Exception
+     * @since 2.1.0
+     */
+    private void checkJobHasExecution(Job job, int expectedNumberOfExecution) throws Exception {
+        long actualNumberOfExecution = jobExecutionService.countByJobId(job.getScopeId(), job.getId());
+
+        Assert.assertEquals(expectedNumberOfExecution, actualNumberOfExecution);
     }
 
     @When("I count the execution items for the current job")
