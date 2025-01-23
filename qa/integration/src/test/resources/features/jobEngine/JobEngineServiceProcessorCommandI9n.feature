@@ -21,6 +21,7 @@ Feature: Job Engine Service - Command Step Processors
   @setup
   Scenario: Setup test resources
     Given Init Security Context
+    And Init Jaxb Context
     And Start Docker environment with resources
       | db                  |
       | events-broker       |
