@@ -13,19 +13,19 @@
 package org.eclipse.kapua;
 
 /**
- * KapuaSQLIntegrityConstraintViolationException is thrown when the value of a method parameter is invalid.
+ * kapuaIntegrityConstraintViolationException is thrown when the integrity constraints of the underlying datastore have been violated
  *
  * @since 2.0.0
  */
-public class KapuaSQLIntegrityConstraintViolationException extends KapuaException {
+public class kapuaIntegrityConstraintViolationException extends KapuaException {
 
     /**
      * Constructor.
      *
      * @since 2.0.0
      */
-    public KapuaSQLIntegrityConstraintViolationException() {
-        super(KapuaErrorCodes.SQL_INTEGRITY_VIOLATION);
+    public kapuaIntegrityConstraintViolationException() {
+        super(KapuaErrorCodes.DATASTORE_INTEGRITY_VIOLATION);
     }
 
     /**
@@ -33,7 +33,7 @@ public class KapuaSQLIntegrityConstraintViolationException extends KapuaExceptio
      *
      * @since 2.0.0
      */
-    public KapuaSQLIntegrityConstraintViolationException(String detailedMessage) {
-        super(KapuaErrorCodes.SQL_INTEGRITY_VIOLATION, detailedMessage);
+    public kapuaIntegrityConstraintViolationException(String detailedMessage) {
+        super(KapuaErrorCodes.DATASTORE_INTEGRITY_VIOLATION, detailedMessage);
     }
 }

@@ -145,7 +145,7 @@ public enum KapuaErrorCodes implements KapuaErrorCode {
      * Sql integrity has been violated for some reason
      * @since 2.0.0
      */
-    SQL_INTEGRITY_VIOLATION
+    DATASTORE_INTEGRITY_VIOLATION
 
 
 }

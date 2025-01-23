@@ -23,7 +23,7 @@ import org.eclipse.kapua.KapuaDuplicateNameException;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.KapuaIllegalNullArgumentException;
 import org.eclipse.kapua.KapuaOptimisticLockingException;
-import org.eclipse.kapua.KapuaSQLIntegrityConstraintViolationException;
+import org.eclipse.kapua.kapuaIntegrityConstraintViolationException;
 import org.eclipse.kapua.qa.markers.junit.JUnitTests;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -117,12 +117,12 @@ public class KapuaExceptionUtilsTest {
         SQLIntegrityConstraintViolationException mockedDatabaseException2 = Mockito.mock(SQLIntegrityConstraintViolationException.class);
         Mockito.when(mockedDatabaseException.getInternalException()).thenReturn(mockedDatabaseException2);
         Mockito.when(mockedDatabaseException.getMessage()).thenReturn("FOREIGN KEY");
-        KapuaSQLIntegrityConstraintViolationException ke = new KapuaSQLIntegrityConstraintViolationException("Check if some foreign key relation exists between this entity and another one in the platform");
+        kapuaIntegrityConstraintViolationException ke = new kapuaIntegrityConstraintViolationException("This entity relates to other entities and cannot be deleted.");
         Assert.assertEquals("ComparisonFailure not expected for: " + exception,ke.toString(), KapuaExceptionUtils.convertPersistenceException(exception).toString());
 
         //generic SQL constraint violation
         Mockito.when(mockedDatabaseException.getMessage()).thenReturn("another message different from for3ign key but always SQL integrity constraint violation stuff");
-        KapuaSQLIntegrityConstraintViolationException ke2 = new KapuaSQLIntegrityConstraintViolationException("");
+        kapuaIntegrityConstraintViolationException ke2 = new kapuaIntegrityConstraintViolationException("");
         Assert.assertEquals("ComparisonFailure not expected for: " + exception,ke2.toString(), KapuaExceptionUtils.convertPersistenceException(exception).toString());
 
         Mockito.verify(mockedDatabaseException, Mockito.times(15)).getInternalException();
