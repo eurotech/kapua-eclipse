@@ -36,16 +36,6 @@ runs:
       run: mvn clean install -Pdocker -pl :kapua-assembly-api
       shell: bash
 
-    - name: Dns look-up containers needed for tests - message-broker
-      if: ${{ inputs.needs-docker-images == 'true' }}
-      run: echo "127.0.0.1       message-broker" | sudo tee -a /etc/hosts
-      shell: bash
-
-    - name: Dns look-up containers needed for tests - job-engine
-      if: ${{ inputs.needs-docker-images == 'true' }}
-      run: echo "127.0.0.1       job-engine" | sudo tee -a /etc/hosts
-      shell: bash
-
     - name: Cucumber tests execution step
       if: ${{ inputs.run-junit == 'false' }}
       run: mvn -B -Dgroups='!org.eclipse.kapua.qa.markers.junit.JUnitTests' -Dcucumber.filter.tags="${{ inputs.tag }}" -pl ${TEST_PROJECTS} verify
