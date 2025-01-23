@@ -24,6 +24,8 @@ jobs:
 
       - name: Set up Maven caches
         uses: ./.github/actions/setUpMavenCaches
+        with:
+          kapua-artifact-cache-enabled: 'false'
 
       - name: Maven version
         run: mvn --version
@@ -31,8 +33,8 @@ jobs:
       - name: Build Kapua project
         run: mvn -B -DskipTests clean install -T 1C
 
-      - name: Prepare Maven repo for caching
-        uses: ./.github/actions/prepareMavenRepoForCache
+      - name: Save built Kapua Artifacts
+        uses: ./.github/actions/saveBuiltKapuaArtifacts
 
   build-javadoc:
     needs: build
