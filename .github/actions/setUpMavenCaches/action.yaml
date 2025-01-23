@@ -1,0 +1,29 @@
+name: 'Set Up Maven caches'
+description: |
+  Set up maven caches to speedup build time and reuse built artifacts
+inputs:
+  kapua-artifact-cache-enabled:
+    description: Whether to enable Kapua artifacts cache or not. If not enable you'll be required to build Kapua Artifacts on the runner
+    default: 'true'
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Maven repository - External dependencies # Cache of external Maven dependencies to speed up build time
+      id: cache-maven-external-deps
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/repository/
+        key: ${{ runner.os }}-maven-develop-dependencies
+
+    - name: Cache Maven repository - Kapua artifacts # Cache of built Kapua artifacts be reused in other jobs
+      if: ${{ inputs.kapua-artifact-cache-enabled == 'true' }}
+      id: cache-maven-kapua-artifacts
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/kapua-repository/org/eclipse/kapua
+        key: ${{ runner.os }}-maven-${{ github.run_number }}-kapua-artifacts
+
+    - name: Build full cached Maven repository # This adds the built Kapua artifact of this run to the cached repository of external dependencies. Used when re-running a job
+      if: ${{ inputs.kapua-artifact-cache-enabled == 'true' && steps.cache-maven-kapua-artifacts.outputs.cache-hit == 'true' }}
+      run: mv ~/.m2/kapua-repository/org/eclipse/kapua ~/.m2/repository/org/eclipse/kapua
+      shell: bash
