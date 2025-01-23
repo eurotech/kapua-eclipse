@@ -16,7 +16,7 @@ import org.eclipse.kapua.KapuaDuplicateNameException;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.KapuaIllegalNullArgumentException;
 import org.eclipse.kapua.KapuaOptimisticLockingException;
-import org.eclipse.kapua.KapuaSQLIntegrityConstraintViolationException;
+import org.eclipse.kapua.kapuaIntegrityConstraintViolationException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
 import javax.persistence.OptimisticLockException;
@@ -103,8 +103,8 @@ public class KapuaExceptionUtils {
                     break;
                     default: {
                         if (cve.getInternalException() instanceof SQLIntegrityConstraintViolationException) {
-                            String message = cve.getMessage().contains("FOREIGN KEY") ? "Check if some foreign key relation exists between this entity and another one in the platform" : "";
-                            ee = new KapuaSQLIntegrityConstraintViolationException(message);
+                            String message = cve.getMessage().contains("FOREIGN KEY") ? "This entity relates to other entities and cannot be deleted." : "";
+                            ee = new kapuaIntegrityConstraintViolationException(message);
                         }
                     }
                 }

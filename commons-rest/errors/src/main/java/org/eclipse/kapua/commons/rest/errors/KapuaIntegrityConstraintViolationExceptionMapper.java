@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.kapua.commons.rest.errors;
 
-import org.eclipse.kapua.KapuaSQLIntegrityConstraintViolationException;
+import org.eclipse.kapua.kapuaIntegrityConstraintViolationException;
 import org.eclipse.kapua.commons.rest.model.errors.ExceptionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +24,20 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class KapuaSQLIntegrityConstraintViolationExceptionMapper implements ExceptionMapper<KapuaSQLIntegrityConstraintViolationException> {
-    private static final Logger LOG = LoggerFactory.getLogger(KapuaSQLIntegrityConstraintViolationException.class);
+public class KapuaIntegrityConstraintViolationExceptionMapper implements ExceptionMapper<kapuaIntegrityConstraintViolationException> {
+    private static final Logger LOG = LoggerFactory.getLogger(kapuaIntegrityConstraintViolationException.class);
 
     private static final Status STATUS = Status.CONFLICT;
     @Inject
     public ExceptionConfigurationProvider exceptionConfigurationProvider;
 
     @Override
-    public Response toResponse(KapuaSQLIntegrityConstraintViolationException kapuaSQLIntegrityConstraintViolationException) {
+    public Response toResponse(kapuaIntegrityConstraintViolationException kapuaIntegrityConstraintViolationException) {
         final boolean showStackTrace = exceptionConfigurationProvider.showStackTrace();
-        LOG.error(kapuaSQLIntegrityConstraintViolationException.getMessage(), kapuaSQLIntegrityConstraintViolationException);
+        LOG.error(kapuaIntegrityConstraintViolationException.getMessage(), kapuaIntegrityConstraintViolationException);
         return Response
                 .status(STATUS)
-                .entity(new ExceptionInfo(STATUS.getStatusCode(), kapuaSQLIntegrityConstraintViolationException, showStackTrace))
+                .entity(new ExceptionInfo(STATUS.getStatusCode(), kapuaIntegrityConstraintViolationException, showStackTrace))
                 .build();
     }
 
