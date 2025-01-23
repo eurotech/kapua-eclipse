@@ -4,6 +4,7 @@ description: |
   - Setup Java 11
   - Setup Node 16
   - Install Swagger CLI
+  - Add entries to /etc/hosts
 runs:
   using: "composite"
   steps:
@@ -20,4 +21,10 @@ runs:
 
     - name: Install Swagger CLI # Installs Swagger CLI to bundle OpenAPI files
       run: 'npm install -g @apidevtools/swagger-cli'
+      shell: bash
+
+    - name: Dns look-up Docker containers needed for tests
+      run: |
+        echo "127.0.0.1       message-broker" | sudo tee -a /etc/hosts
+        echo "127.0.0.1       job-engine"     | sudo tee -a /etc/hosts
       shell: bash
