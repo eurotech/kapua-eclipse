@@ -13,7 +13,6 @@
 ![Gitter](https://img.shields.io/gitter/room/eclipse/kapua?label=Chat&logo=gitter)
 
 ![GitHub Actions CI](https://img.shields.io/github/actions/workflow/status/eclipse/kapua/kapua-ci.yaml) <br/>
-![Jenkins](https://img.shields.io/jenkins/build?jobUrl=https:%2F%2Fci.eclipse.org%2Fkapua%2Fjob%2Fdevelop-build&label=Jenkins%20Build&logo=jenkins) <br/>
 
 [Eclipse Kapua&trade;](http://eclipse.org/kapua) is a modular platform providing the services required to manage IoT gateways and smart edge devices. Kapua provides a core integration framework and an
 initial set of core IoT services including a device registry, device management services, messaging services, data management, and application enablement.
@@ -41,11 +40,8 @@ Eclipse Kapua&trade; can be deployed in a variety of modes. A practical way for 
 Before starting, check that your environment has the following prerequisites:
 
 * 64 bit architecture
-* Java VM Version 8
-* Java VM Version 11
 * Docker Version 1.2+
-* Swagger CLI 4+ (Installed via NPM or separately)
-* Node 16+ 
+  * Docker compose V2 for release >= 1.6.12 (present in latest docker desktop versions)
 * Internet Access (needed to download the artifacts)
 
 ### Demo Setup
@@ -58,20 +54,28 @@ scenarios.
 **Note:** the Docker Hub repository mentioned above is not the official project repository from Eclipse Foundation.
 ***
 
-Suppose the target is the current snapshot 2.0.0-SNAPSHOT.
+Suppose the target is the released version V (for example, 1.6.7).
 
 * Clone Eclipse Kapua&trade; into a local directory
 * Open an OS shell and move to Kapua project root directory
 * Start Docker runtime
+* Perform a checkout to the related git tag for version V. For the proposed example, the command is:
 
-The Kapua repository mentioned above hosts only images of released versions. It is possible to test different versions of Kapua doing a checkout into
-the release branches (for example, "release-1.6.x") and to the tagged commits to select the specific version (for example, the commit tagged as "1.6.7"). Doing so, it is assured
-that the following step will pull proper images from the Docker Hub. If, on the other hand, your target is a SNAPSHOT version (for example, the 2.0.0-SNAPSHOT), a local build is required
-in order to create the docker images and proceed to the next step. Instructions for building can be found in the building.md file under the path docs/developer-guide.
-Assuming that your interest is to deploy a release before 2.0.0 and that you want to pull images from the Docker Hub, it is important to set now the
-`IMAGE_VERSION` environment variable with a value equal to the target version. For example, in the case of the 1.6.7
+
+    git checkout 1.6.7
+
+* Set the `IMAGE_VERSION` environment variable with a value equal to the target version. For the proposed example:
+
 
     export IMAGE_VERSION=1.6.7
+
+The repository mentioned above hosts only images of released versions. If your target is a SNAPSHOT version, a local build is required
+in order to create the docker images and proceed to the next step. [Here you can found instructions for building](docs/developer-guide/en/building.md)
+
+***
+**A note regarding Docker Compose:** starting from Kapua 1.6.12, the project migrated to Docker Compose V2. This means that,
+depending on your terget version V, your Docker Desktop version should be aligned accordingly in order to smoothly deploy the application. If you are trying to deploy a version BEFORE 1.6.12, make sure to have a Docker Desktop version released before july 2023. Otherwise, the latest should be fine.**
+***
 
 * Start Kapua:
 
@@ -193,6 +197,10 @@ The credentials for the user kapua-broker are the following:
 **Note**: If you are using Docker on Windows the hostname will most likely not be `localhost` but
 the IP address of your docker instance.
 
+### Connecting Kura to Kapua
+
+[We provide a quick start guide for the connection of Kura to Kapua](docs/kuraKapuaDocs.md)
+
 #### Simulation
 
 Kapua comes with a framework that you can use to simulate Kura gateways. It can be used to test your Kapua deployments easily. See [Simulator documentation](docs/user-manual/en/simulator.md) for more
@@ -207,12 +215,12 @@ guides:
 * [Running with OpenShift](docs/developer-guide/en/running.md#openshift)
 * [Running with Minishift](docs/developer-guide/en/running.md#minishift)
 
-They will provide more advanced deployment scenarios.
+They will provide more advanced deployment scenarios. For example, if you are interested in having debugging/logging capabilities we recommend you to consult them.
 
 ### User & Developer guides
 
-* [User Manual](http://download.eclipse.org/kapua/docs/develop/user-manual/en)
-* [Developer Guide](http://download.eclipse.org/kapua/docs/develop/developer-guide/en)
+* [User Manual](docs/user-manual/en/README.md)
+* [Developer Guide](docs/developer-guide/en/README.md)
 
 ### Contributing
 
