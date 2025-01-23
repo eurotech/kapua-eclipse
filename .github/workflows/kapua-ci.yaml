@@ -13,23 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Checkout repository # Checks out a copy of the repository on the worker
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
 
-      - name: Setup Java 11
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 11
-
-      - name: Setup Node 16 # Installs Node and NPM
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16
-
-      - name: Install Swagger CLI # Installs Swagger CLI to bundle OpenAPI files
-        run: 'npm install -g @apidevtools/swagger-cli'
-        shell: bash
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
 
       - name: Cache Maven repository - External dependencies # Cache of external Maven dependencies to speed up build time
         id: cache-maven-external-deps
@@ -69,8 +57,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@brokerAcl'
@@ -80,8 +70,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@tag'
@@ -91,8 +83,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@broker'
@@ -102,8 +96,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@device'
@@ -113,8 +109,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@deviceManagement'
@@ -124,8 +122,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@connection'
@@ -135,8 +135,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@datastore'
@@ -146,8 +148,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@user'
@@ -157,8 +161,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@userIntegrationBase'
@@ -168,8 +174,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@userIntegration'
@@ -179,8 +187,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@security'
@@ -190,8 +200,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '(@job or @scheduler) and not @it'
@@ -201,8 +213,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@job and @it'
@@ -212,8 +226,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@jobEngine'
@@ -223,8 +239,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@jobsIntegration'
@@ -234,8 +252,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@account or @translator'
@@ -245,8 +265,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@role or @group'
@@ -256,8 +278,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@deviceRegistry'
@@ -267,8 +291,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@endpoint'
@@ -278,8 +304,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@rest_auth'
@@ -290,8 +318,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@rest_cors'
@@ -302,8 +332,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@rest_parsing'
@@ -314,8 +346,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           needs-docker-images: 'false'
@@ -325,23 +359,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
-
-      - name: Setup Java 11
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 11
-
-      - name: Setup Node 16
-        uses: actions/setup-node@v4 # Installs Node and NPM
-        with:
-          node-version: 16
-
-      - name: Install Swagger CLI # Installs Swagger CLI to bundle OpenAPI files
-        run: 'npm install -g @apidevtools/swagger-cli'
-        shell: bash
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
 
       - name: Cache Maven repository - External dependencies # Cache of external Maven dependencies to speed up build time
         id: cache-maven-external-deps
