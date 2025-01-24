@@ -26,7 +26,7 @@ ENV JAVA_HOME=/usr/lib/jvm/jre-openjdk
 # shadow-utils: To run useradd command
 
 RUN microdnf install -y \
-    java-11-openjdk \
+    java-11-openjdk-headless \
     curl \
     openssl \
     tar \
