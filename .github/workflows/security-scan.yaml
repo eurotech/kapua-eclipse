@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - 'develop'
-      - 'release-**'
-      - 'feat-improvedGitHubActionCaching'
 
 env:
   BUILD_OPTS: ""

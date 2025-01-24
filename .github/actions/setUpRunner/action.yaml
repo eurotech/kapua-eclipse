@@ -4,7 +4,7 @@ description: |
   - Setup Java 11
   - Setup Node 16
   - Install Swagger CLI
-  - Add entries to /etc/hosts
+  - Add entries to /etc/hosts for tests
 runs:
   using: "composite"
   steps:
@@ -15,11 +15,11 @@ runs:
         java-version: 11
 
     - name: Setup Node 16
-      uses: actions/setup-node@v4 # Installs Node and NPM
+      uses: actions/setup-node@v4
       with:
         node-version: 16
 
-    - name: Install Swagger CLI # Installs Swagger CLI to bundle OpenAPI files
+    - name: Install Swagger CLI # Required to bundle OpenAPI files
       run: 'npm install -g @apidevtools/swagger-cli'
       shell: bash
 

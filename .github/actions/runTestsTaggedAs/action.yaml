@@ -1,4 +1,4 @@
-name: 'Execute tests tagged in a certain way'
+name: 'Execute tests'
 description: 'Execute tests suite for tests tagged as specified'
 inputs:
   tag:

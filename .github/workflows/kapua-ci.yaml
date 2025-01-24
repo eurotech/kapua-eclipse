@@ -18,21 +18,16 @@ jobs:
     steps:
       - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
-
       - name: Set up runner
         uses: ./.github/actions/setUpRunner
-
       - name: Set up Maven caches
         uses: ./.github/actions/setUpMavenCaches
         with:
           kapua-artifact-cache-enabled: 'false'
-
       - name: Maven version
         run: mvn --version
-
       - name: Build Kapua project
         run: mvn -B -DskipTests clean install -T 1C
-
       - name: Save built Kapua Artifacts
         uses: ./.github/actions/saveBuiltKapuaArtifacts
 
@@ -44,15 +39,12 @@ jobs:
     steps:
       - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
-
       - name: Set up runner
         uses: ./.github/actions/setUpRunner
-
       - name: Set up Maven caches
         uses: ./.github/actions/setUpMavenCaches
         with:
           kapua-artifact-cache-enabled: 'false'
-
       - name: Build Kapua Javadoc
         run: mvn -B -DskipTests install javadoc:jar
 
@@ -84,6 +76,7 @@ jobs:
         with:
           tag: '@brokerAcl'
           needs-docker-images: 'true'
+
   test-tag:
     needs: build
     runs-on: ubuntu-latest
@@ -97,6 +90,7 @@ jobs:
         with:
           tag: '@tag'
           needs-docker-images: 'false'
+
   test-broker:
     needs: build
     runs-on: ubuntu-latest
@@ -110,6 +104,7 @@ jobs:
         with:
           tag: '@broker'
           needs-docker-images: 'true'
+
   test-device:
     needs: build
     runs-on: ubuntu-latest
@@ -123,6 +118,7 @@ jobs:
         with:
           tag: '@device'
           needs-docker-images: 'true'
+
   test-device-management:
     needs: build
     runs-on: ubuntu-latest
@@ -136,6 +132,7 @@ jobs:
         with:
           tag: '@deviceManagement'
           needs-docker-images: 'true'
+
   test-connection:
     needs: build
     runs-on: ubuntu-latest
@@ -149,6 +146,7 @@ jobs:
         with:
           tag: '@connection'
           needs-docker-images: 'true'
+
   test-datastore:
     needs: build
     runs-on: ubuntu-latest
@@ -162,6 +160,7 @@ jobs:
         with:
           tag: '@datastore'
           needs-docker-images: 'true'
+
   test-user:
     needs: build
     runs-on: ubuntu-latest
@@ -175,6 +174,7 @@ jobs:
         with:
           tag: '@user'
           needs-docker-images: 'false'
+
   test-userIntegrationBase:
     needs: build
     runs-on: ubuntu-latest
@@ -188,6 +188,7 @@ jobs:
         with:
           tag: '@userIntegrationBase'
           needs-docker-images: 'true'
+
   test-userIntegration:
     needs: build
     runs-on: ubuntu-latest
@@ -201,6 +202,7 @@ jobs:
         with:
           tag: '@userIntegration'
           needs-docker-images: 'true'
+
   test-security:
     needs: build
     runs-on: ubuntu-latest
@@ -214,6 +216,7 @@ jobs:
         with:
           tag: '@security'
           needs-docker-images: 'false'
+
   test-jobsAndScheduler:
     needs: build
     runs-on: ubuntu-latest
@@ -227,6 +230,7 @@ jobs:
         with:
           tag: '(@job or @scheduler) and not @it'
           needs-docker-images: 'false'
+
   test-job-IT:
     needs: build
     runs-on: ubuntu-latest
@@ -240,6 +244,7 @@ jobs:
         with:
           tag: '@job and @it'
           needs-docker-images: 'true'
+
   test-jobEngine-IT:
     needs: build
     runs-on: ubuntu-latest
@@ -253,6 +258,7 @@ jobs:
         with:
           tag: '@jobEngine'
           needs-docker-images: 'true'
+
   test-jobsIntegration:
     needs: build
     runs-on: ubuntu-latest
@@ -266,6 +272,7 @@ jobs:
         with:
           tag: '@jobsIntegration'
           needs-docker-images: 'true'
+
   test-accountAndTranslator:
     needs: build
     runs-on: ubuntu-latest
@@ -279,6 +286,7 @@ jobs:
         with:
           tag: '@account or @translator'
           needs-docker-images: 'false'
+
   test-RoleAndGroup:
     needs: build
     runs-on: ubuntu-latest
@@ -292,6 +300,7 @@ jobs:
         with:
           tag: '@role or @group'
           needs-docker-images: 'false'
+
   test-deviceRegistry:
     needs: build
     runs-on: ubuntu-latest
@@ -305,6 +314,7 @@ jobs:
         with:
           tag: '@deviceRegistry'
           needs-docker-images: 'true'
+
   test-endpoint:
     needs: build
     runs-on: ubuntu-latest
@@ -318,6 +328,7 @@ jobs:
         with:
           tag: '@endpoint'
           needs-docker-images: 'true'
+
   test-api-auth:
     needs: build
     runs-on: ubuntu-latest
@@ -332,6 +343,7 @@ jobs:
           tag: '@rest_auth'
           needs-docker-images: 'true'
           needs-api-docker-image: 'true'
+
   test-api-corsfilter:
     needs: test-endpoint # test suite dependent on the endpoint service (if it has failings it's useless to perform these tests)
     runs-on: ubuntu-latest
@@ -346,6 +358,7 @@ jobs:
           tag: '@rest_cors'
           needs-docker-images: 'true'
           needs-api-docker-image: 'true'
+
   test-api-parsing:
     needs: test-api-auth
     runs-on: ubuntu-latest
