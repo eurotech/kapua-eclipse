@@ -26,7 +26,7 @@
     <artifactId>kapua-assembly-java-base</artifactId>
 
     <properties>
-        <docker.base.image>rockylinux:8</docker.base.image>
+        <docker.base.image>rockylinux:8-minimal</docker.base.image>
         <jolokia.agent.url>https://repo1.maven.org/maven2/org/jolokia/jolokia-jvm/1.3.4/jolokia-jvm-1.3.4-agent.jar</jolokia.agent.url>
     </properties>
 

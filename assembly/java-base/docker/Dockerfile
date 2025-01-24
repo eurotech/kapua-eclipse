@@ -16,9 +16,23 @@ FROM @docker.base.image@
 
 ENV JAVA_HOME=/usr/lib/jvm/jre-openjdk
 
-RUN yum install -y java-11-openjdk && \
-    yum install -y curl && \
-    yum install -y openssl && \
+# Packages used for:
+#
+# Java 11: well is Java
+# curl: required to download jetty, H2 and others
+# openssl: SSL support
+# tar: Unpack archives
+# gzip: Unpack archives
+# shadow-utils: To run useradd command
+
+RUN microdnf install -y \
+    java-11-openjdk \
+    curl \
+    openssl \
+    tar \
+    gzip \
+    shadow-utils \
+    && \
     mkdir -p /opt/jolokia && \
     curl -s @jolokia.agent.url@ -o /opt/jolokia/jolokia-jvm-agent.jar
 
