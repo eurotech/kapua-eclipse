@@ -13,7 +13,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ~/.m2/repository/
-        key: ${{ runner.os }}-maven-develop-dependencies
+        key: ${{ runner.os }}-maven-release-2.0.x-dependencies
 
     - name: Cache Maven repository - Kapua artifacts # Cache of built Kapua artifacts be reused in other jobs
       if: ${{ inputs.kapua-artifact-cache-enabled == 'true' }}

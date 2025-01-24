@@ -2,7 +2,7 @@ name: Security Scan
 on:
   push:
     branches:
-      - 'develop'
+      - 'release-2.0.x'
 
 env:
   BUILD_OPTS: ""

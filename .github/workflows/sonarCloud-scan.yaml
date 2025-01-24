@@ -3,10 +3,10 @@ name: Sonar Scan
 on:
   push:
     branches:
-      - 'develop'
+      - 'release-2.0.x'
   pull_request:
     branches:
-      - 'develop'
+      - 'release-2.0.x'
 
 jobs:
   build:
