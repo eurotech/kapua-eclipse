@@ -13,296 +13,360 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4 # Checks out a copy of the repository on the ubuntu-latest machine
-      - uses: actions/setup-java@v4
+      - name: Checkout repository # Checks out a copy of the repository on the runner
+        uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
+      - name: Set up Maven caches
+        uses: ./.github/actions/setUpMavenCaches
         with:
-          distribution: 'zulu'
-          java-version: 11
-      - uses: actions/setup-node@v4 # Installs Node and NPM
+          kapua-artifact-cache-enabled: 'false'
+      - name: Maven version
+        run: mvn --version
+      - name: Build Kapua project
+        run: mvn -B -DskipTests clean install -T 1C
+      - name: Save built Kapua Artifacts
+        uses: ./.github/actions/saveBuiltKapuaArtifacts
+
+  build-javadoc:
+    needs: build
+    name: Build Javadoc
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository # Checks out a copy of the repository on the runner
+        uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
+      - name: Set up Maven caches
+        uses: ./.github/actions/setUpMavenCaches
         with:
-          node-version: 16
-      - name: Install Swagger CLI # Installs Swagger CLI to bundle OpenAPI files
-        run: 'npm install -g @apidevtools/swagger-cli'
-      - uses: actions/cache@v4 # Cache local Maven repository to reuse dependencies
+          kapua-artifact-cache-enabled: 'false'
+      - name: Build Kapua Javadoc
+        run: mvn -B -DskipTests install javadoc:jar
+
+  junit-tests:
+    needs: build
+    name: Run jUnit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository # Checks out a copy of the repository on the runner
+        uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
+      - uses: ./.github/actions/runTestsTaggedAs
         with:
-          path: ~/.m2/repository
-          key: ${{ github.run_id }}-${{ github.run_number }}-maven-cache
-      - run: mvn -v
-      - run: docker images -a  # used as log (should show only GitHub environment standard docker images; if kapua images are present, something is wrong)
-      - run: mvn -B -DskipTests clean install -T 1C
+          needs-docker-images: 'false'
+          run-junit: 'true'
+
   test-brokerAcl:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@brokerAcl'
           needs-docker-images: 'true'
+
   test-tag:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@tag'
           needs-docker-images: 'false'
+
   test-broker:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@broker'
           needs-docker-images: 'true'
+
   test-device:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@device'
           needs-docker-images: 'true'
+
   test-device-management:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@deviceManagement'
           needs-docker-images: 'true'
+
   test-connection:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@connection'
           needs-docker-images: 'true'
+
   test-datastore:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@datastore'
           needs-docker-images: 'true'
+
   test-user:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@user'
           needs-docker-images: 'false'
+
   test-userIntegrationBase:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@userIntegrationBase'
           needs-docker-images: 'true'
+
   test-userIntegration:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@userIntegration'
           needs-docker-images: 'true'
+
   test-security:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@security'
           needs-docker-images: 'false'
+
   test-jobsAndScheduler:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '(@job or @scheduler) and not @it'
           needs-docker-images: 'false'
+
   test-job-IT:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@job and @it'
           needs-docker-images: 'true'
+
   test-jobEngine-IT:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@jobEngine'
           needs-docker-images: 'true'
+
   test-jobsIntegration:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@jobsIntegration'
           needs-docker-images: 'true'
+
   test-accountAndTranslator:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@account or @translator'
           needs-docker-images: 'false'
+
   test-RoleAndGroup:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@role or @group'
           needs-docker-images: 'false'
+
   test-deviceRegistry:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@deviceRegistry'
           needs-docker-images: 'true'
+
   test-endpoint:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@endpoint'
           needs-docker-images: 'true'
+
   test-api-auth:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@rest_auth'
           needs-docker-images: 'true'
           needs-api-docker-image: 'true'
+
   test-api-corsfilter:
     needs: test-endpoint # test suite dependent on the endpoint service (if it has failings it's useless to perform these tests)
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@rest_cors'
           needs-docker-images: 'true'
           needs-api-docker-image: 'true'
+
   test-api-parsing:
     needs: test-api-auth
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Clones Kapua repo inside the runner
+      - name: Checkout repository # Checks out a copy of the repository on the runner
         uses: actions/checkout@v4
+      - name: Set up runner
+        uses: ./.github/actions/setUpRunner
       - uses: ./.github/actions/runTestsTaggedAs
         with:
           tag: '@rest_parsing'
           needs-docker-images: 'true'
           needs-api-docker-image: 'true'
-  junit-tests:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - name: Clones Kapua repo inside the runner
-        uses: actions/checkout@v4
-      - uses: ./.github/actions/runTestsTaggedAs
-        with:
-          needs-docker-images: 'false'
-          run-junit: 'true'
-  build-javadoc:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 11
-      - uses: actions/setup-node@v4 # Installs Node and NPM
-        with:
-          node-version: 16
-      - name: Install Swagger CLI # Installs Swagger CLI to bundle OpenAPI files
-        run: 'npm install -g @apidevtools/swagger-cli'
-      - uses: actions/cache@v4 # Cache local Maven repository to reuse dependencies
-        with:
-          path: ~/.m2/repository
-          key: ${{ github.run_id }}-${{ github.run_number }}-maven-cache
-      - run: mvn -B -DskipTests install javadoc:jar
