@@ -4,12 +4,9 @@ on:
   push:
     branches:
       - 'develop'
-      - 'release-**'
-      - 'feat-improvedGitHubActionCaching'
   pull_request:
     branches:
       - 'develop'
-      - 'release-**'
 
 jobs:
   build:
