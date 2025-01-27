@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - 'release-2.0.x'
-      - 'backport-4179'
 
 env:
   BUILD_OPTS: ""

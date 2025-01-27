@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'release-2.0.x'
-      - 'backport-4179'
   pull_request:
     branches:
       - 'release-2.0.x'
