@@ -1,52 +1,50 @@
-name: 'Execute tests tagged in a certain way'
+name: 'Execute tests'
 description: 'Execute tests suite for tests tagged as specified'
 inputs:
   tag:
     description: Cucumber tag of the tests to run
-    required: true
+    required: false
   needs-docker-images:
     description: true if this suite needs docker images, false otherwise
     required: false
     default: 'true'
+  needs-api-docker-image:
+    description: true if this suite needs the rest-api docker image, false otherwise
+    required: false
+    default: 'false'
+  run-junit:
+    description: true if you want to execute junit tests, false if you want to execute cucumber tests
+    required: false
+    default: 'false'
 #outputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: 11
-    - name: Setup Node
-      uses: actions/setup-node@v4 # Installs Node and NPM
-      with:
-        node-version: 16
-    - name: Install Swagger CLI # Installs Swagger CLI to bundle OpenAPI files
-      run: 'npm install -g @apidevtools/swagger-cli'
-      shell: bash
-    - uses: actions/cache@v4 # Cache local Maven repository to reuse dependencies
-      with:
-        path: ~/.m2/repository
-        key: ${{ github.run_id }}-${{ github.run_number }}-maven-cache
-    - name: Cache Maven repository
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ github.run_id }}-${{ github.run_number }}-maven-cache
+    - name: Set up runner
+      uses: ./.github/actions/setUpRunner
+
+    - name: Set up Maven caches
+      uses: ./.github/actions/setUpMavenCaches
+
     - name: Docker images creation
       if: ${{ inputs.needs-docker-images == 'true' }}
-      run: mvn clean install -pl ${APP_PROJECTS} && mvn clean install -Pdocker --f assembly/pom.xml
+      run: mvn clean install -pl ${APP_PROJECTS} && mvn clean install -Pdocker -f assembly/pom.xml -pl '!:kapua-assembly-api' #api container not used in the tests at all se we don't need to build it here
       shell: bash
-    - name: Dns look-up containers needed for tests - message-broker
-      if: ${{ inputs.needs-docker-images == 'true' }}
-      run: echo "127.0.0.1       message-broker" | sudo tee -a /etc/hosts
+
+    - name: Docker rest-api image creation
+      if: ${{ inputs.needs-api-docker-image == 'true' }}
+      run: mvn clean install -Pdocker -pl :kapua-assembly-api
       shell: bash
-    - name: Dns look-up containers needed for tests - job-engine
-      if: ${{ inputs.needs-docker-images == 'true' }}
-      run: echo "127.0.0.1       job-engine" | sudo tee -a /etc/hosts
+
+    - name: Cucumber tests execution step
+      if: ${{ inputs.run-junit == 'false' }}
+      run: mvn -B -Dgroups='!org.eclipse.kapua.qa.markers.junit.JUnitTests' -Dcucumber.filter.tags="${{ inputs.tag }}" -pl ${TEST_PROJECTS} verify
       shell: bash
-    - name: Test execution step
-      run: mvn -B ${BUILD_OPTS} ${CONFIG_OVERRIDES} -Dgroups='!org.eclipse.kapua.qa.markers.junit.JUnitTests' -Dcucumber.filter.tags="${{ inputs.tag }}" -pl ${TEST_PROJECTS} verify
+
+    - name: Junit tests execution step
+      if: ${{ inputs.run-junit == 'true' }}
+      run: mvn -B -Dgroups='org.eclipse.kapua.qa.markers.junit.JUnitTests' verify
       shell: bash
+
     - name: Code coverage results upload
       uses: codecov/codecov-action@v4
