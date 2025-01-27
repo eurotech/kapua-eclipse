@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2018, 2022 Eurotech and/or its affiliates and others
+# Copyright (c) 2018, 2025 Eurotech and/or its affiliates and others
 #
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,7 @@ FROM @docker.base.image@
 
 ENV JAVA_HOME=/usr/lib/jvm/jre-openjdk
 
-# Packages used for:
+# Install packages
 #
 # Java 11: well is Java
 # curl: required to download jetty, H2 and others
@@ -24,16 +24,16 @@ ENV JAVA_HOME=/usr/lib/jvm/jre-openjdk
 # tar: Unpack archives
 # gzip: Unpack archives
 # shadow-utils: To run useradd command
-
 RUN microdnf install -y \
     java-11-openjdk-headless \
     curl \
     openssl \
     tar \
     gzip \
-    shadow-utils \
-    && \
-    mkdir -p /opt/jolokia && \
+    shadow-utils
+
+# Install Jolokia agent
+RUN mkdir -p /opt/jolokia && \
     curl -s @jolokia.agent.url@ -o /opt/jolokia/jolokia-jvm-agent.jar
 
 # Generate X509 certificate and private key
