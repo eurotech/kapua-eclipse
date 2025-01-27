@@ -30,7 +30,8 @@ RUN microdnf install -y \
     openssl \
     tar \
     gzip \
-    shadow-utils
+    shadow-utils && \
+    microdnf clean all
 
 # Install Jolokia agent
 RUN mkdir -p /opt/jolokia && \
