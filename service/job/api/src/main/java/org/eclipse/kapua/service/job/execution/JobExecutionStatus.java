@@ -15,7 +15,7 @@ package org.eclipse.kapua.service.job.execution;
 /**
  * @since 2.1.0
  */
-public enum JobStatus {
+public enum JobExecutionStatus {
 
     /**
      * @since 2.1.0
