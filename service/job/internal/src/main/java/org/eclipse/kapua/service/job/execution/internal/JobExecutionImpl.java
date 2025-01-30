@@ -176,7 +176,11 @@ public class JobExecutionImpl extends AbstractKapuaUpdatableEntity implements Jo
 
     @Override
     public JobStatus getStatus() {
-        return status;
+        if (this.getEndedOn() != null) {
+            return JobStatus.TERMINATED;
+        } else {
+            return JobStatus.RUNNING;
+        }
     }
 
     @Override

@@ -113,15 +113,7 @@ public class JobExecutions extends AbstractKapuaResource {
         query.setOffset(offset);
         query.setLimit(limit);
 
-        JobExecutionListResult result = query(scopeId, jobId, query);
-        for (JobExecution je : result.getItems()) {
-            if (je.getEndedOn() != null) {
-                je.setStatus(JobStatus.TERMINATED);
-            } else {
-                je.setStatus(JobStatus.RUNNING);
-            }
-        }
-        return result;
+        return query(scopeId, jobId, query);
     }
 
     /**
