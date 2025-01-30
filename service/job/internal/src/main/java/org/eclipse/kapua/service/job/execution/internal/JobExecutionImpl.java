@@ -16,6 +16,7 @@ import org.eclipse.kapua.commons.model.AbstractKapuaUpdatableEntity;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.job.execution.JobExecution;
+import org.eclipse.kapua.service.job.execution.JobStatus;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -29,6 +30,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -68,6 +70,10 @@ public class JobExecutionImpl extends AbstractKapuaUpdatableEntity implements Jo
     @Lob
     @Column(name = "log", nullable = true, updatable = true)
     private String log;
+
+    @Transient
+    private JobStatus status;
+
 
     /**
      * Constructor.
@@ -166,5 +172,15 @@ public class JobExecutionImpl extends AbstractKapuaUpdatableEntity implements Jo
     @Override
     public void setLog(String log) {
         this.log = log;
+    }
+
+    @Override
+    public JobStatus getStatus() {
+        return status;
+    }
+
+    @Override
+    public void setStatus(JobStatus status) {
+        this.status = status;
     }
 }
