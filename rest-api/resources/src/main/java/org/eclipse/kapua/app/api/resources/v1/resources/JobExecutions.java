@@ -42,6 +42,7 @@ import org.eclipse.kapua.service.job.execution.JobExecutionFactory;
 import org.eclipse.kapua.service.job.execution.JobExecutionListResult;
 import org.eclipse.kapua.service.job.execution.JobExecutionQuery;
 import org.eclipse.kapua.service.job.execution.JobExecutionService;
+import org.eclipse.kapua.service.job.execution.JobStatus;
 import org.eclipse.kapua.service.job.targets.JobTargetFactory;
 import org.eclipse.kapua.service.job.targets.JobTargetListResult;
 import org.eclipse.kapua.service.job.targets.JobTargetQuery;
@@ -84,7 +85,8 @@ public class JobExecutions extends AbstractKapuaResource {
             @QueryParam("sortParam") String sortParam,
             @QueryParam("sortDir") @DefaultValue("ASCENDING") SortOrder sortDir,
             @QueryParam("offset") @DefaultValue("0") int offset,
-            @QueryParam("limit") @DefaultValue("50") int limit) throws KapuaException {
+            @QueryParam("limit") @DefaultValue("50") int limit,
+            @QueryParam("status") JobStatus statusParam) throws KapuaException {
         JobExecutionQuery query = jobExecutionFactory.newQuery(scopeId);
 
         AndPredicate andPredicate = query.andPredicate(query.attributePredicate(JobExecutionAttributes.JOB_ID, jobId));
@@ -94,6 +96,11 @@ public class JobExecutions extends AbstractKapuaResource {
         }
         if (endDateParam != null) {
             andPredicate.and(query.attributePredicate(JobExecutionAttributes.ENDED_ON, endDateParam.getDate(), AttributePredicate.Operator.LESS_THAN_OR_EQUAL));
+        }
+        if (statusParam != null && statusParam.equals(JobStatus.RUNNING)) {
+            andPredicate.and(query.attributePredicate(JobExecutionAttributes.ENDED_ON, null, AttributePredicate.Operator.IS_NULL));
+        } else if (statusParam != null && statusParam.equals(JobStatus.TERMINATED)) {
+            andPredicate.and(query.attributePredicate(JobExecutionAttributes.ENDED_ON, null, AttributePredicate.Operator.NOT_NULL));
         }
 
         query.setPredicate(andPredicate);
@@ -106,7 +113,15 @@ public class JobExecutions extends AbstractKapuaResource {
         query.setOffset(offset);
         query.setLimit(limit);
 
-        return query(scopeId, jobId, query);
+        JobExecutionListResult result = query(scopeId, jobId, query);
+        for (JobExecution je : result.getItems()) {
+            if (je.getEndedOn() != null) {
+                je.setStatus(JobStatus.TERMINATED);
+            } else {
+                je.setStatus(JobStatus.RUNNING);
+            }
+        }
+        return result;
     }
 
     /**
