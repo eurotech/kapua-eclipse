@@ -61,7 +61,7 @@ Feature: Job Execution service CRUD tests
       | integer | maxNumberChildEntities | 5     |
     Given I create a job with the name "TestJob"
     And A regular job execution item
-    When I update the end time of the execution item
+    When I update the end time of the execution item as if the job finished now
     Then No exception was thrown
     When I search for the last job execution in the database
     Then The job execution items match
@@ -155,6 +155,24 @@ Feature: Job Execution service CRUD tests
   Scenario: Job execution factory sanity checks
 
     And I test the sanity of the job execution factory
+
+  Scenario: Update the end time of an existing execution item and see if status is computed correctly
+
+    Given I login as user with name "kapua-sys" and password "kapua-password"
+    And I configure the job service
+      | type    | name                   | value |
+      | boolean | infiniteChildEntities  | true  |
+      | integer | maxNumberChildEntities | 5     |
+    Given I create a job with the name "TestJob"
+    And A regular job execution item
+    When I update the end time of the execution item as if the job finished now
+    Then No exception was thrown
+    When I search for the last job execution in the database
+    Then The job execution status is "TERMINATED"
+    When I update the end time of the execution item as if the job never finished
+    Then No exception was thrown
+    When I search for the last job execution in the database
+    Then The job execution status is "RUNNING"
 
   @teardown
   Scenario: Tear down test resources
