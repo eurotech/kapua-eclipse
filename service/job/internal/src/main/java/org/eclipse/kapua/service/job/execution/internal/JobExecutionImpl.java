@@ -16,7 +16,7 @@ import org.eclipse.kapua.commons.model.AbstractKapuaUpdatableEntity;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.job.execution.JobExecution;
-import org.eclipse.kapua.service.job.execution.JobStatus;
+import org.eclipse.kapua.service.job.execution.JobExecutionStatus;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -72,7 +72,7 @@ public class JobExecutionImpl extends AbstractKapuaUpdatableEntity implements Jo
     private String log;
 
     @Transient
-    private JobStatus status;
+    private JobExecutionStatus status;
 
 
     /**
@@ -175,16 +175,16 @@ public class JobExecutionImpl extends AbstractKapuaUpdatableEntity implements Jo
     }
 
     @Override
-    public JobStatus getStatus() {
+    public JobExecutionStatus getStatus() {
         if (this.getEndedOn() != null) {
-            return JobStatus.TERMINATED;
+            return JobExecutionStatus.TERMINATED;
         } else {
-            return JobStatus.RUNNING;
+            return JobExecutionStatus.RUNNING;
         }
     }
 
     @Override
-    public void setStatus(JobStatus status) {
+    public void setStatus(JobExecutionStatus status) {
         this.status = status;
     }
 }
