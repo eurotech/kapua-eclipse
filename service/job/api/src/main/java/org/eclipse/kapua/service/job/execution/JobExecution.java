@@ -112,11 +112,11 @@ public interface JobExecution extends KapuaUpdatableEntity {
      * @return
      * @since 2.1.0
      */
-    JobStatus getStatus();
+    JobExecutionStatus getStatus();
 
     /**
      * @param status
      * @since 2.1.0
      */
-    void setStatus(JobStatus status);
+    void setStatus(JobExecutionStatus status);
 }
