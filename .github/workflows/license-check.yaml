@@ -11,6 +11,9 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  pull-requests: write
+
 jobs:
   # Documentation: https://github.com/eclipse-dash/dash-licenses#reusable-github-workflow-for-automatic-license-check-and-ip-team-review-requests
   eclipse-dash-license-tool-run:
