@@ -13,7 +13,6 @@
 package org.eclipse.kapua.translator.test;
 
 import org.eclipse.kapua.KapuaException;
-import org.eclipse.kapua.commons.configuration.metatype.KapuaMetatypeFactoryImpl;
 import org.eclipse.kapua.commons.crypto.CryptoUtil;
 import org.eclipse.kapua.commons.crypto.CryptoUtilImpl;
 import org.eclipse.kapua.commons.crypto.setting.CryptoSettings;
@@ -28,7 +27,6 @@ import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.message.KapuaMessageFactory;
 import org.eclipse.kapua.message.device.data.KapuaDataMessageFactory;
 import org.eclipse.kapua.message.internal.KapuaMessageFactoryImpl;
-import org.eclipse.kapua.model.config.metatype.KapuaMetatypeFactory;
 import org.eclipse.kapua.model.id.KapuaIdFactory;
 import org.eclipse.kapua.qa.common.MockedLocator;
 import org.eclipse.kapua.qa.common.TestJAXBContextProvider;
@@ -116,8 +114,6 @@ public class TranslatorLocatorConfiguration {
                 bind(DeviceConfigurationFactory.class).toInstance(Mockito.mock(DeviceConfigurationFactory.class));
                 bind(DeviceInventoryManagementFactory.class).toInstance(Mockito.mock(DeviceInventoryManagementFactory.class));
                 bind(DeviceKeystoreManagementFactory.class).toInstance(Mockito.mock(DeviceKeystoreManagementFactory.class));
-                // Set KapuaMetatypeFactory for Metatype configuration
-                bind(KapuaMetatypeFactory.class).toInstance(new KapuaMetatypeFactoryImpl());
             }
         };
 

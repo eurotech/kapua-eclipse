@@ -21,13 +21,13 @@ import org.eclipse.kapua.KapuaMaxNumberOfItemsReachedException;
 import org.eclipse.kapua.commons.configuration.exception.ServiceConfigurationLimitExceededException;
 import org.eclipse.kapua.commons.configuration.exception.ServiceConfigurationParentLimitExceededException;
 import org.eclipse.kapua.commons.security.KapuaSecurityUtils;
-import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.model.config.metatype.KapuaTocd;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.account.Account;
 import org.eclipse.kapua.service.account.AccountListResult;
 import org.eclipse.kapua.service.config.KapuaConfigurableService;
 import org.eclipse.kapua.storage.TxContext;
+import org.eclipse.kapua.storage.TxManager;
 
 public class ResourceLimitedServiceConfigurationManagerImpl
         extends ServiceConfigurationManagerImpl
@@ -38,12 +38,14 @@ public class ResourceLimitedServiceConfigurationManagerImpl
 
     public ResourceLimitedServiceConfigurationManagerImpl(
             String pid,
+            String domain,
+            TxManager txManager,
             ServiceConfigRepository serviceConfigRepository,
             RootUserTester rootUserTester,
             AccountRelativeFinder accountRelativeFinder,
             UsedEntitiesCounter usedEntitiesCounter,
-            XmlUtil xmlUtil) {
-        super(pid, serviceConfigRepository, rootUserTester, xmlUtil);
+            ServiceConfigurationMetadataProvider serviceConfigurationMetadataProvider) {
+        super(pid, domain, txManager, serviceConfigRepository, rootUserTester, serviceConfigurationMetadataProvider);
         this.accountRelativeFinder = accountRelativeFinder;
         this.usedEntitiesCounter = usedEntitiesCounter;
     }
@@ -134,7 +136,7 @@ public class ResourceLimitedServiceConfigurationManagerImpl
         if (configuration.isPresent()) { // Checked exceptions be damned, could have been .orElseGet(()->...)
             finalConfig = configuration.get();
         } else {
-            finalConfig = getConfigValues(txContext, scopeId, false);
+            finalConfig = doGetConfigValues(txContext, scopeId, false);
         }
         boolean allowInfiniteChildEntities = (boolean) finalConfig.getOrDefault("infiniteChildEntities", false);
         if (allowInfiniteChildEntities) {
@@ -148,7 +150,7 @@ public class ResourceLimitedServiceConfigurationManagerImpl
             // Resources assigned to children
             long childCount = 0;
             for (Account childAccount : childAccounts.getItems()) {
-                Map<String, Object> childConfigValues = getConfigValues(txContext, childAccount.getId(), true);
+                Map<String, Object> childConfigValues = doGetConfigValues(txContext, childAccount.getId(), true);
                 // maxNumberChildEntities can be null if such property is disabled via the
                 // isPropertyEnabled() method in the service implementation. In such case,
                 // it makes sense to treat the service as it had 0 available entities

@@ -12,9 +12,7 @@
  *******************************************************************************/
 package org.eclipse.kapua.commons.configuration;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +22,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import org.eclipse.kapua.KapuaEntityNotFoundException;
@@ -32,36 +29,39 @@ import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.KapuaIllegalArgumentException;
 import org.eclipse.kapua.KapuaIllegalNullArgumentException;
 import org.eclipse.kapua.commons.security.KapuaSecurityUtils;
-import org.eclipse.kapua.commons.service.internal.KapuaServiceDisabledException;
 import org.eclipse.kapua.commons.util.ArgumentValidator;
-import org.eclipse.kapua.commons.util.ResourceUtils;
 import org.eclipse.kapua.commons.util.StringUtil;
-import org.eclipse.kapua.commons.util.xml.XmlUtil;
 import org.eclipse.kapua.model.KapuaEntityAttributes;
 import org.eclipse.kapua.model.config.metatype.KapuaTad;
 import org.eclipse.kapua.model.config.metatype.KapuaTmetadata;
 import org.eclipse.kapua.model.config.metatype.KapuaTocd;
 import org.eclipse.kapua.model.id.KapuaId;
 import org.eclipse.kapua.service.config.KapuaConfigurableService;
+import org.eclipse.kapua.service.config.ServiceComponentConfiguration;
 import org.eclipse.kapua.storage.TxContext;
-import org.xml.sax.SAXException;
+import org.eclipse.kapua.storage.TxManager;
 
 public class ServiceConfigurationManagerImpl implements ServiceConfigurationManager {
 
     protected final String pid;
+    protected final TxManager txManager;
+    private final String domain;
     private final ServiceConfigRepository serviceConfigRepository;
     private final RootUserTester rootUserTester;
-    private final XmlUtil xmlUtil;
+    private final ServiceConfigurationMetadataProvider serviceConfigurationMetadataProvider;
 
     public ServiceConfigurationManagerImpl(
             String pid,
+            String domain, TxManager txManager,
             ServiceConfigRepository serviceConfigRepository,
             RootUserTester rootUserTester,
-            XmlUtil xmlUtil) {
+            ServiceConfigurationMetadataProvider serviceConfigurationMetadataProvider) {
         this.pid = pid;
+        this.txManager = txManager;
+        this.domain = domain;
         this.serviceConfigRepository = serviceConfigRepository;
         this.rootUserTester = rootUserTester;
-        this.xmlUtil = xmlUtil;
+        this.serviceConfigurationMetadataProvider = serviceConfigurationMetadataProvider;
     }
 
     /**
@@ -101,6 +101,11 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
         return true;
     }
 
+    @Override
+    public String getDomain() {
+        return domain;
+    }
+
     /**
      * Checks if the given scope {@link KapuaId} can have more entities for this {@link KapuaConfigurableService}.
      *
@@ -117,58 +122,71 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
     }
 
     @Override
-    public void setConfigValues(TxContext txContext, KapuaId scopeId, Optional<KapuaId> parentId, Map<String, Object> values) throws KapuaException {
-        KapuaTocd ocd = getConfigMetadata(txContext, scopeId, false);
-
-        Map<String, Object> originalValues = getConfigValues(txContext, scopeId, true);
-
-        for (KapuaTad ad : ocd.getAD()) {
-            boolean allowSelfEdit = Boolean.parseBoolean(ad.getOtherAttributes().getOrDefault(new QName("allowSelfEdit"), "false"));
-
-            final KapuaId currentUserId = KapuaSecurityUtils.getSession().getUserId();
-            boolean preventChange =
-                    // if current user is not root user...
-                    !rootUserTester.isRoot(currentUserId) &&
-                            // current configuration does not allow self edit...
-                            !allowSelfEdit &&
-                            // a configuration for the current logged account is about to be changed...
-                            KapuaSecurityUtils.getSession().getScopeId().equals(scopeId) &&
-                            // and the new value is different from the other one...
-                            !originalValues.get(ad.getId()).equals(values.get(ad.getId()));
-
-            if (preventChange) {
-                // ... prevent the change!
-                throw KapuaException.internalError(String.format("The configuration \"%s\" cannot be changed by this user in this account", ad.getId()));
+    public void setConfigValues(KapuaId scopeId, Optional<KapuaId> parentId, Map<String, Object> values) throws KapuaException {
+        txManager.<Void>execute(tx -> {
+            Optional<KapuaTocd> maybeOcd = doGetConfigMetadata(tx, scopeId, false);
+            if (!maybeOcd.isPresent()) {
+                return null;
+                //throw?
             }
-        }
 
-        validateConfigurations(txContext, ocd, values, scopeId, parentId);
+            final Optional<KapuaTocd> maybeKapuaTocd = doGetConfigMetadata(tx, scopeId, true);
+            if (!maybeKapuaTocd.isPresent()) {
+                return null;
+                //throw?
+            }
 
-        ServiceConfigQueryImpl query = new ServiceConfigQueryImpl(scopeId);
-        query.setPredicate(
-                query.andPredicate(
-                        query.attributePredicate(ServiceConfigAttributes.SERVICE_ID, pid),
-                        query.attributePredicate(KapuaEntityAttributes.SCOPE_ID, scopeId)
-                )
-        );
+            Map<String, Object> originalValues = doGetConfigValues(tx, scopeId, maybeKapuaTocd.get());
 
-        ServiceConfigListResult result = serviceConfigRepository.query(txContext, query);
+            for (KapuaTad ad : maybeOcd.get().getAD()) {
+                boolean allowSelfEdit = Boolean.parseBoolean(ad.getOtherAttributes().getOrDefault(new QName("allowSelfEdit"), "false"));
 
-        Properties props = toProperties(values);
-        if (result == null || result.isEmpty()) {
-            // In not exists create then return
-            ServiceConfig serviceConfigNew = new ServiceConfigImpl(scopeId);
-            serviceConfigNew.setPid(pid);
-            serviceConfigNew.setConfigurations(props);
+                final KapuaId currentUserId = KapuaSecurityUtils.getSession().getUserId();
+                boolean preventChange =
+                        // if current user is not root user...
+                        !rootUserTester.isRoot(currentUserId) &&
+                                // current configuration does not allow self edit...
+                                !allowSelfEdit &&
+                                // a configuration for the current logged account is about to be changed...
+                                KapuaSecurityUtils.getSession().getScopeId().equals(scopeId) &&
+                                // and the new value is different from the other one...
+                                !originalValues.get(ad.getId()).equals(values.get(ad.getId()));
 
-            createConfig(txContext, serviceConfigNew);
-        } else {
-            // If exists update it
-            ServiceConfig serviceConfig = result.getFirstItem();
-            serviceConfig.setConfigurations(props);
+                if (preventChange) {
+                    // ... prevent the change!
+                    throw KapuaException.internalError(String.format("The configuration \"%s\" cannot be changed by this user in this account", ad.getId()));
+                }
+            }
 
-            updateConfig(txContext, serviceConfig);
-        }
+            validateConfigurations(tx, maybeOcd.get(), values, scopeId, parentId);
+
+            ServiceConfigQueryImpl query = new ServiceConfigQueryImpl(scopeId);
+            query.setPredicate(
+                    query.andPredicate(
+                            query.attributePredicate(ServiceConfigAttributes.SERVICE_ID, pid),
+                            query.attributePredicate(KapuaEntityAttributes.SCOPE_ID, scopeId)
+                    )
+            );
+
+            ServiceConfigListResult result = serviceConfigRepository.query(tx, query);
+
+            Properties props = toProperties(values);
+            if (result == null || result.isEmpty()) {
+                // In not exists create then return
+                ServiceConfig serviceConfigNew = new ServiceConfigImpl(scopeId);
+                serviceConfigNew.setPid(pid);
+                serviceConfigNew.setConfigurations(props);
+
+                createConfig(tx, serviceConfigNew);
+            } else {
+                // If exists update it
+                ServiceConfig serviceConfig = result.getFirstItem();
+                serviceConfig.setConfigurations(props);
+
+                updateConfig(tx, serviceConfig);
+            }
+            return null;
+        });
     }
 
     /**
@@ -252,7 +270,7 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
 
         if (!disabledProperties.isEmpty()) {
             // If there's any disabled property, read current values to overwrite the proposed ones
-            Map<String, Object> originalValues = getConfigValues(txContext, scopeId, false);
+            Map<String, Object> originalValues = doGetConfigValues(txContext, scopeId, false);
             if (originalValues != null) {
                 disabledProperties.forEach(disabledProp -> updatedProps.put(disabledProp.getId(), originalValues.get(disabledProp.getId())));
             }
@@ -330,9 +348,36 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
      * @since 1.3.0
      */
     @Override
+    public Map<String, Object> getConfigValues(KapuaId scopeId, boolean excludeDisabled) throws KapuaException {
+        // Argument validation
+        ArgumentValidator.notNull(scopeId, "scopeId");
+
+        return txManager.execute(txContext -> doGetConfigValues(txContext, scopeId, excludeDisabled));
+    }
+
+    @Override
     public Map<String, Object> getConfigValues(TxContext txContext, KapuaId scopeId, boolean excludeDisabled) throws KapuaException {
         // Argument validation
         ArgumentValidator.notNull(scopeId, "scopeId");
+
+        return doGetConfigValues(txContext, scopeId, excludeDisabled);
+    }
+
+    protected Map<String, Object> doGetConfigValues(TxContext txContext, KapuaId scopeId, boolean excludeDisabled) throws KapuaException {
+        final Optional<KapuaTocd> metadata = doGetConfigMetadata(txContext, scopeId, excludeDisabled);
+        return metadata.map(m -> {
+            try {
+                return doGetConfigValues(txContext, scopeId, m);
+            } catch (KapuaException e) {
+                throw new RuntimeException(e);
+            }
+        }).orElse(Collections.emptyMap());
+    }
+
+    protected Map<String, Object> doGetConfigValues(TxContext txContext, KapuaId scopeId, KapuaTocd metadata) throws KapuaException {
+        if (metadata == null) {
+            return null;
+        }
         // Get configuration values
         final ServiceConfigListResult result = serviceConfigRepository.findByScopeAndPid(txContext, scopeId, pid);
 
@@ -341,9 +386,7 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
             properties = result.getFirstItem().getConfigurations();
         }
 
-        KapuaTocd ocd = getConfigMetadata(txContext, scopeId, excludeDisabled);
-
-        return ocd == null ? null : toValues(ocd, properties);
+        return toValues(metadata, properties);
     }
 
     /**
@@ -380,19 +423,40 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
      * @since 1.3.0
      */
     @Override
-    public KapuaTocd getConfigMetadata(TxContext txContext, KapuaId scopeId, boolean excludeDisabled) throws KapuaException {
+    public Optional<KapuaTocd> getConfigMetadata(KapuaId scopeId, boolean excludeDisabled) throws KapuaException {
+        return txManager.execute(txContext -> doGetConfigMetadata(txContext, scopeId, excludeDisabled));
+    }
+
+    protected Optional<KapuaTocd> doGetConfigMetadata(TxContext txContext, KapuaId scopeId, boolean excludeDisabled) throws KapuaException {
         // Argument validation
         ArgumentValidator.notNull(scopeId, "scopeId");
         // Check disabled service
         if (!isServiceEnabled(txContext, scopeId)) {
-            throw new KapuaServiceDisabledException(pid);
+            return Optional.empty();
         }
         // Get the Tocd
         try {
-            return processMetadata(txContext, readMetadata(pid), scopeId, excludeDisabled);
+            return processMetadata(txContext, serviceConfigurationMetadataProvider.fetchMetadata(txContext, pid), scopeId, excludeDisabled);
         } catch (Exception e) {
             throw KapuaException.internalError(e);
         }
+    }
+
+    @Override
+    public Optional<ServiceComponentConfiguration> extractServiceComponentConfiguration(KapuaId scopeId) throws KapuaException {
+        return txManager.execute(txContext -> {
+            final Optional<KapuaTocd> maybeMetadata = this.doGetConfigMetadata(txContext, scopeId, true);
+            if (!maybeMetadata.isPresent()) {
+                return Optional.empty();
+            }
+            final KapuaTocd metadata = maybeMetadata.get();
+            final Map<String, Object> values = this.doGetConfigValues(txContext, scopeId, metadata);
+            final ServiceComponentConfiguration res = new ServiceComponentConfiguration(metadata.getId());
+            res.setDefinition(metadata);
+            res.setName(metadata.getName());
+            res.setProperties(values);
+            return Optional.of(res);
+        });
     }
 
     /**
@@ -405,35 +469,15 @@ public class ServiceConfigurationManagerImpl implements ServiceConfigurationMana
      * @return The processed {@link KapuaTocd}.
      * @since 1.3.0
      */
-    private KapuaTocd processMetadata(TxContext txContext, KapuaTmetadata metadata, KapuaId scopeId, boolean excludeDisabled) {
-        if (metadata != null && metadata.getOCD() != null && !metadata.getOCD().isEmpty()) {
-            for (KapuaTocd ocd : metadata.getOCD()) {
+    private Optional<KapuaTocd> processMetadata(TxContext txContext, Optional<KapuaTmetadata> metadata, KapuaId scopeId, boolean excludeDisabled) {
+        return metadata.flatMap(meta -> {
+            for (KapuaTocd ocd : meta.getOCD()) {
                 if (ocd.getId() != null && ocd.getId().equals(pid) && isServiceEnabled(txContext, scopeId)) {
                     ocd.getAD().removeIf(ad -> excludeDisabled && !isPropertyEnabled(ad, scopeId));
-                    return ocd;
+                    return Optional.of(ocd);
                 }
             }
-        }
-        return null;
+            return Optional.empty();
+        });
     }
-
-    /**
-     * Reads the {@link KapuaTmetadata} for the given {@link KapuaConfigurableService} pid.
-     *
-     * @param pid
-     *         The {@link KapuaConfigurableService} pid
-     * @return The {@link KapuaTmetadata} for the given {@link KapuaConfigurableService} pid.
-     * @throws Exception
-     * @since 1.0.0
-     */
-    private KapuaTmetadata readMetadata(String pid) throws JAXBException, SAXException, IOException {
-        URL url = ResourceUtils.getResource(String.format("META-INF/metatypes/%s.xml", pid));
-
-        if (url == null) {
-            return null;
-        }
-
-        return xmlUtil.unmarshal(ResourceUtils.openAsReader(url, StandardCharsets.UTF_8), KapuaTmetadata.class);
-    }
-
 }
