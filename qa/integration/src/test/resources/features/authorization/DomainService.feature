@@ -71,7 +71,7 @@ Scenario: Initialize test environment
       | test_name_1 | read,write |
     Then A domain was created
     And The domain matches the creator
-    Given I expect the exception "KapuaSQLIntegrityConstraintViolationException" with the text "Entity constraint violation error."
+    Given I expect the exception "kapuaIntegrityConstraintViolationException" with the text "Entity constraint violation error."
     When I create the domain
       | name        | actions    |
       | test_name_1 | read,write |

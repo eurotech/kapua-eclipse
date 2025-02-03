@@ -449,7 +449,7 @@ Feature: User Coupling
     And I set the reserved user for the connection from device "device-1" in account "test-acc-1" to "test-user-1"
     Then I set the user coupling mode for the connection from device "device-2" in account "test-acc-1" to "STRICT"
     # Try to set a duplicate reserved user
-    Given I expect the exception "KapuaSQLIntegrityConstraintViolationException" with the text "Entity constraint violation error."
+    Given I expect the exception "kapuaIntegrityConstraintViolationException" with the text "Entity constraint violation error."
     When I set the reserved user for the connection from device "device-2" in account "test-acc-1" to "test-user-1"
     Then An exception was thrown
     # Reserved users must be unique!
@@ -874,7 +874,7 @@ Feature: User Coupling
     And I set the reserved user for the connection from device "device-1" in account "test-acc-1" to "test-user-1"
     Then I set the user coupling mode for the connection from device "device-2" in account "test-acc-1" to "STRICT"
 # Try to set a duplicate reserved user
-    Given I expect the exception "KapuaSQLIntegrityConstraintViolationException" with the text "Entity constraint violation error."
+    Given I expect the exception "kapuaIntegrityConstraintViolationException" with the text "Entity constraint violation error."
     When I set the reserved user for the connection from device "device-2" in account "test-acc-1" to "test-user-1"
     Then An exception was thrown
 # Reserved users must be unique!
