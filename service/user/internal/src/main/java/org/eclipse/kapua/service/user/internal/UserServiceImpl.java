@@ -126,7 +126,7 @@ public class UserServiceImpl extends KapuaConfigurableServiceBase implements Use
 
                 // Check duplicate externalUsername
                 if (userCreator.getExternalUsername() != null) {
-                    Optional<User> userByExternalPreferredUserame = userRepository.findByExternalId(tx, userCreator.getExternalUsername());
+                    Optional<User> userByExternalPreferredUserame = userRepository.findByExternalUsername(tx, userCreator.getExternalUsername());
                     if (userByExternalPreferredUserame.isPresent()) {
                         throw new KapuaDuplicateExternalUsernameException(userCreator.getExternalUsername());
                     }
@@ -209,7 +209,7 @@ public class UserServiceImpl extends KapuaConfigurableServiceBase implements Use
                     if (user.getExternalId() != null) {
                         if (userRepository.findByExternalId(tx, user.getExternalId())
                                 .map(u -> u.getId())
-                                .map(id -> id.equals(user.getId()))
+                                .map(id -> !(id.equals(user.getId())))
                                 .orElse(false)) {
                             throw new KapuaDuplicateExternalIdException(user.getExternalId());
                         }
@@ -217,9 +217,9 @@ public class UserServiceImpl extends KapuaConfigurableServiceBase implements Use
 
                     // User.externalUsername
                     if (user.getExternalUsername() != null) {
-                        if (userRepository.findByExternalId(tx, user.getExternalUsername())
+                        if (userRepository.findByExternalUsername(tx, user.getExternalUsername())
                                 .map(u -> u.getId())
-                                .map(id -> id.equals(user.getId()))
+                                .map(id -> !(id.equals(user.getId())))
                                 .orElse(false)) {
                             throw new KapuaDuplicateExternalUsernameException(user.getExternalUsername());
                         }
