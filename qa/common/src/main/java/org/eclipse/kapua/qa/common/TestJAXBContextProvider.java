@@ -144,7 +144,6 @@ public class TestJAXBContextProvider implements JAXBContextProvider {
                     JobXmlRegistry.class,
 
                     // Job Engine
-                    JobStartOptionsClient.class,
                     JobStartOptions.class,
                     JobTargetSublist.class,
                     IsJobRunningResponse.class,
