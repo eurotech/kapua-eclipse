@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.kapua.translator.kura.mqtt;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import org.eclipse.kapua.service.device.call.message.kura.KuraPayload;
 import org.eclipse.kapua.service.device.call.message.kura.app.request.KuraRequestChannel;
@@ -85,8 +86,14 @@ public class TranslatorRequestKuraMqtt extends Translator<KuraRequestMessage, Mq
 
             topicTokens.add(kuraRequestChannel.getScope());
             topicTokens.add(kuraRequestChannel.getClientId());
-            topicTokens.add(kuraRequestChannel.getAppId());
-            topicTokens.add(kuraRequestChannel.getMethod().name());
+
+            if (!Strings.isNullOrEmpty(kuraRequestChannel.getAppId())) {
+                topicTokens.add(kuraRequestChannel.getAppId());
+            }
+
+            if (kuraRequestChannel.getMethod() != null) {
+                topicTokens.add(kuraRequestChannel.getMethod().name());
+            }
 
             Collections.addAll(topicTokens, kuraRequestChannel.getResources());
 
