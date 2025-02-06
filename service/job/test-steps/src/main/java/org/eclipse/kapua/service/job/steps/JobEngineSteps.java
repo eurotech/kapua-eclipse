@@ -12,14 +12,11 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.job.steps;
 
-import com.google.inject.Singleton;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.When;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.eclipse.kapua.KapuaException;
-import org.eclipse.kapua.job.engine.JobEngineFactory;
 import org.eclipse.kapua.job.engine.JobEngineService;
 import org.eclipse.kapua.job.engine.JobStartOptions;
 import org.eclipse.kapua.locator.KapuaLocator;
@@ -30,8 +27,13 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.util.concurrent.TimeUnit;
+import com.google.inject.Singleton;
+
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.When;
 
 @Singleton
 public class JobEngineSteps extends JobServiceTestBase {
@@ -39,7 +41,6 @@ public class JobEngineSteps extends JobServiceTestBase {
     private static final Logger LOG = LoggerFactory.getLogger(JobEngineSteps.class);
 
     private JobEngineService jobEngineService;
-    private JobEngineFactory jobEngineFactory;
 
     @Inject
     public JobEngineSteps(StepData stepData) {
@@ -56,7 +57,6 @@ public class JobEngineSteps extends JobServiceTestBase {
         KapuaLocator locator = KapuaLocator.getInstance();
 
         jobEngineService = locator.getService(JobEngineService.class);
-        jobEngineFactory = locator.getFactory(JobEngineFactory.class);
     }
 
     @When("I start a job")
@@ -64,7 +64,7 @@ public class JobEngineSteps extends JobServiceTestBase {
         primeException();
         KapuaId currentJobId = (KapuaId) stepData.get(CURRENT_JOB_ID);
         try {
-            JobStartOptions jobStartOptions = jobEngineFactory.newJobStartOptions();
+            JobStartOptions jobStartOptions = new JobStartOptions();
             jobStartOptions.setEnqueue(true);
             jobEngineService.startJob(getCurrentScopeId(), currentJobId, jobStartOptions);
         } catch (KapuaException ke) {
@@ -77,7 +77,8 @@ public class JobEngineSteps extends JobServiceTestBase {
     /**
      * Waits the {@link Job} in context to start.
      *
-     * @param waitSeconds The max time to wait
+     * @param waitSeconds
+     *         The max time to wait
      * @throws Exception
      * @since 2.1.0
      */
@@ -91,8 +92,7 @@ public class JobEngineSteps extends JobServiceTestBase {
                 if (jobEngineService.isRunning(job.getScopeId(), job.getId())) {
                     return;
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 LOG.warn("Error while checking running status for Job {}. Ignoring... Error: {}", job.getName(), e.getMessage());
             }
 
@@ -108,7 +108,8 @@ public class JobEngineSteps extends JobServiceTestBase {
     /**
      * Waits the last {@link Job} in context to finish it execution up the given wait time
      *
-     * @param waitSeconds The max time to wait
+     * @param waitSeconds
+     *         The max time to wait
      * @throws Exception
      * @since 2.1.0
      */
@@ -122,8 +123,10 @@ public class JobEngineSteps extends JobServiceTestBase {
     /**
      * Looks for a {@link Job} by its {@link Job#getName()} and waits to finish it execution up the given wait time
      *
-     * @param jobName The {@link Job#getName()} to look for
-     * @param waitSeconds The max time to wait
+     * @param jobName
+     *         The {@link Job#getName()} to look for
+     * @param waitSeconds
+     *         The max time to wait
      * @throws Exception
      * @since 2.1.0
      */
@@ -137,8 +140,10 @@ public class JobEngineSteps extends JobServiceTestBase {
     /**
      * Wait the given {@link Job} to finish its execution up the given wait time
      *
-     * @param job The {@link Job} to monitor
-     * @param waitSeconds The max time to wait
+     * @param job
+     *         The {@link Job} to monitor
+     * @param waitSeconds
+     *         The max time to wait
      * @throws Exception
      * @since 2.1.0
      */
@@ -146,11 +151,10 @@ public class JobEngineSteps extends JobServiceTestBase {
         long now = System.currentTimeMillis();
         while ((System.currentTimeMillis() - now) < (waitSeconds * 1000L)) {
             try {
-                    if (!jobEngineService.isRunning(job.getScopeId(), job.getId())) {
+                if (!jobEngineService.isRunning(job.getScopeId(), job.getId())) {
                     return;
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 LOG.warn("Error while checking running status for Job {}. Ignoring... Error: {}", job.getName(), e.getMessage());
             }
 
@@ -178,7 +182,8 @@ public class JobEngineSteps extends JobServiceTestBase {
     /**
      * Looks for a {@link Job} by its {@link Job#getName()} and checks that is running
      *
-     * @param jobName The {@link Job#getName()} to look for
+     * @param jobName
+     *         The {@link Job#getName()} to look for
      * @throws Exception
      * @since 2.1.0
      */
@@ -205,7 +210,8 @@ public class JobEngineSteps extends JobServiceTestBase {
     /**
      * Looks for a {@link Job} by its {@link Job#getName()} and checks that is not running
      *
-     * @param jobName The {@link Job#getName()} to look for
+     * @param jobName
+     *         The {@link Job#getName()} to look for
      * @throws Exception
      * @since 2.1.0
      */
@@ -219,8 +225,10 @@ public class JobEngineSteps extends JobServiceTestBase {
     /**
      * Checks the running status of the given {@link Job}
      *
-     * @param job The {@link Job} to check
-     * @param expectedRunning Whether expecting running or not
+     * @param job
+     *         The {@link Job} to check
+     * @param expectedRunning
+     *         Whether expecting running or not
      * @throws Exception
      * @since 2.1.0
      */
