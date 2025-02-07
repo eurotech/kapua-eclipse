@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.eclipse.kapua.KapuaEntityNotFoundException;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.commons.configuration.AccountRelativeFinder;
 import org.eclipse.kapua.commons.model.id.KapuaEid;
@@ -84,5 +85,16 @@ public class AccountRelativeFinderImpl implements AccountRelativeFinder, KapuaSe
         }
 
         return parentAccountIds;
+    }
+
+    @Override
+    public KapuaId findParentId(KapuaId accountId) throws KapuaException {
+        Account account = KapuaSecurityUtils.doPrivileged(() -> accountService.find(accountId));
+
+        if(account == null){
+            throw new KapuaEntityNotFoundException(Account.TYPE, accountId);
+        }
+
+        return account.getScopeId();
     }
 }
