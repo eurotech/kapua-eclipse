@@ -42,7 +42,9 @@ public interface DeviceCall<RQ extends DeviceRequestMessage<?, ?>, RS extends De
      * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
      * @throws DeviceCallSendException    if sending the request produces any error.
      * @since 1.0.0
+     * @deprecated Since 2.1.0. Just use {@link #send(DeviceRequestMessage, Long)}
      */
+    @Deprecated
     RS read(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
 
     /**
@@ -54,7 +56,9 @@ public interface DeviceCall<RQ extends DeviceRequestMessage<?, ?>, RS extends De
      * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
      * @throws DeviceCallSendException    if sending the request produces any error.
      * @since 1.0.0
+     * @deprecated Since 2.1.0. Just use {@link #send(DeviceRequestMessage, Long)}
      */
+    @Deprecated
     RS create(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
 
     /**
@@ -66,7 +70,9 @@ public interface DeviceCall<RQ extends DeviceRequestMessage<?, ?>, RS extends De
      * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
      * @throws DeviceCallSendException    if sending the request produces any error.
      * @since 1.0.0
+     * @deprecated Since 2.1.0. Just use {@link #send(DeviceRequestMessage, Long)}
      */
+    @Deprecated
     RS write(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
 
     /**
@@ -78,7 +84,9 @@ public interface DeviceCall<RQ extends DeviceRequestMessage<?, ?>, RS extends De
      * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
      * @throws DeviceCallSendException    if sending the request produces any error.
      * @since 1.0.0
+     * @deprecated Since 2.1.0. Just use {@link #send(DeviceRequestMessage, Long)}
      */
+    @Deprecated
     RS delete(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
 
     /**
@@ -90,7 +98,9 @@ public interface DeviceCall<RQ extends DeviceRequestMessage<?, ?>, RS extends De
      * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
      * @throws DeviceCallSendException    if sending the request produces any error.
      * @since 1.0.0
+     * @deprecated Since 2.1.0. Just use {@link #send(DeviceRequestMessage, Long)}
      */
+    @Deprecated
     RS execute(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
 
     /**
@@ -102,7 +112,9 @@ public interface DeviceCall<RQ extends DeviceRequestMessage<?, ?>, RS extends De
      * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
      * @throws DeviceCallSendException    if sending the request produces any error.
      * @since 1.0.0
+     * @deprecated Since 2.1.0. Just use {@link #send(DeviceRequestMessage, Long)}
      */
+    @Deprecated
     RS options(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
 
     /**
@@ -115,7 +127,9 @@ public interface DeviceCall<RQ extends DeviceRequestMessage<?, ?>, RS extends De
      * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
      * @throws DeviceCallSendException    if sending the request produces any error.
      * @since 1.3.0
+     * @deprecated Since 2.1.0. Just use {@link #send(DeviceRequestMessage, Long)}
      */
+    @Deprecated
     RS submit(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
 
     /**
@@ -128,8 +142,22 @@ public interface DeviceCall<RQ extends DeviceRequestMessage<?, ?>, RS extends De
      * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
      * @throws DeviceCallSendException    if sending the request produces any error.
      * @since 1.3.0
+     * @deprecated Since 2.1.0. Just use {@link #send(DeviceRequestMessage, Long)}
      */
+    @Deprecated
     RS cancel(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
+
+    /**
+     * Sends the request message
+     *
+     * @param requestMessage The {@link DeviceRequestMessage} to send.
+     * @param timeout        The timeout of the request.
+     * @throws DeviceCallTimeoutException if waiting of the response goes on timeout.
+     * @throws DeviceCallSendException    if sending the request produces any error.
+     * @throws TransportException
+     * @since 2.1.0
+     */
+    RS send(@NotNull RQ requestMessage, @Nullable Long timeout) throws DeviceCallTimeoutException, DeviceCallSendException, TransportException;
 
     /**
      * Get the {@link DeviceMessage} type.

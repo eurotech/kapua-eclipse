@@ -25,7 +25,6 @@ import org.eclipse.kapua.service.device.call.message.app.request.DeviceRequestMe
 import org.eclipse.kapua.service.device.call.message.app.response.DeviceResponseMessage;
 import org.eclipse.kapua.service.device.management.commons.setting.DeviceManagementSetting;
 import org.eclipse.kapua.service.device.management.commons.setting.DeviceManagementSettingKey;
-import org.eclipse.kapua.service.device.management.exception.DeviceManagementRequestBadMethodException;
 import org.eclipse.kapua.service.device.management.exception.DeviceManagementSendException;
 import org.eclipse.kapua.service.device.management.exception.DeviceManagementTimeoutException;
 import org.eclipse.kapua.service.device.management.exception.DeviceNeverConnectedException;
@@ -147,41 +146,10 @@ public class DeviceCallBuilder<C extends KapuaRequestChannel, P extends KapuaReq
             DeviceCall<DeviceRequestMessage<?, ?>, DeviceResponseMessage<?, ?>> deviceCall = deviceCallFactory.newDeviceCall();
             Translator<RQ, DeviceRequestMessage<?, ?>> tKapuaToClient = translatorHub.getTranslatorFor(requestMessage.getRequestClass(), deviceCall.getBaseMessageClass());
             DeviceRequestMessage<?, ?> deviceRequestMessage = tKapuaToClient.translate(requestMessage);
+
             // Send the request
-            DeviceResponseMessage<?, ?> responseMessage;
-            switch (requestMessage.getChannel().getMethod()) {
-                case CREATE:
-                case POST:
-                    responseMessage = deviceCall.create(deviceRequestMessage, timeout);
-                    break;
-                case READ:
-                case GET:
-                    responseMessage = deviceCall.read(deviceRequestMessage, timeout);
-                    break;
-                case OPTIONS:
-                    responseMessage = deviceCall.options(deviceRequestMessage, timeout);
-                    break;
-                case DELETE:
-                case DEL:
-                    responseMessage = deviceCall.delete(deviceRequestMessage, timeout);
-                    break;
-                case EXECUTE:
-                case EXEC:
-                    responseMessage = deviceCall.execute(deviceRequestMessage, timeout);
-                    break;
-                case WRITE:
-                case PUT:
-                    responseMessage = deviceCall.write(deviceRequestMessage, timeout);
-                    break;
-                case SUBMIT:
-                    responseMessage = deviceCall.submit(deviceRequestMessage, timeout);
-                    break;
-                case CANCEL:
-                    responseMessage = deviceCall.cancel(deviceRequestMessage, timeout);
-                    break;
-                default:
-                    throw new DeviceManagementRequestBadMethodException(requestMessage.getChannel().getMethod());
-            }
+            DeviceResponseMessage<?, ?> responseMessage = deviceCall.send(deviceRequestMessage, timeout);
+
             // Translate the response from Device to Kapua
             Translator<DeviceResponseMessage<?, ?>, RS> tClientToKapua = translatorHub.getTranslatorFor(deviceCall.getBaseMessageClass(), requestMessage.getResponseClass());
             return tClientToKapua.translate(responseMessage);
@@ -213,40 +181,10 @@ public class DeviceCallBuilder<C extends KapuaRequestChannel, P extends KapuaReq
             DeviceCall<DeviceRequestMessage<?, ?>, DeviceResponseMessage<?, ?>> deviceCall = deviceCallFactory.newDeviceCall();
             Translator<RQ, DeviceRequestMessage<?, ?>> tKapuaToClient = translatorHub.getTranslatorFor(requestMessage.getRequestClass(), deviceCall.getBaseMessageClass());
             DeviceRequestMessage<?, ?> deviceRequestMessage = tKapuaToClient.translate(requestMessage);
+
             // Send the request
-            switch (requestMessage.getChannel().getMethod()) {
-                case CREATE:
-                case POST:
-                    deviceCall.create(deviceRequestMessage, null);
-                    break;
-                case READ:
-                case GET:
-                    deviceCall.read(deviceRequestMessage, null);
-                    break;
-                case OPTIONS:
-                    deviceCall.options(deviceRequestMessage, null);
-                    break;
-                case DELETE:
-                case DEL:
-                    deviceCall.delete(deviceRequestMessage, null);
-                    break;
-                case EXECUTE:
-                case EXEC:
-                    deviceCall.execute(deviceRequestMessage, null);
-                    break;
-                case WRITE:
-                case PUT:
-                    deviceCall.write(deviceRequestMessage, null);
-                    break;
-                case SUBMIT:
-                    deviceCall.submit(deviceRequestMessage, null);
-                    break;
-                case CANCEL:
-                    deviceCall.cancel(deviceRequestMessage, null);
-                    break;
-                default:
-                    throw new DeviceManagementRequestBadMethodException(requestMessage.getChannel().getMethod());
-            }
+            deviceCall.send(deviceRequestMessage, null);
+
         } catch (TransportException te) {
             throw te;
         } catch (Exception e) {
