@@ -136,6 +136,13 @@ public enum KapuaErrorCodes implements KapuaErrorCode {
     SERVICE_DISABLED,
 
     /**
+     * @see org.eclipse.kapua.exception.KapuaFeatureDisabledException
+     *
+     * @since 2.1.0
+     */
+    FEATURE_DISABLED,
+
+    /**
      * Some parsing failed for some reason
      * @since 2.0.0
      */
