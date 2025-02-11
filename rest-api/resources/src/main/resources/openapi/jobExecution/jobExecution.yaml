@@ -48,6 +48,12 @@ components:
               items:
                 allOf:
                 - $ref: '../openapi.yaml#/components/schemas/kapuaId'
+            status:
+                description: status of job execution
+                type: string
+                enum:
+                  - RUNNING
+                  - TERMINATED
           example:
             type: jobExecution
             id: GTh9xBWezHY
