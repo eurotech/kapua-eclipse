@@ -35,6 +35,14 @@ paths:
             format: 'date-time'
         - $ref: '../openapi.yaml#/components/parameters/sortParam'
         - $ref: '../openapi.yaml#/components/parameters/sortDir'
+        - name: status
+          in: query
+          description: status of job execution
+          schema:
+            type: string
+            enum:
+              - RUNNING
+              - TERMINATED
         - $ref: '../openapi.yaml#/components/parameters/limit'
         - $ref: '../openapi.yaml#/components/parameters/offset'
         - $ref: '../openapi.yaml#/components/parameters/askTotalCount'

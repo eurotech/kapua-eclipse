@@ -42,6 +42,7 @@ import org.eclipse.kapua.service.job.execution.JobExecutionFactory;
 import org.eclipse.kapua.service.job.execution.JobExecutionListResult;
 import org.eclipse.kapua.service.job.execution.JobExecutionQuery;
 import org.eclipse.kapua.service.job.execution.JobExecutionService;
+import org.eclipse.kapua.service.job.execution.JobExecutionStatus;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -107,12 +108,25 @@ public class JobExecutionServiceSteps extends JobServiceTestBase {
         }
     }
 
-    @When("I update the end time of the execution item")
+    @When("I update the end time of the execution item as if the job finished now")
     public void updateJobExecutionEndTime() throws Exception {
         JobExecution execution = (JobExecution) stepData.get(JOB_EXECUTION);
         primeException();
         try {
             execution.setEndedOn(DateTime.now().toDate());
+            execution = jobExecutionService.update(execution);
+            stepData.put(JOB_EXECUTION, execution);
+        } catch (KapuaException ex) {
+            verifyException(ex);
+        }
+    }
+
+    @When("I update the end time of the execution item as if the job never finished")
+    public void updateJobExecutionEndTimeWithNull() throws Exception {
+        JobExecution execution = (JobExecution) stepData.get(JOB_EXECUTION);
+        primeException();
+        try {
+            execution.setEndedOn(null);
             execution = jobExecutionService.update(execution);
             stepData.put(JOB_EXECUTION, execution);
         } catch (KapuaException ex) {
@@ -419,7 +433,6 @@ public class JobExecutionServiceSteps extends JobServiceTestBase {
         }
     }
 
-
     @Then("The job execution matches the creator")
     public void checkJobExecutionItemAgainstCreator() {
         JobExecutionCreator executionCreator = (JobExecutionCreator) stepData.get("JobExecutionCreator");
@@ -430,13 +443,19 @@ public class JobExecutionServiceSteps extends JobServiceTestBase {
     }
 
     @Then("The job execution items match")
-    public void checkJobExecutionItems() {
+    public void checkJobExecutionItemsRunning() {
         JobExecution execution = (JobExecution) stepData.get(JOB_EXECUTION);
         JobExecution foundExecution = (JobExecution) stepData.get("JobExecutionFound");
         Assert.assertEquals(execution.getScopeId(), foundExecution.getScopeId());
         Assert.assertEquals(execution.getJobId(), foundExecution.getJobId());
         Assert.assertEquals(execution.getStartedOn(), foundExecution.getStartedOn());
         Assert.assertEquals(execution.getEndedOn(), foundExecution.getEndedOn());
+    }
+
+    @Then("The job execution status is {string}")
+    public void checkJobExecutionItems(String status) {
+        JobExecution foundExecution = (JobExecution) stepData.get("JobExecutionFound");
+        Assert.assertEquals(foundExecution.getStatus(), JobExecutionStatus.valueOf(status));
     }
 
     @Then("There is no such job execution item in the database")
