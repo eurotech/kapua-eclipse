@@ -222,7 +222,6 @@
                                 <descriptor>descriptors/kapua-broker-artemis.xml</descriptor>
                             </descriptors>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>kapua-broker-artemis-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
