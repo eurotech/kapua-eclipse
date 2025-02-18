@@ -35,7 +35,7 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/configurations</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory/>
             <fileMode>0644</fileMode>
         </fileSet>
     </fileSets>
