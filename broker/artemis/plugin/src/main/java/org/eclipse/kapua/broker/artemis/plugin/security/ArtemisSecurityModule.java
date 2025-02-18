@@ -51,6 +51,7 @@ public class ArtemisSecurityModule extends AbstractKapuaModule {
     SecurityContext securityContext(LoginMetric loginMetric,
             BrokerSetting brokerSettings,
             MetricsSecurityPlugin metricsSecurityPlugin,
+            PluginUtility pluginUtility,
             RunWithLock runWithLock) {
         return new SecurityContext(loginMetric,
                 brokerSettings.getBoolean(BrokerSettingKey.PRINT_SECURITY_CONTEXT_REPORT, false),
@@ -67,6 +68,7 @@ public class ArtemisSecurityModule extends AbstractKapuaModule {
                         brokerSettings.getInt(BrokerSettingKey.CACHE_SESSION_CONTEXT_TTL),
                         null),
                 metricsSecurityPlugin,
+                pluginUtility,
                 runWithLock
         );
     }

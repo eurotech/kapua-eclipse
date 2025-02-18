@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2019, 2025 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.apache.activemq.artemis.api.core.ActiveMQException;
 import org.apache.activemq.artemis.api.core.ActiveMQExceptionType;
+import org.apache.activemq.artemis.api.core.ActiveMQSecurityException;
 import org.apache.activemq.artemis.api.core.Message;
 import org.apache.activemq.artemis.core.remoting.FailureListener;
 import org.apache.activemq.artemis.core.server.ActiveMQServer;
@@ -27,6 +28,7 @@ import org.apache.activemq.artemis.core.transaction.Transaction;
 import org.apache.activemq.artemis.spi.core.protocol.RemotingConnection;
 import org.apache.activemq.artemis.utils.critical.CriticalComponent;
 import org.apache.commons.lang3.SerializationUtils;
+import org.eclipse.kapua.KapuaRuntimeException;
 import org.eclipse.kapua.broker.artemis.plugin.security.connector.AcceptorHandler;
 import org.eclipse.kapua.broker.artemis.plugin.security.event.BrokerEvent;
 import org.eclipse.kapua.broker.artemis.plugin.security.event.BrokerEvent.EventType;
@@ -176,7 +178,15 @@ public class ServerPlugin implements ActiveMQServerPlugin {
      */
     @Override
     public void afterCreateConnection(RemotingConnection connection) throws ActiveMQException {
-        connection.addCloseListener(() -> cleanUpConnectionData(connection, Failure.CLOSED));
+        connection.addCloseListener(() -> {
+            try {
+                cleanUpConnectionData(connection, Failure.CLOSED);
+            } catch (Exception e) {
+                //shouldn't happen so log it and throw runtime?
+                logger.error("Cleaning up connection data error!", e);
+                throw KapuaRuntimeException.internalError(e);
+            }
+        });
         connection.addFailureListener(new FailureListener() {
 
             @Override
@@ -198,7 +208,13 @@ public class ServerPlugin implements ActiveMQServerPlugin {
     @Override
     public void afterDestroyConnection(RemotingConnection connection) throws ActiveMQException {
         ActiveMQServerPlugin.super.afterDestroyConnection(connection);
-        cleanUpConnectionData(connection, Failure.DESTROY);
+        try {
+            cleanUpConnectionData(connection, Failure.DESTROY);
+        } catch (Exception e) {
+            //shouldn't happen so log it and throw runtime?
+            logger.error("Cleaning up connection data error!", e);
+            throw KapuaRuntimeException.internalError(e);
+        }
     }
 
     /**
@@ -225,7 +241,14 @@ public class ServerPlugin implements ActiveMQServerPlugin {
         try {
             String address = message.getAddress();
             int messageSize = message.getEncodeSize();
-            SessionContext sessionContext = serverContext.getSecurityContext().getSessionContextWithCacheFallback(pluginUtility.getConnectionId(session.getRemotingConnection()));
+            SessionContext sessionContext;
+            try {
+                sessionContext = serverContext.getSecurityContext().getSessionContextWithCacheFallback(pluginUtility.getConnectionId(session.getRemotingConnection()));
+            } catch (Exception e) {
+                //do not disclose internals so throw generic security exception
+                //anyway this exception shouldn't occur
+                throw new ActiveMQSecurityException("Operation not allowed");
+            }
             logger.debug("Publishing message on address {} from clientId: {} - clientIp: {}", address, sessionContext.getClientId(), sessionContext.getClientIp());
             message.putStringProperty(MessageConstants.HEADER_KAPUA_CLIENT_ID, sessionContext.getClientId());
             message.putStringProperty(MessageConstants.HEADER_KAPUA_CONNECTOR_NAME, sessionContext.getConnectorName());
@@ -384,8 +407,20 @@ public class ServerPlugin implements ActiveMQServerPlugin {
         ActiveMQServerPlugin.super.criticalFailure(components);
     }
 
-    private void cleanUpConnectionData(RemotingConnection connection, Failure reason) {
-        cleanUpConnectionData(connection, reason, null);
+    private void cleanUpConnectionData(RemotingConnection connection, Failure reason) throws Exception {
+        SessionContext sessioncontext = serverContext.getSecurityContext().getSessionContextWithCacheFallback(
+                pluginUtility.getConnectionId(connection));
+        String clientId = sessioncontext!=null ? Utils.getFullClientId(sessioncontext) : null;
+        if (clientId == null) {
+            cleanUpConnectionData(connection, reason, null);
+        }
+        else {
+            serverContext.getSecurityContext().callWithLock(clientId,
+                () -> {
+                    cleanUpConnectionData(connection, reason, null);
+                    return (Void) null;
+                });
+        }
     }
 
     private void cleanUpConnectionData(RemotingConnection connection, Failure reason, Exception exception) {
