@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2017, 2025 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -44,7 +44,7 @@ import java.util.Map;
 /**
  * Authentication logic definition
  *
- * @since 1.0
+ * @since 1.0.0
  */
 public abstract class AuthenticationLogic {
 
@@ -205,8 +205,13 @@ public abstract class AuthenticationLogic {
                 }
             }
         } else {
-            if (deviceConnection != null && deviceConnection.getReservedUserId() != null && userId.equals(deviceConnection.getReservedUserId())) {
-                checkConnectionCountByReservedUserId(scopeId, userId, 1);
+            if (deviceConnection != null && deviceConnection.getReservedUserId() != null) {
+                if (userId.equals(deviceConnection.getReservedUserId())) {
+                    checkConnectionCountByReservedUserId(scopeId, userId, 1);
+                }
+                else {
+                    throw new SecurityException(USER_NOT_AUTHORIZED + " DeviceConnection cannot use User different from reserved User!");
+                }
             } else {
                 checkConnectionCountByReservedUserId(scopeId, userId, 0);
             }
