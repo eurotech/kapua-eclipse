@@ -13,32 +13,45 @@
 package org.eclipse.kapua.broker.artemis.plugin.security;
 
 import javax.inject.Inject;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
 
 /**
  * Helper class to run code encapsulated into a lock/unlock block
  */
 public class RunWithLock {
 
+    public enum LockType {
+        EXTERNAL,
+        INTERNAL
+    }
+
     //TODO make it configurable?
     //TODO how many threads are available?
     private static final int LOCKS_SIZE = 128;
-    private final Lock[] locks;
+    private final Map<LockType, Lock[]> locks;
 
     @Inject
     public RunWithLock() {
-        //init lock array
-        locks = new Lock[LOCKS_SIZE];
-        for (int i = 0; i < LOCKS_SIZE; i++) {
-            locks[i] = new ReentrantLock(true);
-        }
+        locks = new HashMap<>();
+        //init lock map
+        Stream.of(LockType.values()).forEach(value -> {
+            Lock[] tmp = new Lock[LOCKS_SIZE];
+            for (int i = 0; i < LOCKS_SIZE; i++) {
+                tmp[i] = new ReentrantLock(true);
+            }
+            locks.put(value, tmp);
+        });
     }
 
     /**
      * Gets a Lock based on provided key value and run the callable inside a lock/unlock block
-     * Given a key values the acquired Lock is always the same so this method is doing a synchonization based on key value.
+     * Given a key values the acquired Lock is always the same so this method is doing a synchronization based on key value.
      *
      * @param <T>
      * @param key
@@ -46,8 +59,8 @@ public class RunWithLock {
      * @return
      * @throws Exception
      */
-    public <T> T run(String key, Callable<T> callable) throws Exception {
-        Lock lock = getLock(key);
+    public <T> T run(LockType type, String key, Callable<T> callable) throws Exception {
+        Lock lock = getLock(type, key);
         try {
             lock.lock();
             return callable.call();
@@ -56,8 +69,8 @@ public class RunWithLock {
         }
     }
 
-    private Lock getLock(String connectionId) {
-        return locks[Math.abs(connectionId.hashCode() % LOCKS_SIZE)];
+    private Lock getLock(LockType type, String connectionId) {
+        return locks.get(type)[Math.abs(connectionId.hashCode() % LOCKS_SIZE)];
     }
 
 }

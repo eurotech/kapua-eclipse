@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2022 Eurotech and/or its affiliates and others
+ * Copyright (c) 2021, 2025 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,9 +13,12 @@
 package org.eclipse.kapua.broker.artemis.plugin.security.context;
 
 import org.apache.activemq.artemis.core.server.ActiveMQServer;
+import org.apache.activemq.artemis.spi.core.protocol.RemotingConnection;
 import org.eclipse.kapua.KapuaException;
 import org.eclipse.kapua.broker.artemis.plugin.security.MetricsSecurityPlugin;
+import org.eclipse.kapua.broker.artemis.plugin.security.PluginUtility;
 import org.eclipse.kapua.broker.artemis.plugin.security.RunWithLock;
+import org.eclipse.kapua.broker.artemis.plugin.security.RunWithLock.LockType;
 import org.eclipse.kapua.broker.artemis.plugin.security.metric.LoginMetric;
 import org.eclipse.kapua.client.security.AuthErrorCodes;
 import org.eclipse.kapua.client.security.KapuaIllegalDeviceStateException;
@@ -38,6 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -51,6 +55,8 @@ public final class SecurityContext {
     protected static Logger logger = LoggerFactory.getLogger(SecurityContext.class);
     private static final String REPORT_HEADER = "################################################################################################";
     private static final String REPORT_SEPARATOR = "------------------------------------------------------------------------------------------------";
+
+    private PluginUtility pluginUtility;
 
     private enum ReportType {
         Full,
@@ -89,6 +95,7 @@ public final class SecurityContext {
                            LocalCache<String, SessionContext> sessionContextCache,
                            LocalCache<String, Acl> aclCache,
                            MetricsSecurityPlugin metricsSecurityPlugin,
+                           PluginUtility pluginUtility,
                            RunWithLock runWithLock) {
         this.loginMetric = loginMetric;
         this.printData = printData;
@@ -96,6 +103,7 @@ public final class SecurityContext {
         this.sessionContextCache = sessionContextCache;
         this.aclCache = aclCache;
         this.metricsSecurityPlugin = metricsSecurityPlugin;
+        this.pluginUtility = pluginUtility;
         this.runWithLock = runWithLock;
         this.sessionContextMapByClient = new ConcurrentHashMap<>();
         this.sessionContextMap = new ConcurrentHashMap<>();
@@ -105,7 +113,7 @@ public final class SecurityContext {
     public void init(ActiveMQServer server) {
         if (printData) {
             if (executorWrapper == null) {
-                executorWrapper = new ExecutorWrapper("ServerReport", () -> printCompactReport(server, "ServerReportTask", "N/A"), 60, 30, TimeUnit.SECONDS);
+                executorWrapper = new ExecutorWrapper("ServerReport", () -> printCompactReport(server, "ServerReportTask"), 60, 30, TimeUnit.SECONDS);
                 executorWrapper.start();
             } else {
                 logger.warn("ServerReportTask already started!");
@@ -130,12 +138,19 @@ public final class SecurityContext {
         }
     }
 
+    /**
+     * return true if an old token was present for the provided connection id (so, likely, a stealing link occurred)
+     * @param sessionContext
+     * @param authAcls
+     * @return
+     * @throws Exception
+     */
     public boolean setSessionContext(SessionContext sessionContext, List<AuthAcl> authAcls) throws Exception {
-        logger.info("Updating session context for connection id: {}", sessionContext.getConnectionId());
+        logger.debug("Updating session context for connection id: {}", sessionContext.getConnectionId());
         String connectionId = sessionContext.getConnectionId();
-        return runWithLock.run(connectionId, () -> {
+        return runWithLock.run(LockType.INTERNAL, connectionId, () -> {
             if (updateConnectionTokenOnConnection(connectionId) == null) {
-                logger.info("Setting session context for connection id: {}", connectionId);
+                logger.debug("Setting session context for connection id: {}", connectionId);
                 activeConnections.add(connectionId);
                 //fill by connection id context
                 sessionContextMap.put(connectionId, sessionContext);
@@ -163,7 +178,7 @@ public final class SecurityContext {
     }
 
     public void updateConnectionTokenOnDisconnection(String connectionId) throws Exception {
-        runWithLock.run(connectionId, () -> {
+        runWithLock.run(LockType.INTERNAL, connectionId, () -> {
             if (connectionTokenCache.getAndRemove(connectionId) == null) {
                 //put the connection token
                 connectionTokenCache.put(connectionId,
@@ -174,9 +189,9 @@ public final class SecurityContext {
     }
 
     public SessionContext cleanSessionContext(SessionContext sessionContext) throws Exception {
-        logger.info("Updating session context for connection id: {}", sessionContext.getConnectionId());
+        logger.debug("Updating session context for connection id: {}", sessionContext.getConnectionId());
         String connectionId = sessionContext.getConnectionId();
-        return runWithLock.run(connectionId, () -> {
+        return runWithLock.run(LockType.INTERNAL, connectionId, () -> {
             logger.info("Cleaning session context for connection id: {}", connectionId);
             //cleaning context and filling cache
             SessionContext sessionContextOld = sessionContextMap.remove(connectionId);
@@ -200,9 +215,11 @@ public final class SecurityContext {
                 if (connectionId.equals(currentSessionContext.getConnectionId())) {
                     //redundant assignment
                     currentSessionContext = sessionContextMapByClient.remove(fullClientId);
-                    logger.info("Disconnect: NO stealing - remove session context by clientId: {} - connection id: {}", currentSessionContext.getClientId(), currentSessionContext.getConnectionId());
+                    logger.debug("Disconnect: NO stealing - remove session context by clientId: {} - connection id: {}",
+                        currentSessionContext.getClientId(), currentSessionContext.getConnectionId());
                 } else {
-                    logger.info("Disconnect: stealing - leave session context by clientId: {} - connection id: {}", currentSessionContext.getClientId(), currentSessionContext.getConnectionId());
+                    logger.info("Disconnect: stealing - leave session context by clientId: {} - connection id: {} (old connection id: {})",
+                        currentSessionContext.getClientId(), currentSessionContext.getConnectionId(), sessionContext.getConnectionId());
                 }
             }
             return currentSessionContext;
@@ -213,12 +230,18 @@ public final class SecurityContext {
         return sessionContextMapByClient.get(fullClientId);
     }
 
-    public SessionContext getSessionContextWithCacheFallback(String connectionId) {
-        SessionContext sessionContext = sessionContextMap.get(connectionId);
-        if (sessionContext == null) {
-            sessionContext = sessionContextCache.get(connectionId);
-        }
-        return sessionContext;
+    public SessionContext getSessionContextWithCacheFallback(String connectionId) throws Exception {
+        return runWithLock.run(LockType.INTERNAL, connectionId, () -> {
+            SessionContext sessionContext = sessionContextMap.get(connectionId);
+            if (sessionContext == null) {
+                sessionContext = sessionContextCache.get(connectionId);
+            }
+            return sessionContext;
+        });
+    }
+
+    public <T> T callWithLock(String key, Callable<T> callable) throws Exception {
+        return runWithLock.run(LockType.EXTERNAL, key, callable);
     }
 
     public SessionContext getSessionContext(String connectionId) {
@@ -284,19 +307,19 @@ public final class SecurityContext {
     }
 
     //logger features
-    public void printReport(ActiveMQServer server, String caller, String connectionId) {
-        printReport(ReportType.Full, server, caller, connectionId);
+    public void printReport(ActiveMQServer server, String caller) {
+        printReport(ReportType.Full, server, caller);
     }
 
-    public void printCompactReport(ActiveMQServer server, String caller, String connectionId) {
-        printReport(ReportType.Compact, server, caller, connectionId);
+    public void printCompactReport(ActiveMQServer server, String caller) {
+        printReport(ReportType.Compact, server, caller);
     }
 
-    public void printDetailedServerReport(ActiveMQServer server, String caller, String connectionId) {
-        printReport(ReportType.DetailedServer, server, caller, connectionId);
+    public void printDetailedServerReport(ActiveMQServer server, String caller) {
+        printReport(ReportType.DetailedServer, server, caller);
     }
 
-    private void printReport(ReportType reportType, ActiveMQServer server, String caller, String connectionId) {
+    private void printReport(ReportType reportType, ActiveMQServer server, String caller) {
         StringBuilder builder = new StringBuilder();
         builder.append("\n").append(REPORT_HEADER).append("\n");
         switch (reportType) {
@@ -305,13 +328,13 @@ public final class SecurityContext {
                 builder.append(REPORT_SEPARATOR).append("\n");
                 appendSessionInfoReport(builder, server);
                 builder.append(REPORT_SEPARATOR).append("\n");
-                appendDetailedServerContextReport(builder, caller, connectionId);
+                appendDetailedServerContextReport(builder, caller, server);
                 break;
             case Compact:
                 appendServerContextReport(builder, server);
                 break;
             case DetailedServer:
-                appendDetailedServerContextReport(builder, caller, connectionId);
+                appendDetailedServerContextReport(builder, caller, server);
                 break;
             default:
                 break;
@@ -344,14 +367,22 @@ public final class SecurityContext {
         sessionById.forEach((id, count) -> builder.append("##\tid:count ").append(id).append(":").append(count.intValue()).append("\n"));
     }
 
-    private void appendDetailedServerContextReport(StringBuilder builder, String caller, String connectionId) {
-        builder.append("## Security context: (caller: ").append(caller).append(" - connectionId: ").append(connectionId).append(")\n");
+    private void appendDetailedServerContextReport(StringBuilder builder, String caller, ActiveMQServer server) {
+        builder.append("## Security context: (caller: ").append(caller).append(")\n");
         builder.append("## connection info by client id\n");
         sessionContextMapByClient.forEach((key, sessionContext) -> builder.append("##\tclientId: ").append(key).append(" - ip: ").append(sessionContext.getClientIp()).append(" - conId: ").append(sessionContext.getConnectionId()).append("\tinternal: ").append(sessionContext.isInternal()).append("\n"));
         builder.append("## connection info by connection id\n");
         sessionContextMap.forEach((key, sessionContext) -> builder.append("##\tconId: ").append(key).append(" - clientId: ").append(sessionContext.getClientId()).append(" - ip: ").append(sessionContext.getClientIp()).append("\tinternal: ").append(sessionContext.isInternal()).append("\n"));
         builder.append("## acl by connection id\n");
         aclMap.forEach((key, acl) -> builder.append("##\tconnId: ").append(key).append("\n"));
+        builder.append("## connection::");
+        server.getSessions().stream().forEach(session -> {
+            RemotingConnection remotingConnection = session.getRemotingConnection();
+            String connectionId = pluginUtility.getConnectionId(remotingConnection);
+            SessionContext sessionContext = getSessionContextByClientId(connectionId);
+            String connectionFullClientId = sessionContext != null ? Utils.getFullClientId(sessionContext) : "N/A";
+            builder.append("\n\t\t\tconnection id: ").append(connectionId).append(" - client Id: ").append(connectionFullClientId);
+        });
     }
 
 }
