@@ -12,10 +12,13 @@
  *******************************************************************************/
 package org.eclipse.kapua.service.tag;
 
-import org.eclipse.kapua.model.query.KapuaListResult;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.eclipse.kapua.model.query.KapuaListResult;
 
 /**
  * {@link Tag} list result definition.
@@ -23,7 +26,12 @@ import javax.xml.bind.annotation.XmlType;
  * @since 1.0.0
  */
 @XmlRootElement(name = "tags")
-@XmlType(factoryClass = TagXmlRegistry.class, factoryMethod = "newTagListResult")
-public interface TagListResult extends KapuaListResult<Tag> {
+@XmlType
+public class TagListResult extends KapuaListResult<Tag> {
 
+    private static final long serialVersionUID = 791258978210911362L;
+
+    public void setItems(List<Tag> items) {
+        this.items = new ArrayList<>(items);
+    }
 }

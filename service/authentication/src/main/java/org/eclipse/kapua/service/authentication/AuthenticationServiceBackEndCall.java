@@ -36,7 +36,6 @@ import org.eclipse.kapua.client.security.metric.AuthMetric;
 import org.eclipse.kapua.commons.security.KapuaSecurityUtils;
 import org.eclipse.kapua.locator.KapuaLocator;
 import org.eclipse.kapua.model.KapuaEntity;
-import org.eclipse.kapua.model.id.KapuaIdFactory;
 import org.eclipse.kapua.service.account.Account;
 import org.eclipse.kapua.service.account.AccountService;
 import org.eclipse.kapua.service.authentication.authentication.Authenticator;
@@ -67,8 +66,6 @@ public class AuthenticationServiceBackEndCall {
     private AuthenticationService authenticationService;
     private AccountService accountService;
     private DeviceConnectionService deviceConnectionService;
-    private CredentialsFactory credentialFactory;
-    private KapuaIdFactory kapuaIdFactory;
     private UserService userService;
 
     @Inject
@@ -79,15 +76,14 @@ public class AuthenticationServiceBackEndCall {
         authenticationService = locator.getService(AuthenticationService.class);
         accountService = locator.getService(AccountService.class);
         deviceConnectionService = locator.getService(DeviceConnectionService.class);
-        credentialFactory = locator.getFactory(CredentialsFactory.class);
-        kapuaIdFactory = locator.getFactory(KapuaIdFactory.class);
         userService = locator.getService(UserService.class);
         authenticationMetric = locator.getComponent(AuthMetric.class);
     }
 
     public AuthResponse brokerConnect(AuthRequest authRequest) {
         try {
-            logger.info("Login for clientId {} - user: {} - password: {} - client certificates: {}", authRequest.getClientId(), authRequest.getUsername(), Strings.isNullOrEmpty(authRequest.getPassword()) ? "no" : "yes", authRequest.getCertificates() != null ? "yes" : "no");
+            logger.info("Login for clientId {} - user: {} - password: {} - client certificates: {}", authRequest.getClientId(), authRequest.getUsername(),
+                    Strings.isNullOrEmpty(authRequest.getPassword()) ? "no" : "yes", authRequest.getCertificates() != null ? "yes" : "no");
             ThreadContext.unbindSubject();
             String deviceConnectionAuthType = extractAuthTypeFromAuthRequest(authRequest);
             LoginCredentials authenticationCredentials = buildLoginCredentialsFromAuthType(authRequest, deviceConnectionAuthType);
@@ -249,7 +245,8 @@ public class AuthenticationServiceBackEndCall {
     /**
      * Extracts the {@link DeviceConnection#getAuthenticationType()} to be used for this connect attempt from the {@link AuthRequest}.
      *
-     * @param authRequest The {@link AuthRequest} from which to extract data.
+     * @param authRequest
+     *         The {@link AuthRequest} from which to extract data.
      * @return The resolved  {@link DeviceConnection#getAuthenticationType()}.
      * @throws KapuaException
      * @since 2.0.0
@@ -271,8 +268,10 @@ public class AuthenticationServiceBackEndCall {
     /**
      * Builds the {@link LoginCredentials} to be used from the resolved {@link DeviceConnection#getAuthenticationType()}.
      *
-     * @param authRequest              The {@link AuthRequest} with the {@link LoginCredentials} values.
-     * @param deviceConnectionAuthType The resolved {@link DeviceConnection#getAuthenticationType()}.
+     * @param authRequest
+     *         The {@link AuthRequest} with the {@link LoginCredentials} values.
+     * @param deviceConnectionAuthType
+     *         The resolved {@link DeviceConnection#getAuthenticationType()}.
      * @return The {@link LoginCredentials} for the given {@link DeviceConnection#getAuthenticationType()}.
      * @throws KapuaException
      * @since 2.0.0
