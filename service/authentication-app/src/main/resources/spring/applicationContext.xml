@@ -60,7 +60,6 @@
         <constructor-arg name="deviceConnectionOptionService" ref="deviceConnectionOptionService"/>
         <constructor-arg name="authorizationService" ref="authorizationService"/>
         <constructor-arg name="deviceConnectionFactory" ref="deviceConnectionFactory"/>
-        <constructor-arg name="permissionFactory" ref="permissionFactory"/>
         <constructor-arg name="deviceConnectionService" ref="deviceConnectionService"/>
     </bean>
     <bean id="userAuthenticationLogic" class="org.eclipse.kapua.service.authentication.authentication.UserAuthenticationLogic">
@@ -70,7 +69,6 @@
         <constructor-arg name="deviceConnectionOptionService" ref="deviceConnectionOptionService"/>
         <constructor-arg name="authorizationService" ref="authorizationService"/>
         <constructor-arg name="deviceConnectionFactory" ref="deviceConnectionFactory"/>
-        <constructor-arg name="permissionFactory" ref="permissionFactory"/>
         <constructor-arg name="deviceConnectionService" ref="deviceConnectionService"/>
     </bean>
 
