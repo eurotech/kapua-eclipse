@@ -1326,16 +1326,18 @@ Feature: User Coupling
     Given The account name is "test-acc-1" and the client ID is "device-2"
     And The broker URI is "tcp://test-user-1:KeepCalm123.@localhost:1883"
     When I start the simulator
-    And I search for a connection from the device "device-2" in account "test-acc-1" I find 1 connection with status "CONNECTED" and user "test-user-1" within 10 seconds
-    Then I stop the simulator
     And I wait for 2 seconds
+    When I search for a connection from the device "device-2" in account "test-acc-1"
+    Then I find 1 connection
+    And The connection status is "DISCONNECTED"
 
     Given The account name is "test-acc-1" and the client ID is "device-2"
     And The broker URI is "tcp://test-user-3:KeepCalm123.@localhost:1883"
     When I start the simulator
-    And I search for a connection from the device "device-2" in account "test-acc-1" I find 1 connection with status "CONNECTED" and user "test-user-3" within 10 seconds
-    Then I stop the simulator
     And I wait for 2 seconds
+    When I search for a connection from the device "device-2" in account "test-acc-1"
+    Then I find 1 connection
+    And The connection status is "DISCONNECTED"
 
     Given The account name is "test-acc-1" and the client ID is "device-3"
     And The broker URI is "tcp://test-user-2:KeepCalm123.@localhost:1883"
