@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (c) 2021, 2022 Eurotech and/or its affiliates and others
+    Copyright (c) 2021, 2025 Eurotech and/or its affiliates and others
 
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
@@ -23,6 +23,7 @@
     </parent>
 
     <artifactId>kapua-assembly-job-engine</artifactId>
+    <packaging>pom</packaging>
 
     <dependencies>
         <!-- Kapua dependencies -->
@@ -61,7 +62,6 @@
                                 <descriptor>${project.basedir}/descriptors/kapua-job-engine-jetty.xml</descriptor>
                             </descriptors>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>kapua-job-engine-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
