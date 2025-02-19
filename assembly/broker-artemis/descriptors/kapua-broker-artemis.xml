@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (c) 2019, 2022 Eurotech and/or its affiliates and others
+    Copyright (c) 2019, 2025 Eurotech and/or its affiliates and others
 
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
@@ -25,7 +25,7 @@
     <files>
         <file>
             <source>${project.basedir}/entrypoint/run-broker</source>
-            <outputDirectory>/opt/artemis</outputDirectory>
+            <outputDirectory>opt/artemis</outputDirectory>
             <fileMode>0755</fileMode>
         </file>
     </files>
@@ -33,7 +33,7 @@
     <fileSets>
         <!-- Expanded ActiveMQ Runtime -->
         <fileSet>
-            <outputDirectory>/opt/artemis</outputDirectory>
+            <outputDirectory>opt/artemis</outputDirectory>
             <directory>${project.build.directory}/dependencies/artemis/apache-artemis-${artemis.version}</directory>
             <fileMode>0644</fileMode>
             <!-- <excludes>
@@ -104,7 +104,6 @@
                 <include>com.google.guava:failureaccess</include>
                 <include>com.google.guava:guava</include>
                 <include>com.google.guava:listenablefuture</include>
-                <include>com.google.inject.extensions:guice-multibindings</include>
                 <include>com.google.inject:guice</include>
                 <include>com.warrenstrange:googleauth</include>
                 <include>javax.cache:cache-api</include>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-    Copyright (c) 2019, 2022 Eurotech and/or its affiliates and others
+    Copyright (c) 2019, 2025 Eurotech and/or its affiliates and others
 
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
@@ -21,8 +21,8 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <packaging>pom</packaging>
     <artifactId>kapua-assembly-broker-artemis</artifactId>
+    <packaging>pom</packaging>
 
     <dependencies>
         <dependency>
@@ -226,7 +226,6 @@
                                 <descriptor>descriptors/kapua-broker-artemis.xml</descriptor>
                             </descriptors>
                             <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>kapua-broker-artemis-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
