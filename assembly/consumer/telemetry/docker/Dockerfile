@@ -28,13 +28,12 @@ ENV DATASTORE_CLIENT org.eclipse.kapua.service.datastore.client.rest.RestDatasto
 ENV SQL_DB_ADDR db
 ENV SQL_DB_PORT 3306
 
-ENV SERVICE_BROKER_ADDR failover:(amqp://events-broker:5672)?jms.sendTimeout=1000
+ENV SERVICE_BROKER_ADDR amqp://events-broker:5672
 
 ENV JAVA_OPTS "-Dcommons.db.schema.update=true \
               -Dcommons.db.connection.host=\${SQL_DB_ADDR} \
               -Dcommons.db.connection.port=\${SQL_DB_PORT} \
               -Dlocator.guice.stage=PRODUCTION \
-              -Dcommons.eventbus.url=\${SERVICE_BROKER_ADDR} \
               -Dconsumer.jaxb_context_class_name=org.eclipse.kapua.consumer.telemetry.TelemetryJAXBContextProvider \
               -Ddatastore.elasticsearch.nodes=\${DATASTORE_ADDR} \
               -Ddatastore.client.class=\${DATASTORE_CLIENT} \
